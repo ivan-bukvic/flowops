@@ -11,6 +11,7 @@ import TopBar from "@/components/TopBar";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import CreateWorkspace from "./pages/CreateWorkspace";
+import Dashboard from "./pages/Dashboard";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 
@@ -18,8 +19,10 @@ const queryClient = new QueryClient();
 
 const AuthenticatedLayout = ({ children }: { children: React.ReactNode }) => (
   <RequireAuth>
-    <TopBar />
-    <OrgProvider>{children}</OrgProvider>
+    <OrgProvider>
+      <TopBar />
+      {children}
+    </OrgProvider>
   </RequireAuth>
 );
 
@@ -38,6 +41,14 @@ const App = () => (
               element={
                 <AuthenticatedLayout>
                   <CreateWorkspace />
+                </AuthenticatedLayout>
+              }
+            />
+            <Route
+              path="/dashboard"
+              element={
+                <AuthenticatedLayout>
+                  <RequireOrg><Dashboard /></RequireOrg>
                 </AuthenticatedLayout>
               }
             />
