@@ -1,24 +1,20 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { useOrg } from "@/contexts/OrgContext";
 
 const Index = () => {
-  const { user, isLoading: authLoading } = useAuth();
-  const { selectedOrgId, isLoading: orgLoading } = useOrg();
+  const { user, isLoading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (authLoading || orgLoading) return;
+    if (isLoading) return;
 
     if (!user) {
       navigate("/login", { replace: true });
-    } else if (selectedOrgId) {
-      navigate("/dashboard", { replace: true });
     } else {
-      navigate("/create-workspace", { replace: true });
+      navigate("/dashboard", { replace: true });
     }
-  }, [user, authLoading, orgLoading, selectedOrgId, navigate]);
+  }, [user, isLoading, navigate]);
 
   return null;
 };
