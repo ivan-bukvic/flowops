@@ -1,14 +1,26 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { useOrg } from "@/contexts/OrgContext";
 
 const Index = () => {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
-    </div>
-  );
+  const { user, isLoading: authLoading } = useAuth();
+  const { selectedOrgId, isLoading: orgLoading } = useOrg();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (authLoading || orgLoading) return;
+
+    if (!user) {
+      navigate("/login", { replace: true });
+    } else if (selectedOrgId) {
+      navigate("/dashboard", { replace: true });
+    } else {
+      navigate("/create-workspace", { replace: true });
+    }
+  }, [user, authLoading, orgLoading, selectedOrgId, navigate]);
+
+  return null;
 };
 
 export default Index;
