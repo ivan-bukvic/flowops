@@ -131,6 +131,41 @@ export type Database = {
           },
         ]
       }
+      events: {
+        Row: {
+          actor_user_id: string | null
+          created_at: string
+          id: string
+          metadata: Json
+          org_id: string
+          type: Database["public"]["Enums"]["event_type"]
+        }
+        Insert: {
+          actor_user_id?: string | null
+          created_at?: string
+          id?: string
+          metadata?: Json
+          org_id: string
+          type: Database["public"]["Enums"]["event_type"]
+        }
+        Update: {
+          actor_user_id?: string | null
+          created_at?: string
+          id?: string
+          metadata?: Json
+          org_id?: string
+          type?: Database["public"]["Enums"]["event_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "events_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       organization_members: {
         Row: {
           created_at: string | null
@@ -207,6 +242,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      emit_event: {
+        Args: {
+          p_metadata?: Json
+          p_org_id: string
+          p_type: Database["public"]["Enums"]["event_type"]
+        }
+        Returns: undefined
+      }
       soft_delete_organization: {
         Args: { p_org_id: string }
         Returns: undefined
@@ -218,6 +261,11 @@ export type Database = {
     }
     Enums: {
       document_status: "uploaded" | "processing" | "completed" | "failed"
+      event_type:
+        | "WORKSPACE_CREATED"
+        | "OWNERSHIP_TRANSFERRED"
+        | "MEMBER_ADDED"
+        | "MEMBER_REMOVED"
       org_role: "owner" | "admin" | "member"
     }
     CompositeTypes: {
@@ -347,6 +395,12 @@ export const Constants = {
   public: {
     Enums: {
       document_status: ["uploaded", "processing", "completed", "failed"],
+      event_type: [
+        "WORKSPACE_CREATED",
+        "OWNERSHIP_TRANSFERRED",
+        "MEMBER_ADDED",
+        "MEMBER_REMOVED",
+      ],
       org_role: ["owner", "admin", "member"],
     },
   },
