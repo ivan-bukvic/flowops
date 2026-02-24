@@ -255,7 +255,7 @@ export type Database = {
         Returns: undefined
       }
       transfer_organization_ownership: {
-        Args: { p_new_owner_user_id: string; p_org_id: string }
+        Args: { p_new_owner_id: string; p_org_id: string }
         Returns: undefined
       }
     }
