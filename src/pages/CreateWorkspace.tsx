@@ -50,6 +50,13 @@ const CreateWorkspace = () => {
 
       if (memberError) throw memberError;
 
+      // Emit event without blocking navigation
+      supabase.rpc("emit_event", {
+        p_org_id: org.id,
+        p_type: "WORKSPACE_CREATED" as const,
+        p_metadata: { source: "app_workspace_creation" } as unknown as undefined,
+      }).then(undefined, () => {});
+
       setSelectedOrgId(org.id);
       navigate("/dashboard", { replace: true });
     } catch (err: any) {
