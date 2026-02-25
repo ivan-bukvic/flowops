@@ -34,7 +34,20 @@ const Projects = () => {
   return (
     <main className="flex-1 px-6 py-4">
       <h1 className="text-lg font-semibold text-foreground mb-3">Projects</h1>
-      <p className="text-sm text-muted-foreground">Projects page ready.</p>
+      {projectsList.length === 0 ? (
+        <p className="text-sm text-muted-foreground">No projects yet.</p>
+      ) : (
+        <div className="divide-y divide-border">
+          {projectsList.map((project) => (
+            <div key={project.id} className="py-2.5">
+              <p className="text-sm font-semibold text-foreground">{project.name}</p>
+              <p className="text-xs text-muted-foreground">
+                {new Date(project.created_at).toLocaleString()}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
     </main>
   );
 };
