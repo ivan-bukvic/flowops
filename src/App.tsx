@@ -13,6 +13,7 @@ import Signup from "./pages/Signup";
 import CreateWorkspace from "./pages/CreateWorkspace";
 import Dashboard from "./pages/Dashboard";
 import Events from "./pages/Events";
+import Projects from "./pages/Projects";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 
@@ -58,6 +59,14 @@ const App = () => (
               element={
                 <AuthenticatedLayout>
                   <RequireOrg><Events /></RequireOrg>
+                </AuthenticatedLayout>
+              }
+            />
+            <Route
+              path="/projects"
+              element={
+                <AuthenticatedLayout>
+                  <RequireOrg><Projects /></RequireOrg>
                 </AuthenticatedLayout>
               }
             />

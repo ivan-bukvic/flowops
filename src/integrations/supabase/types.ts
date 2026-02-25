@@ -237,6 +237,44 @@ export type Database = {
         }
         Relationships: []
       }
+      projects: {
+        Row: {
+          created_at: string
+          created_by: string
+          deleted_at: string | null
+          description: string | null
+          id: string
+          name: string
+          org_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          deleted_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          org_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          deleted_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          org_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "projects_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -266,6 +304,7 @@ export type Database = {
         | "OWNERSHIP_TRANSFERRED"
         | "MEMBER_ADDED"
         | "MEMBER_REMOVED"
+        | "PROJECT_CREATED"
       org_role: "owner" | "admin" | "member"
     }
     CompositeTypes: {
@@ -400,6 +439,7 @@ export const Constants = {
         "OWNERSHIP_TRANSFERRED",
         "MEMBER_ADDED",
         "MEMBER_REMOVED",
+        "PROJECT_CREATED",
       ],
       org_role: ["owner", "admin", "member"],
     },
