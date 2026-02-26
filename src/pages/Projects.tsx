@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import { useOrg } from "@/contexts/OrgContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 
 interface ProjectRow {
   id: string;
@@ -12,28 +16,122 @@ interface ProjectRow {
 
 const Projects = () => {
   const { selectedOrgId } = useOrg();
+  const { user } = useAuth();
   const [projectsList, setProjectsList] = useState<ProjectRow[]>([]);
+  const [currentRole, setCurrentRole] = useState<string | null>(null);
+  const [projectName, setProjectName] = useState("");
+  const [projectDescription, setProjectDescription] = useState("");
+  const [formError, setFormError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const fetchProjects = async () => {
+    if (!selectedOrgId) return;
+    const { data } = await supabase
+      .from("projects")
+      .select("id, name, description, created_by, created_at")
+      .eq("org_id", selectedOrgId)
+      .is("deleted_at", null)
+      .order("created_at", { ascending: false });
+    setProjectsList((data as ProjectRow[]) ?? []);
+  };
 
   useEffect(() => {
     if (!selectedOrgId) return;
-
-    const fetchProjects = async () => {
-      const { data } = await supabase
-        .from("projects")
-        .select("id, name, description, created_by, created_at")
-        .eq("org_id", selectedOrgId)
-        .is("deleted_at", null)
-        .order("created_at", { ascending: false });
-
-      setProjectsList((data as ProjectRow[]) ?? []);
-    };
-
     fetchProjects();
   }, [selectedOrgId]);
+
+  useEffect(() => {
+    if (!selectedOrgId || !user) {
+      setCurrentRole(null);
+      return;
+    }
+    const fetchRole = async () => {
+      const { data } = await supabase
+        .from("organization_members")
+        .select("role")
+        .eq("org_id", selectedOrgId)
+        .eq("user_id", user.id)
+        .maybeSingle();
+      setCurrentRole(data?.role ?? null);
+    };
+    fetchRole();
+  }, [selectedOrgId, user]);
+
+  const canCreate = currentRole === "owner" || currentRole === "admin";
+
+  const handleCreate = async () => {
+    if (!selectedOrgId || !user || !projectName.trim()) return;
+    setFormError(null);
+    setIsSubmitting(true);
+
+    const { data: newProject, error } = await supabase
+      .from("projects")
+      .insert({
+        org_id: selectedOrgId,
+        name: projectName.trim(),
+        description: projectDescription.trim() || null,
+        created_by: user.id,
+      })
+      .select("id, name, description, created_by, created_at")
+      .single();
+
+    if (error) {
+      setIsSubmitting(false);
+      if (error.code === "23505") {
+        setFormError("A project with this name already exists in this workspace.");
+      } else {
+        setFormError(error.message);
+      }
+      return;
+    }
+
+    supabase
+      .rpc("emit_event", {
+        p_org_id: selectedOrgId,
+        p_type: "PROJECT_CREATED" as const,
+        p_metadata: {
+          project_id: (newProject as ProjectRow).id,
+          project_name: (newProject as ProjectRow).name,
+        } as unknown as undefined,
+      })
+      .then(undefined, () => {});
+
+    setProjectName("");
+    setProjectDescription("");
+    setIsSubmitting(false);
+    fetchProjects();
+  };
 
   return (
     <main className="flex-1 px-6 py-4">
       <h1 className="text-lg font-semibold text-foreground mb-3">Projects</h1>
+
+      {canCreate && (
+        <div className="mb-4 space-y-2 max-w-md">
+          <Input
+            placeholder="Project name"
+            value={projectName}
+            onChange={(e) => setProjectName(e.target.value)}
+          />
+          <Textarea
+            placeholder="Description (optional)"
+            value={projectDescription}
+            onChange={(e) => setProjectDescription(e.target.value)}
+            className="min-h-[60px]"
+          />
+          {formError && (
+            <p className="text-sm text-destructive">{formError}</p>
+          )}
+          <Button
+            onClick={handleCreate}
+            disabled={isSubmitting || !projectName.trim()}
+            size="sm"
+          >
+            {isSubmitting ? "Creating..." : "Create Project"}
+          </Button>
+        </div>
+      )}
+
       {projectsList.length === 0 ? (
         <p className="text-sm text-muted-foreground">No projects yet.</p>
       ) : (
