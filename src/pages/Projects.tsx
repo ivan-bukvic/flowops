@@ -67,16 +67,14 @@ const Projects = () => {
 
     if (error) return;
 
-    supabase
-      .rpc("emit_event", {
-        p_org_id: selectedOrgId,
-        p_type: "PROJECT_DELETED" as const,
-        p_metadata: {
-          project_id: project.id,
-          project_name: project.name,
-        } as unknown as undefined,
-      })
-      .then(undefined, () => {});
+    await supabase.rpc("emit_event", {
+      p_org_id: selectedOrgId,
+      p_type: "PROJECT_DELETED" as const,
+      p_metadata: {
+        project_id: project.id,
+        project_name: project.name,
+      } as unknown as undefined,
+    });
 
     fetchProjects();
   };
