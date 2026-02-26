@@ -23,6 +23,11 @@ const Projects = () => {
   const [projectDescription, setProjectDescription] = useState("");
   const [formError, setFormError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editDescription, setEditDescription] = useState("");
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [updateError, setUpdateError] = useState("");
 
   const fetchProjects = async () => {
     if (!selectedOrgId) return;
@@ -154,24 +159,62 @@ const Projects = () => {
       ) : (
         <div className="divide-y divide-border">
           {projectsList.map((project) => (
-            <div key={project.id} className="py-2.5 flex items-start justify-between">
-              <div>
-                <p className="text-sm font-semibold text-foreground">{project.name}</p>
-                <p className="text-xs text-muted-foreground">{new Date(project.created_at).toLocaleString()}</p>
-              </div>
-              {canCreate && (
-                <div className="flex items-center gap-2">
-                  <button
-                    className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(project)}
-                    className="text-xs text-muted-foreground hover:text-destructive transition-colors"
-                  >
-                    Delete
-                  </button>
+            <div key={project.id} className="py-2.5">
+              {editingProjectId === project.id ? (
+                <div className="space-y-2 max-w-md">
+                  <Input
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    placeholder="Project name"
+                  />
+                  <Textarea
+                    value={editDescription}
+                    onChange={(e) => setEditDescription(e.target.value)}
+                    placeholder="Description (optional)"
+                    className="min-h-[60px]"
+                  />
+                  {updateError && <p className="text-sm text-destructive">{updateError}</p>}
+                  <div className="flex items-center gap-2">
+                    <Button size="sm" disabled={isUpdating || !editName.trim()}>
+                      {isUpdating ? "Saving..." : "Save"}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => setEditingProjectId(null)}
+                      disabled={isUpdating}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-start justify-between">
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">{project.name}</p>
+                    <p className="text-xs text-muted-foreground">{new Date(project.created_at).toLocaleString()}</p>
+                  </div>
+                  {canCreate && (
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => {
+                          setEditingProjectId(project.id);
+                          setEditName(project.name);
+                          setEditDescription(project.description ?? "");
+                          setUpdateError("");
+                        }}
+                        className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(project)}
+                        className="text-xs text-muted-foreground hover:text-destructive transition-colors"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
