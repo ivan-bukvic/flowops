@@ -89,6 +89,48 @@ const Projects = () => {
     fetchProjects();
   };
 
+  const handleSave = async () => {
+    if (!editName.trim()) {
+      setUpdateError("Project name required");
+      return;
+    }
+    if (!selectedOrgId || !editingProjectId) return;
+    setUpdateError("");
+    setIsUpdating(true);
+
+    const { error } = await supabase
+      .from("projects")
+      .update({
+        name: editName.trim(),
+        description: editDescription.trim() || null,
+      })
+      .eq("id", editingProjectId)
+      .eq("org_id", selectedOrgId);
+
+    if (error) {
+      setIsUpdating(false);
+      if (error.code === "23505") {
+        setUpdateError("Project name already exists");
+      } else {
+        setUpdateError("Update failed");
+      }
+      return;
+    }
+
+    await supabase.rpc("emit_event", {
+      p_org_id: selectedOrgId,
+      p_type: "PROJECT_UPDATED" as const,
+      p_metadata: {
+        project_id: editingProjectId,
+        new_name: editName.trim(),
+      } as unknown as undefined,
+    });
+
+    setIsUpdating(false);
+    setEditingProjectId(null);
+    fetchProjects();
+  };
+
   const canCreate = currentRole === "owner" || currentRole === "admin";
 
   const handleCreate = async () => {
@@ -175,7 +217,7 @@ const Projects = () => {
                   />
                   {updateError && <p className="text-sm text-destructive">{updateError}</p>}
                   <div className="flex items-center gap-2">
-                    <Button size="sm" disabled={isUpdating || !editName.trim()}>
+                    <Button size="sm" disabled={isUpdating || !editName.trim()} onClick={handleSave}>
                       {isUpdating ? "Saving..." : "Save"}
                     </Button>
                     <Button
