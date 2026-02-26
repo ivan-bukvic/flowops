@@ -306,6 +306,7 @@ export type Database = {
         | "MEMBER_REMOVED"
         | "PROJECT_CREATED"
         | "PROJECT_DELETED"
+        | "PROJECT_UPDATED"
       org_role: "owner" | "admin" | "member"
     }
     CompositeTypes: {
@@ -442,6 +443,7 @@ export const Constants = {
         "MEMBER_REMOVED",
         "PROJECT_CREATED",
         "PROJECT_DELETED",
+        "PROJECT_UPDATED",
       ],
       org_role: ["owner", "admin", "member"],
     },
