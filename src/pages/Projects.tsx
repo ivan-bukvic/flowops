@@ -66,7 +66,11 @@ const Projects = () => {
       .eq("id", project.id)
       .eq("org_id", selectedOrgId);
 
-    if (error) return;
+    if (error) {
+      console.error("DELETE ERROR:", error);
+      alert("Delete failed. Check console.");
+      return;
+    }
 
     await supabase.rpc("emit_event", {
       p_org_id: selectedOrgId,
