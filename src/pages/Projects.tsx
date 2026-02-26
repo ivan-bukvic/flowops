@@ -63,7 +63,8 @@ const Projects = () => {
     const { error } = await supabase
       .from("projects")
       .update({ deleted_at: new Date().toISOString() })
-      .eq("id", project.id);
+      .eq("id", project.id)
+      .eq("org_id", selectedOrgId);
 
     if (error) return;
 
@@ -130,25 +131,15 @@ const Projects = () => {
 
       {canCreate && (
         <div className="mb-4 space-y-2 max-w-md">
-          <Input
-            placeholder="Project name"
-            value={projectName}
-            onChange={(e) => setProjectName(e.target.value)}
-          />
+          <Input placeholder="Project name" value={projectName} onChange={(e) => setProjectName(e.target.value)} />
           <Textarea
             placeholder="Description (optional)"
             value={projectDescription}
             onChange={(e) => setProjectDescription(e.target.value)}
             className="min-h-[60px]"
           />
-          {formError && (
-            <p className="text-sm text-destructive">{formError}</p>
-          )}
-          <Button
-            onClick={handleCreate}
-            disabled={isSubmitting || !projectName.trim()}
-            size="sm"
-          >
+          {formError && <p className="text-sm text-destructive">{formError}</p>}
+          <Button onClick={handleCreate} disabled={isSubmitting || !projectName.trim()} size="sm">
             {isSubmitting ? "Creating..." : "Create Project"}
           </Button>
         </div>
@@ -162,9 +153,7 @@ const Projects = () => {
             <div key={project.id} className="py-2.5 flex items-start justify-between">
               <div>
                 <p className="text-sm font-semibold text-foreground">{project.name}</p>
-                <p className="text-xs text-muted-foreground">
-                  {new Date(project.created_at).toLocaleString()}
-                </p>
+                <p className="text-xs text-muted-foreground">{new Date(project.created_at).toLocaleString()}</p>
               </div>
               {canCreate && (
                 <button
