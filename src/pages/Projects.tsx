@@ -160,12 +160,19 @@ const Projects = () => {
                 <p className="text-xs text-muted-foreground">{new Date(project.created_at).toLocaleString()}</p>
               </div>
               {canCreate && (
-                <button
-                  onClick={() => handleDelete(project)}
-                  className="text-xs text-muted-foreground hover:text-destructive transition-colors"
-                >
-                  Delete
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(project)}
+                    className="text-xs text-muted-foreground hover:text-destructive transition-colors"
+                  >
+                    Delete
+                  </button>
+                </div>
               )}
             </div>
           ))}
