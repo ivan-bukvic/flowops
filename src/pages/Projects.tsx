@@ -57,6 +57,30 @@ const Projects = () => {
     fetchRole();
   }, [selectedOrgId, user]);
 
+  const handleDelete = async (project: ProjectRow) => {
+    if (!selectedOrgId) return;
+
+    const { error } = await supabase
+      .from("projects")
+      .update({ deleted_at: new Date().toISOString() })
+      .eq("id", project.id);
+
+    if (error) return;
+
+    supabase
+      .rpc("emit_event", {
+        p_org_id: selectedOrgId,
+        p_type: "PROJECT_DELETED" as const,
+        p_metadata: {
+          project_id: project.id,
+          project_name: project.name,
+        } as unknown as undefined,
+      })
+      .then(undefined, () => {});
+
+    fetchProjects();
+  };
+
   const canCreate = currentRole === "owner" || currentRole === "admin";
 
   const handleCreate = async () => {
@@ -137,11 +161,21 @@ const Projects = () => {
       ) : (
         <div className="divide-y divide-border">
           {projectsList.map((project) => (
-            <div key={project.id} className="py-2.5">
-              <p className="text-sm font-semibold text-foreground">{project.name}</p>
-              <p className="text-xs text-muted-foreground">
-                {new Date(project.created_at).toLocaleString()}
-              </p>
+            <div key={project.id} className="py-2.5 flex items-start justify-between">
+              <div>
+                <p className="text-sm font-semibold text-foreground">{project.name}</p>
+                <p className="text-xs text-muted-foreground">
+                  {new Date(project.created_at).toLocaleString()}
+                </p>
+              </div>
+              {canCreate && (
+                <button
+                  onClick={() => handleDelete(project)}
+                  className="text-xs text-muted-foreground hover:text-destructive transition-colors"
+                >
+                  Delete
+                </button>
+              )}
             </div>
           ))}
         </div>
