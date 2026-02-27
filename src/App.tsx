@@ -14,6 +14,7 @@ import CreateWorkspace from "./pages/CreateWorkspace";
 import Dashboard from "./pages/Dashboard";
 import Events from "./pages/Events";
 import Projects from "./pages/Projects";
+import ProjectDetail from "./pages/ProjectDetail";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 
@@ -67,6 +68,14 @@ const App = () => (
               element={
                 <AuthenticatedLayout>
                   <RequireOrg><Projects /></RequireOrg>
+                </AuthenticatedLayout>
+              }
+            />
+            <Route
+              path="/projects/:projectId"
+              element={
+                <AuthenticatedLayout>
+                  <RequireOrg><ProjectDetail /></RequireOrg>
                 </AuthenticatedLayout>
               }
             />
