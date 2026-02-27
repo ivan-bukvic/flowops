@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { useOrg } from "@/contexts/OrgContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -233,7 +234,7 @@ const Projects = () => {
               ) : (
                 <div className="flex items-start justify-between">
                   <div>
-                    <p className="text-sm font-semibold text-foreground">{project.name}</p>
+                    <Link to={`/projects/${project.id}`} className="text-sm font-semibold text-foreground hover:underline">{project.name}</Link>
                     <p className="text-xs text-muted-foreground">{new Date(project.created_at).toLocaleString()}</p>
                   </div>
                   {canCreate && (
