@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useOrg } from "@/contexts/OrgContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface ProjectRow {
   id: string;
@@ -26,15 +28,29 @@ interface MemberRow {
   profiles: { email: string | null } | null;
 }
 
+interface OrgMemberOption {
+  user_id: string;
+  email: string;
+}
+
 const ProjectDetail = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const { selectedOrgId } = useOrg();
+  const { user } = useAuth();
   const [project, setProject] = useState<ProjectRow | null>(null);
   const [loading, setLoading] = useState(true);
   const [projectEvents, setProjectEvents] = useState<EventRow[]>([]);
   const [eventsLoading, setEventsLoading] = useState(true);
   const [projectMembers, setProjectMembers] = useState<MemberRow[]>([]);
   const [membersLoading, setMembersLoading] = useState(true);
+
+  const [orgRole, setOrgRole] = useState<string | null>(null);
+  const [orgMembers, setOrgMembers] = useState<OrgMemberOption[]>([]);
+  const [selectedUserId, setSelectedUserId] = useState("");
+  const [selectedRole, setSelectedRole] = useState<"editor" | "viewer">("viewer");
+  const [adding, setAdding] = useState(false);
+
+  const isAdmin = orgRole === "owner" || orgRole === "admin";
 
   useEffect(() => {
     if (!projectId || !selectedOrgId) return;
@@ -69,20 +85,83 @@ const ProjectDetail = () => {
     fetchEvents();
   }, [projectId, selectedOrgId]);
 
-  useEffect(() => {
+  const fetchMembers = async () => {
     if (!projectId) return;
-    const fetchMembers = async () => {
-      setMembersLoading(true);
-      const { data } = await supabase
-        .from("project_members")
-        .select("id, user_id, role, created_at, profiles(email)")
-        .eq("project_id", projectId)
-        .order("created_at", { ascending: true });
-      setProjectMembers((data as unknown as MemberRow[]) ?? []);
-      setMembersLoading(false);
-    };
+    setMembersLoading(true);
+    const { data } = await supabase
+      .from("project_members")
+      .select("id, user_id, role, created_at, profiles(email)")
+      .eq("project_id", projectId)
+      .order("created_at", { ascending: true });
+    setProjectMembers((data as unknown as MemberRow[]) ?? []);
+    setMembersLoading(false);
+  };
+
+  useEffect(() => {
     fetchMembers();
   }, [projectId]);
+
+  // Fetch current user's org role
+  useEffect(() => {
+    if (!selectedOrgId || !user) return;
+    supabase
+      .from("organization_members")
+      .select("role")
+      .eq("org_id", selectedOrgId)
+      .eq("user_id", user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        setOrgRole((data as { role: string } | null)?.role ?? null);
+      });
+  }, [selectedOrgId, user]);
+
+  // Fetch org members for the dropdown
+  useEffect(() => {
+    if (!selectedOrgId || !isAdmin) return;
+    supabase
+      .from("organization_members")
+      .select("user_id, profiles(email)")
+      .eq("org_id", selectedOrgId)
+      .then(({ data }) => {
+        const members = ((data as unknown as { user_id: string; profiles: { email: string | null } | null }[]) ?? [])
+          .map((m) => ({ user_id: m.user_id, email: m.profiles?.email ?? "Unknown" }));
+        setOrgMembers(members);
+      });
+  }, [selectedOrgId, isAdmin]);
+
+  const handleAddMember = async () => {
+    if (!projectId || !selectedOrgId || !selectedUserId) return;
+    setAdding(true);
+    const { error } = await supabase
+      .from("project_members")
+      .insert({ project_id: projectId, user_id: selectedUserId, role: selectedRole });
+
+    if (error) {
+      if (error.code === "23505") {
+        toast.error("User already added");
+      } else {
+        toast.error("Failed to add member");
+      }
+      setAdding(false);
+      return;
+    }
+
+    // Emit event (non-blocking, fail silently)
+    supabase.rpc("emit_event", {
+      p_org_id: selectedOrgId,
+      p_type: "PROJECT_MEMBER_ADDED" as never,
+      p_metadata: {
+        project_id: projectId,
+        user_id: selectedUserId,
+        role: selectedRole,
+      },
+    }).then(() => {});
+
+    setSelectedUserId("");
+    setSelectedRole("viewer");
+    setAdding(false);
+    await fetchMembers();
+  };
 
   if (loading) return <main className="flex-1 px-6 py-4"><p className="text-sm text-muted-foreground">Loading...</p></main>;
   if (!project) return <main className="flex-1 px-6 py-4"><p className="text-sm text-muted-foreground">Project not found.</p><Link to="/projects" className="text-sm text-primary hover:underline mt-2 inline-block">Back to Projects</Link></main>;
@@ -112,6 +191,37 @@ const ProjectDetail = () => {
       )}
 
       <h2 className="text-base font-semibold text-foreground mt-6 mb-2">Project Members</h2>
+
+      {isAdmin && (
+        <div className="flex items-center gap-2 mb-3">
+          <select
+            className="text-sm border border-border rounded px-2 py-1 bg-background text-foreground"
+            value={selectedUserId}
+            onChange={(e) => setSelectedUserId(e.target.value)}
+          >
+            <option value="">Select member...</option>
+            {orgMembers.map((m) => (
+              <option key={m.user_id} value={m.user_id}>{m.email}</option>
+            ))}
+          </select>
+          <select
+            className="text-sm border border-border rounded px-2 py-1 bg-background text-foreground"
+            value={selectedRole}
+            onChange={(e) => setSelectedRole(e.target.value as "editor" | "viewer")}
+          >
+            <option value="viewer">viewer</option>
+            <option value="editor">editor</option>
+          </select>
+          <button
+            className="text-sm px-3 py-1 rounded bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50"
+            disabled={!selectedUserId || adding}
+            onClick={handleAddMember}
+          >
+            Add
+          </button>
+        </div>
+      )}
+
       {membersLoading ? (
         <p className="text-sm text-muted-foreground">Loading members...</p>
       ) : projectMembers.length === 0 ? (
