@@ -237,6 +237,45 @@ export type Database = {
         }
         Relationships: []
       }
+      project_members: {
+        Row: {
+          created_at: string
+          id: string
+          project_id: string
+          role: Database["public"]["Enums"]["project_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          project_id: string
+          role?: Database["public"]["Enums"]["project_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          project_id?: string
+          role?: Database["public"]["Enums"]["project_role"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_members_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       projects: {
         Row: {
           created_at: string
@@ -307,7 +346,10 @@ export type Database = {
         | "PROJECT_CREATED"
         | "PROJECT_DELETED"
         | "PROJECT_UPDATED"
+        | "PROJECT_MEMBER_ADDED"
+        | "PROJECT_MEMBER_REMOVED"
       org_role: "owner" | "admin" | "member"
+      project_role: "editor" | "viewer"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -444,8 +486,11 @@ export const Constants = {
         "PROJECT_CREATED",
         "PROJECT_DELETED",
         "PROJECT_UPDATED",
+        "PROJECT_MEMBER_ADDED",
+        "PROJECT_MEMBER_REMOVED",
       ],
       org_role: ["owner", "admin", "member"],
+      project_role: ["editor", "viewer"],
     },
   },
 } as const

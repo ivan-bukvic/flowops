@@ -18,6 +18,14 @@ interface EventRow {
   created_at: string;
 }
 
+interface MemberRow {
+  id: string;
+  user_id: string;
+  role: string;
+  created_at: string;
+  profiles: { email: string | null } | null;
+}
+
 const ProjectDetail = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const { selectedOrgId } = useOrg();
@@ -25,6 +33,8 @@ const ProjectDetail = () => {
   const [loading, setLoading] = useState(true);
   const [projectEvents, setProjectEvents] = useState<EventRow[]>([]);
   const [eventsLoading, setEventsLoading] = useState(true);
+  const [projectMembers, setProjectMembers] = useState<MemberRow[]>([]);
+  const [membersLoading, setMembersLoading] = useState(true);
 
   useEffect(() => {
     if (!projectId || !selectedOrgId) return;
@@ -59,6 +69,21 @@ const ProjectDetail = () => {
     fetchEvents();
   }, [projectId, selectedOrgId]);
 
+  useEffect(() => {
+    if (!projectId) return;
+    const fetchMembers = async () => {
+      setMembersLoading(true);
+      const { data } = await supabase
+        .from("project_members")
+        .select("id, user_id, role, created_at, profiles(email)")
+        .eq("project_id", projectId)
+        .order("created_at", { ascending: true });
+      setProjectMembers((data as unknown as MemberRow[]) ?? []);
+      setMembersLoading(false);
+    };
+    fetchMembers();
+  }, [projectId]);
+
   if (loading) return <main className="flex-1 px-6 py-4"><p className="text-sm text-muted-foreground">Loading...</p></main>;
   if (!project) return <main className="flex-1 px-6 py-4"><p className="text-sm text-muted-foreground">Project not found.</p><Link to="/projects" className="text-sm text-primary hover:underline mt-2 inline-block">Back to Projects</Link></main>;
 
@@ -81,6 +106,22 @@ const ProjectDetail = () => {
               <p className="text-sm font-semibold text-foreground">{event.type}</p>
               <p className="text-xs text-muted-foreground">{new Date(event.created_at).toLocaleString()}</p>
               <pre className="text-xs text-muted-foreground mt-1 whitespace-pre-wrap">{JSON.stringify(event.metadata, null, 2)}</pre>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <h2 className="text-base font-semibold text-foreground mt-6 mb-2">Project Members</h2>
+      {membersLoading ? (
+        <p className="text-sm text-muted-foreground">Loading members...</p>
+      ) : projectMembers.length === 0 ? (
+        <p className="text-sm text-muted-foreground">No members yet.</p>
+      ) : (
+        <div className="divide-y divide-border">
+          {projectMembers.map((member) => (
+            <div key={member.id} className="py-2.5">
+              <p className="text-sm font-semibold text-foreground">{member.profiles?.email ?? "Unknown"}</p>
+              <p className="text-xs text-muted-foreground">{member.role}</p>
             </div>
           ))}
         </div>
