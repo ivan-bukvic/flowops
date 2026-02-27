@@ -120,11 +120,11 @@ const ProjectDetail = () => {
     if (!selectedOrgId || !isAdmin) return;
     supabase
       .from("organization_members")
-      .select("user_id, profiles(email)")
+      .select("user_id")
       .eq("org_id", selectedOrgId)
       .then(({ data }) => {
-        const members = ((data as unknown as { user_id: string; profiles: { email: string | null } | null }[]) ?? [])
-          .map((m) => ({ user_id: m.user_id, email: m.profiles?.email ?? "Unknown" }));
+        const members = ((data as unknown as { user_id: string }[]) ?? [])
+          .map((m) => ({ user_id: m.user_id, email: m.user_id }));
         setOrgMembers(members);
       });
   }, [selectedOrgId, isAdmin]);
