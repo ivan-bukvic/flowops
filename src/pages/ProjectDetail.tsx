@@ -11,15 +11,24 @@ interface ProjectRow {
   created_by: string;
 }
 
+interface EventRow {
+  id: string;
+  type: string;
+  metadata: Record<string, unknown>;
+  created_at: string;
+}
+
 const ProjectDetail = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const { selectedOrgId } = useOrg();
   const [project, setProject] = useState<ProjectRow | null>(null);
   const [loading, setLoading] = useState(true);
+  const [projectEvents, setProjectEvents] = useState<EventRow[]>([]);
+  const [eventsLoading, setEventsLoading] = useState(true);
 
   useEffect(() => {
     if (!projectId || !selectedOrgId) return;
-    const fetch = async () => {
+    const fetchProject = async () => {
       setLoading(true);
       const { data } = await supabase
         .from("projects")
@@ -31,7 +40,23 @@ const ProjectDetail = () => {
       setProject(data as ProjectRow | null);
       setLoading(false);
     };
-    fetch();
+    fetchProject();
+  }, [projectId, selectedOrgId]);
+
+  useEffect(() => {
+    if (!projectId || !selectedOrgId) return;
+    const fetchEvents = async () => {
+      setEventsLoading(true);
+      const { data } = await supabase
+        .from("events")
+        .select("id, type, metadata, created_at")
+        .eq("org_id", selectedOrgId)
+        .filter("metadata->>project_id", "eq", projectId)
+        .order("created_at", { ascending: false });
+      setProjectEvents((data as EventRow[]) ?? []);
+      setEventsLoading(false);
+    };
+    fetchEvents();
   }, [projectId, selectedOrgId]);
 
   if (loading) return <main className="flex-1 px-6 py-4"><p className="text-sm text-muted-foreground">Loading...</p></main>;
@@ -43,8 +68,24 @@ const ProjectDetail = () => {
       <h1 className="text-lg font-semibold text-foreground mt-3">{project.name}</h1>
       {project.description && <p className="text-sm text-muted-foreground mt-1">{project.description}</p>}
       <p className="text-xs text-muted-foreground mt-2">Created {new Date(project.created_at).toLocaleString()}</p>
+
+      <h2 className="text-base font-semibold text-foreground mt-6 mb-2">Project Activity</h2>
+      {eventsLoading ? (
+        <p className="text-sm text-muted-foreground">Loading activity...</p>
+      ) : projectEvents.length === 0 ? (
+        <p className="text-sm text-muted-foreground">No activity yet.</p>
+      ) : (
+        <div className="divide-y divide-border">
+          {projectEvents.map((event) => (
+            <div key={event.id} className="py-2.5">
+              <p className="text-sm font-semibold text-foreground">{event.type}</p>
+              <p className="text-xs text-muted-foreground">{new Date(event.created_at).toLocaleString()}</p>
+              <pre className="text-xs text-muted-foreground mt-1 whitespace-pre-wrap">{JSON.stringify(event.metadata, null, 2)}</pre>
+            </div>
+          ))}
+        </div>
+      )}
     </main>
   );
 };
-
 export default ProjectDetail;
