@@ -53,24 +53,23 @@ const ProjectDetail = () => {
   const isAdmin = orgRole === "owner" || orgRole === "admin";
 
   useEffect(() => {
-    if (!projectId || !selectedOrgId) return;
+    if (!projectId) return;
     const fetchProject = async () => {
       setLoading(true);
       const { data } = await supabase
         .from("projects")
         .select("id, name, description, created_at, created_by")
         .eq("id", projectId)
-        .eq("org_id", selectedOrgId)
         .is("deleted_at", null)
         .maybeSingle();
       setProject(data as ProjectRow | null);
       setLoading(false);
     };
     fetchProject();
-  }, [projectId, selectedOrgId]);
+  }, [projectId]);
 
   useEffect(() => {
-    if (!projectId || !selectedOrgId) return;
+    if (!projectId) return;
     const fetchEvents = async () => {
       setEventsLoading(true);
       const { data } = await supabase
@@ -83,7 +82,7 @@ const ProjectDetail = () => {
       setEventsLoading(false);
     };
     fetchEvents();
-  }, [projectId, selectedOrgId]);
+  }, [projectId]);
 
   const fetchMembers = async () => {
     if (!projectId) return;
@@ -123,8 +122,10 @@ const ProjectDetail = () => {
       .select("user_id")
       .eq("org_id", selectedOrgId)
       .then(({ data }) => {
-        const members = ((data as unknown as { user_id: string }[]) ?? [])
-          .map((m) => ({ user_id: m.user_id, email: m.user_id }));
+        const members = ((data as unknown as { user_id: string }[]) ?? []).map((m) => ({
+          user_id: m.user_id,
+          email: m.user_id,
+        }));
         setOrgMembers(members);
       });
   }, [selectedOrgId, isAdmin]);
@@ -147,15 +148,17 @@ const ProjectDetail = () => {
     }
 
     // Emit event (non-blocking, fail silently)
-    supabase.rpc("emit_event", {
-      p_org_id: selectedOrgId,
-      p_type: "PROJECT_MEMBER_ADDED" as never,
-      p_metadata: {
-        project_id: projectId,
-        user_id: selectedUserId,
-        role: selectedRole,
-      },
-    }).then(() => {});
+    supabase
+      .rpc("emit_event", {
+        p_org_id: selectedOrgId,
+        p_type: "PROJECT_MEMBER_ADDED" as never,
+        p_metadata: {
+          project_id: projectId,
+          user_id: selectedUserId,
+          role: selectedRole,
+        },
+      })
+      .then(() => {});
 
     setSelectedUserId("");
     setSelectedRole("viewer");
@@ -163,12 +166,27 @@ const ProjectDetail = () => {
     await fetchMembers();
   };
 
-  if (loading) return <main className="flex-1 px-6 py-4"><p className="text-sm text-muted-foreground">Loading...</p></main>;
-  if (!project) return <main className="flex-1 px-6 py-4"><p className="text-sm text-muted-foreground">Project not found.</p><Link to="/projects" className="text-sm text-primary hover:underline mt-2 inline-block">Back to Projects</Link></main>;
+  if (loading)
+    return (
+      <main className="flex-1 px-6 py-4">
+        <p className="text-sm text-muted-foreground">Loading...</p>
+      </main>
+    );
+  if (!project)
+    return (
+      <main className="flex-1 px-6 py-4">
+        <p className="text-sm text-muted-foreground">Project not found.</p>
+        <Link to="/projects" className="text-sm text-primary hover:underline mt-2 inline-block">
+          Back to Projects
+        </Link>
+      </main>
+    );
 
   return (
     <main className="flex-1 px-6 py-4">
-      <Link to="/projects" className="text-sm text-primary hover:underline">← Back to Projects</Link>
+      <Link to="/projects" className="text-sm text-primary hover:underline">
+        ← Back to Projects
+      </Link>
       <h1 className="text-lg font-semibold text-foreground mt-3">{project.name}</h1>
       {project.description && <p className="text-sm text-muted-foreground mt-1">{project.description}</p>}
       <p className="text-xs text-muted-foreground mt-2">Created {new Date(project.created_at).toLocaleString()}</p>
@@ -184,7 +202,9 @@ const ProjectDetail = () => {
             <div key={event.id} className="py-2.5">
               <p className="text-sm font-semibold text-foreground">{event.type}</p>
               <p className="text-xs text-muted-foreground">{new Date(event.created_at).toLocaleString()}</p>
-              <pre className="text-xs text-muted-foreground mt-1 whitespace-pre-wrap">{JSON.stringify(event.metadata, null, 2)}</pre>
+              <pre className="text-xs text-muted-foreground mt-1 whitespace-pre-wrap">
+                {JSON.stringify(event.metadata, null, 2)}
+              </pre>
             </div>
           ))}
         </div>
@@ -201,7 +221,9 @@ const ProjectDetail = () => {
           >
             <option value="">Select member...</option>
             {orgMembers.map((m) => (
-              <option key={m.user_id} value={m.user_id}>{m.email}</option>
+              <option key={m.user_id} value={m.user_id}>
+                {m.email}
+              </option>
             ))}
           </select>
           <select
