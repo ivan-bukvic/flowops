@@ -110,20 +110,20 @@ const Projects = () => {
       .select();
 
     if (error) {
-  setIsUpdating(false);
-  if (error.code === "23505"") {
-    setUpdateError("Project name already exists");
-  } else {
-    setUpdateError("Update failed");
-  }
-  return;
-}
+      setIsUpdating(false);
+      if (error.code === "23505") {
+        setUpdateError("Project name already exists");
+      } else {
+        setUpdateError("Update failed");
+      }
+      return;
+    }
 
-if (!data || data.length === 0) {
-  setIsUpdating(false);
-  setUpdateError("You do not have permission to edit this project");
-  return;
-}
+    if (!data || data.length === 0) {
+      setIsUpdating(false);
+      setUpdateError("You do not have permission to edit this project");
+      return;
+    }
 
     await supabase.rpc("emit_event", {
       p_org_id: selectedOrgId,
@@ -212,11 +212,7 @@ if (!data || data.length === 0) {
             <div key={project.id} className="py-2.5">
               {editingProjectId === project.id ? (
                 <div className="space-y-2 max-w-md">
-                  <Input
-                    value={editName}
-                    onChange={(e) => setEditName(e.target.value)}
-                    placeholder="Project name"
-                  />
+                  <Input value={editName} onChange={(e) => setEditName(e.target.value)} placeholder="Project name" />
                   <Textarea
                     value={editDescription}
                     onChange={(e) => setEditDescription(e.target.value)}
@@ -228,12 +224,7 @@ if (!data || data.length === 0) {
                     <Button size="sm" disabled={isUpdating || !editName.trim()} onClick={handleSave}>
                       {isUpdating ? "Saving..." : "Save"}
                     </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => setEditingProjectId(null)}
-                      disabled={isUpdating}
-                    >
+                    <Button size="sm" variant="ghost" onClick={() => setEditingProjectId(null)} disabled={isUpdating}>
                       Cancel
                     </Button>
                   </div>
@@ -241,7 +232,12 @@ if (!data || data.length === 0) {
               ) : (
                 <div className="flex items-start justify-between">
                   <div>
-                    <Link to={`/projects/${project.id}`} className="text-sm font-semibold text-foreground hover:underline">{project.name}</Link>
+                    <Link
+                      to={`/projects/${project.id}`}
+                      className="text-sm font-semibold text-foreground hover:underline"
+                    >
+                      {project.name}
+                    </Link>
                     <p className="text-xs text-muted-foreground">{new Date(project.created_at).toLocaleString()}</p>
                   </div>
                   {canCreate && (
