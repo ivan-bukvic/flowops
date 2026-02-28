@@ -99,24 +99,31 @@ const Projects = () => {
     setUpdateError("");
     setIsUpdating(true);
 
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from("projects")
       .update({
         name: editName.trim(),
         description: editDescription.trim() || null,
       })
       .eq("id", editingProjectId)
-      .eq("org_id", selectedOrgId);
+      .eq("org_id", selectedOrgId)
+      .select();
 
     if (error) {
-      setIsUpdating(false);
-      if (error.code === "23505") {
-        setUpdateError("Project name already exists");
-      } else {
-        setUpdateError("Update failed");
-      }
-      return;
-    }
+  setIsUpdating(false);
+  if (error.code === "23505"") {
+    setUpdateError("Project name already exists");
+  } else {
+    setUpdateError("Update failed");
+  }
+  return;
+}
+
+if (!data || data.length === 0) {
+  setIsUpdating(false);
+  setUpdateError("You do not have permission to edit this project");
+  return;
+}
 
     await supabase.rpc("emit_event", {
       p_org_id: selectedOrgId,
