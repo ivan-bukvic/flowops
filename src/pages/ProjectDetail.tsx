@@ -118,13 +118,13 @@ const ProjectDetail = () => {
   useEffect(() => {
     if (!selectedOrgId || !isAdmin) return;
     supabase
-      .from("organization_members")
-      .select("user_id")
+      .from("org_members_simple")
+      .select("user_id, email")
       .eq("org_id", selectedOrgId)
       .then(({ data }) => {
-        const members = ((data as unknown as { user_id: string }[]) ?? []).map((m) => ({
+        const members = ((data as unknown as { user_id: string; email: string }[]) ?? []).map((m) => ({
           user_id: m.user_id,
-          email: m.user_id,
+          email: m.email,
         }));
         setOrgMembers(members);
       });
