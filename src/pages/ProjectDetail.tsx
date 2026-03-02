@@ -135,9 +135,9 @@ const ProjectDetail = () => {
       .select("user_id, email")
       .eq("org_id", selectedOrgId)
       .then(({ data }) => {
-        const members = ((data as unknown as { user_id: string; email: string }[]) ?? []).map((m) => ({
+        const members = (data ?? []).map((m: any) => ({
           user_id: m.user_id,
-          email: m.email,
+          email: m.profiles?.email ?? "",
         }));
         setOrgMembers(members);
       });
