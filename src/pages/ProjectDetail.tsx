@@ -129,7 +129,7 @@ const ProjectDetail = () => {
   useEffect(() => {
     if (!selectedOrgId || !isAdmin) return;
     supabase
-      .from("org_members_simple")
+      .from("org_members")
       .select("user_id, email")
       .eq("org_id", selectedOrgId)
       .then(({ data }) => {
