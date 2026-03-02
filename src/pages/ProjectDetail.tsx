@@ -114,7 +114,7 @@ const ProjectDetail = () => {
   // Fetch current user's org role
   useEffect(() => {
     if (!selectedOrgId || !user) return;
-    supabase(supabase as any)
+    (supabase as any)
       .from("organization_members")
       .select("role")
       .eq("org_id", selectedOrgId)
