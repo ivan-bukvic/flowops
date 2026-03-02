@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useOrg } from "@/contexts/OrgContext";
 import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase as rawSupabase } from "@/integrations/supabase/client";
+
+const supabase: any = rawSupabase;
 import { toast } from "sonner";
 
 interface ProjectRow {
