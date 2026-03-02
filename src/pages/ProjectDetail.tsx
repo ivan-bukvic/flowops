@@ -238,7 +238,29 @@ const ProjectDetail = () => {
           ))}
         </div>
       )}
+      {/* ================= DOCUMENTS SECTION ================= */}
 
+      <h2 className="text-base font-semibold text-foreground mt-6 mb-2">Documents</h2>
+
+      {documentsLoading ? (
+        <p className="text-sm text-muted-foreground">Loading documents...</p>
+      ) : documents.length === 0 ? (
+        <p className="text-sm text-muted-foreground">No documents yet.</p>
+      ) : (
+        <div className="space-y-3">
+          {documents.map((doc) => (
+            <div key={doc.id} className="p-3 border rounded-md flex justify-between items-center">
+              <div>
+                <p className="text-sm font-medium break-all">{doc.file_url}</p>
+
+                {doc.summary && <p className="text-xs text-muted-foreground mt-1">{doc.summary}</p>}
+              </div>
+
+              <span className="text-xs px-2 py-1 rounded bg-muted">{doc.processing_status}</span>
+            </div>
+          ))}
+        </div>
+      )}
       <h2 className="text-base font-semibold text-foreground mt-6 mb-2">Project Members</h2>
 
       {isAdmin && (
