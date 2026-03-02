@@ -43,7 +43,18 @@ const ProjectDetail = () => {
   const [eventsLoading, setEventsLoading] = useState(true);
   const [projectMembers, setProjectMembers] = useState<MemberRow[]>([]);
   const [membersLoading, setMembersLoading] = useState(true);
+  // --- DOCUMENTS STATE ---
+  interface DocumentRow {
+    id: string;
+    file_url: string;
+    processing_status: string;
+    summary: string | null;
+    extracted_deadlines: any;
+    created_at: string;
+  }
 
+  const [documents, setDocuments] = useState<DocumentRow[]>([]);
+  const [documentsLoading, setDocumentsLoading] = useState(true);
   const [orgRole, setOrgRole] = useState<string | null>(null);
   const [orgMembers, setOrgMembers] = useState<OrgMemberOption[]>([]);
   const [selectedUserId, setSelectedUserId] = useState("");
