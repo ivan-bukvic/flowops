@@ -130,14 +130,12 @@ const ProjectDetail = () => {
   // Fetch org members for the dropdown
   useEffect(() => {
     if (!selectedOrgId || !isAdmin) return;
-    (supabase as any)
-      .from("organization_members")
-      .select("user_id, email")
-      .eq("org_id", selectedOrgId)
+    supabase
+      .rpc("get_org_members_with_email", { p_org_id: selectedOrgId })
       .then(({ data }) => {
         const members = (data ?? []).map((m: any) => ({
           user_id: m.user_id,
-          email: m.profiles?.email ?? "",
+          email: m.email ?? "",
         }));
         setOrgMembers(members);
       });

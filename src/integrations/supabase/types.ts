@@ -88,38 +88,50 @@ export type Database = {
         Row: {
           created_at: string | null
           deleted_at: string | null
+          error_message: string | null
           extracted_deadlines: Json | null
           file_url: string
           id: string
           org_id: string | null
+          processed_at: string | null
           processing_status:
             | Database["public"]["Enums"]["document_status"]
             | null
+          project_id: string | null
           summary: string | null
+          uploaded_by: string | null
         }
         Insert: {
           created_at?: string | null
           deleted_at?: string | null
+          error_message?: string | null
           extracted_deadlines?: Json | null
           file_url: string
           id?: string
           org_id?: string | null
+          processed_at?: string | null
           processing_status?:
             | Database["public"]["Enums"]["document_status"]
             | null
+          project_id?: string | null
           summary?: string | null
+          uploaded_by?: string | null
         }
         Update: {
           created_at?: string | null
           deleted_at?: string | null
+          error_message?: string | null
           extracted_deadlines?: Json | null
           file_url?: string
           id?: string
           org_id?: string | null
+          processed_at?: string | null
           processing_status?:
             | Database["public"]["Enums"]["document_status"]
             | null
+          project_id?: string | null
           summary?: string | null
+          uploaded_by?: string | null
         }
         Relationships: [
           {
@@ -127,6 +139,13 @@ export type Database = {
             columns: ["org_id"]
             isOneToOne: false
             referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documents_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
         ]
@@ -316,7 +335,23 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      org_members_simple: {
+        Row: {
+          email: string | null
+          org_id: string | null
+          role: Database["public"]["Enums"]["org_role"] | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organization_members_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       emit_event: {
@@ -326,6 +361,21 @@ export type Database = {
           p_type: Database["public"]["Enums"]["event_type"]
         }
         Returns: undefined
+      }
+      get_org_members: {
+        Args: { p_org_id: string }
+        Returns: {
+          role: string
+          user_id: string
+        }[]
+      }
+      get_org_members_with_email: {
+        Args: { p_org_id: string }
+        Returns: {
+          email: string
+          role: string
+          user_id: string
+        }[]
       }
       soft_delete_organization: {
         Args: { p_org_id: string }
@@ -349,7 +399,7 @@ export type Database = {
         | "PROJECT_MEMBER_ADDED"
         | "PROJECT_MEMBER_REMOVED"
       org_role: "owner" | "admin" | "member"
-      project_role: "editor" | "viewer"
+      project_role: "editor" | "viewer" | "owner"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -490,7 +540,7 @@ export const Constants = {
         "PROJECT_MEMBER_REMOVED",
       ],
       org_role: ["owner", "admin", "member"],
-      project_role: ["editor", "viewer"],
+      project_role: ["editor", "viewer", "owner"],
     },
   },
 } as const
