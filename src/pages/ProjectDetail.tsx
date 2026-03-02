@@ -128,7 +128,7 @@ const ProjectDetail = () => {
   // Fetch org members for the dropdown
   useEffect(() => {
     if (!selectedOrgId || !isAdmin) return;
-    supabase
+    (supabase as any)
       .from("organization_members")
       .select("user_id, email")
       .eq("org_id", selectedOrgId)
