@@ -140,7 +140,25 @@ const ProjectDetail = () => {
         setOrgMembers(members);
       });
   }, [selectedOrgId, isAdmin]);
+  useEffect(() => {
+    if (!projectId || !selectedOrgId) return;
 
+    const fetchDocuments = async () => {
+      setDocumentsLoading(true);
+
+      const { data } = await supabase
+        .from("documents")
+        .select("id, file_url, processing_status, summary, extracted_deadlines, created_at")
+        .eq("project_id", projectId)
+        .is("deleted_at", null)
+        .order("created_at", { ascending: false });
+
+      setDocuments((data as DocumentRow[]) ?? []);
+      setDocumentsLoading(false);
+    };
+
+    fetchDocuments();
+  }, [projectId, selectedOrgId]);
   const handleAddMember = async () => {
     if (!projectId || !selectedOrgId || !selectedUserId) return;
     setAdding(true);
