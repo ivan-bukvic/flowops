@@ -115,7 +115,7 @@ const ProjectDetail = () => {
   useEffect(() => {
     if (!selectedOrgId || !user) return;
     supabase
-      .from("organization_members")
+      .from("org_members_simple" as any)
       .select("role")
       .eq("org_id", selectedOrgId)
       .eq("user_id", user.id)
