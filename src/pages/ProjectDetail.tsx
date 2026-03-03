@@ -64,7 +64,51 @@ const ProjectDetail = () => {
   const [adding, setAdding] = useState(false);
 
   const isAdmin = orgRole === "owner" || orgRole === "admin";
+  async function handleFileUpload(file: File) {
+    if (!selectedOrgId || !projectId || !user) {
+      console.error("Missing required context");
+      return;
+    }
 
+    const filePath = `${selectedOrgId}/${projectId}/${crypto.randomUUID()}-${file.name}`;
+
+    // 1️⃣ Upload to Storage
+    const { error: uploadError } = await supabase.storage.from("documents").upload(filePath, file);
+
+    if (uploadError) {
+      console.error("Upload error:", uploadError.message);
+      return;
+    }
+
+    // 2️⃣ Insert into documents table
+    const { error: insertError } = await supabase.from("documents").insert({
+      org_id: selectedOrgId,
+      project_id: projectId,
+      uploaded_by: user.id,
+      file_url: filePath,
+      processing_status: "pending",
+    });
+
+    if (insertError) {
+      console.error("Insert error:", insertError.message);
+      return;
+    }
+
+    console.log("File uploaded successfully");
+
+    // Optional: refresh documents
+    setDocuments((prev) => [
+      ...prev,
+      {
+        id: crypto.randomUUID(),
+        file_url: filePath,
+        processing_status: "pending",
+        summary: null,
+        extracted_deadlines: null,
+        created_at: new Date().toISOString(),
+      },
+    ]);
+  }
   useEffect(() => {
     if (!projectId) return;
     const fetchProject = async () => {
@@ -130,15 +174,13 @@ const ProjectDetail = () => {
   // Fetch org members for the dropdown
   useEffect(() => {
     if (!selectedOrgId || !isAdmin) return;
-    supabase
-      .rpc("get_org_members_with_email", { p_org_id: selectedOrgId })
-      .then(({ data }) => {
-        const members = (data ?? []).map((m: any) => ({
-          user_id: m.user_id,
-          email: m.email ?? "",
-        }));
-        setOrgMembers(members);
-      });
+    supabase.rpc("get_org_members_with_email", { p_org_id: selectedOrgId }).then(({ data }) => {
+      const members = (data ?? []).map((m: any) => ({
+        user_id: m.user_id,
+        email: m.email ?? "",
+      }));
+      setOrgMembers(members);
+    });
   }, [selectedOrgId, isAdmin]);
   useEffect(() => {
     if (!projectId || !selectedOrgId) return;
