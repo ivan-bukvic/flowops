@@ -86,7 +86,7 @@ const ProjectDetail = () => {
       project_id: projectId,
       uploaded_by: user.id,
       file_url: filePath,
-      processing_status: "pending",
+      processing_status: "uploaded",
     });
 
     if (insertError) {
@@ -102,7 +102,7 @@ const ProjectDetail = () => {
       {
         id: crypto.randomUUID(),
         file_url: filePath,
-        processing_status: "pending",
+        processing_status: "uploaded",
         summary: null,
         extracted_deadlines: null,
         created_at: new Date().toISOString(),
