@@ -76,6 +76,7 @@ const ProjectDetail = () => {
     const { error: uploadError } = await supabase.storage.from("documents").upload(filePath, file);
 
     if (uploadError) {
+      toast.error("File upload failed");
       console.error("Upload error:", uploadError.message);
       return;
     }
@@ -90,11 +91,12 @@ const ProjectDetail = () => {
     });
 
     if (insertError) {
+      toast.error("Failed to register document");
       console.error("Insert error:", insertError.message);
       return;
     }
 
-    console.log("File uploaded successfully");
+    toast.success("Document uploaded successfully");
 
     // Optional: refresh documents
     setDocuments((prev) => [
