@@ -281,7 +281,15 @@ const ProjectDetail = () => {
         </div>
       )}
       {/* ================= DOCUMENTS SECTION ================= */}
-
+      <div style={{ marginBottom: "1rem" }}>
+        <input
+          type="file"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) handleFileUpload(file);
+          }}
+        />
+      </div>
       <h2 className="text-base font-semibold text-foreground mt-6 mb-2">Documents</h2>
 
       {documentsLoading ? (
