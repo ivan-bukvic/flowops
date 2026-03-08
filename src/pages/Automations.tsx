@@ -24,12 +24,19 @@ import {
 } from "@/components/ui/select";
 import { Plus, Trash2 } from "lucide-react";
 
+interface AutomationLog {
+  status: string | null;
+  created_at: string | null;
+}
+
 interface AutomationRow {
   id: string;
   trigger_type: string;
   action_type: string;
   config_json: Record<string, any> | null;
   created_at: string | null;
+  last_run?: string | null;
+  last_status?: string | null;
 }
 
 const TRIGGERS = ["PROJECT_CREATED", "PROJECT_UPDATED", "PROJECT_DELETED", "MEMBER_ADDED", "MEMBER_REMOVED"];
