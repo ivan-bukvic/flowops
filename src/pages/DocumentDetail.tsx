@@ -105,11 +105,14 @@ const DocumentDetailPage = () => {
               <p className="text-sm text-muted-foreground">No deadlines extracted.</p>
             ) : (
               <ul className="space-y-1">
-                {deadlines.map((d: any, i: number) => (
-                  <li key={i} className="text-sm text-foreground">
-                    {typeof d === "string" ? d : JSON.stringify(d)}
-                  </li>
-                ))}
+                {deadlines.map((d: any, i: number) => {
+                  if (typeof d === "string") return <li key={i} className="text-sm text-foreground">{d}</li>;
+                  if (d && typeof d === "object" && d.date) {
+                    const formatted = new Date(d.date + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+                    return <li key={i} className="text-sm text-foreground">{formatted} — {d.event || d.description || "Deadline"}</li>;
+                  }
+                  return <li key={i} className="text-sm text-foreground">{JSON.stringify(d)}</li>;
+                })}
               </ul>
             )}
           </CardContent>
