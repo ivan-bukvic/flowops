@@ -14,6 +14,7 @@ interface DocumentRow {
   summary: string | null;
   created_at: string;
   project_id: string | null;
+  project_name: string | null;
 }
 
 const Documents = () => {
@@ -26,13 +27,22 @@ const Documents = () => {
     if (!selectedOrgId) return;
     const fetchDocs = async () => {
       setLoading(true);
-      const { data } = await supabase
+      const { data } = await (supabase as any)
         .from("documents")
-        .select("id, file_url, processing_status, summary, created_at, project_id")
+        .select("id, file_url, processing_status, summary, created_at, project_id, projects(name)")
         .eq("org_id", selectedOrgId)
         .is("deleted_at", null)
         .order("created_at", { ascending: false });
-      setDocuments((data as DocumentRow[]) ?? []);
+      const rows: DocumentRow[] = (data ?? []).map((d: any) => ({
+        id: d.id,
+        file_url: d.file_url,
+        processing_status: d.processing_status,
+        summary: d.summary,
+        created_at: d.created_at,
+        project_id: d.project_id,
+        project_name: d.projects?.name ?? null,
+      }));
+      setDocuments(rows);
       setLoading(false);
     };
     fetchDocs();
@@ -43,8 +53,23 @@ const Documents = () => {
       key: "file_url",
       header: "Document Name",
       render: (row) => (
-        <span className="font-medium text-foreground text-sm truncate max-w-[250px] block">
+        <button
+          className="font-medium text-primary hover:underline text-sm truncate max-w-[250px] block text-left"
+          onClick={(e) => {
+            e.stopPropagation();
+            navigate(`/documents/${row.id}`);
+          }}
+        >
           {row.file_url.split("/").pop() || row.file_url}
+        </button>
+      ),
+    },
+    {
+      key: "project_name",
+      header: "Project",
+      render: (row) => (
+        <span className="text-sm text-muted-foreground">
+          {row.project_name || "—"}
         </span>
       ),
     },
@@ -81,7 +106,6 @@ const Documents = () => {
         actionLabel="Upload Document"
         actionIcon={Upload}
         onAction={() => {
-          // Trigger file input
           const input = document.createElement("input");
           input.type = "file";
           input.click();
