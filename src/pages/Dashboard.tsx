@@ -4,7 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import PageHeader from "@/components/shared/PageHeader";
 import StatCard from "@/components/shared/StatCard";
 import { Badge } from "@/components/ui/badge";
-import { FolderKanban, FileText, Zap, Bot } from "lucide-react";
+import { FolderKanban, FileText, Zap, Bot, Plus, Upload, Sparkles } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 interface EventRow {
   id: string;
