@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useOrg } from "@/contexts/OrgContext";
 import { supabase } from "@/integrations/supabase/client";
+import PageHeader from "@/components/shared/PageHeader";
 import { Badge } from "@/components/ui/badge";
 
 interface EventRow {
@@ -18,8 +19,7 @@ const Events = () => {
 
   useEffect(() => {
     if (!selectedOrgId) return;
-
-    const fetch = async () => {
+    const fetchEvents = async () => {
       setLoading(true);
       const { data } = await supabase
         .from("events")
@@ -27,31 +27,29 @@ const Events = () => {
         .eq("org_id", selectedOrgId)
         .order("created_at", { ascending: false })
         .limit(50);
-
       setEvents((data as EventRow[]) ?? []);
       setLoading(false);
     };
-
-    fetch();
+    fetchEvents();
   }, [selectedOrgId]);
 
   return (
-    <main className="flex-1 px-6 py-4">
-      <h1 className="text-lg font-semibold text-foreground mb-3">Audit Log</h1>
+    <main className="p-6">
+      <PageHeader title="Events" description="Activity timeline for your workspace" />
 
       {loading ? (
-        <p className="text-sm text-muted-foreground">Loading…</p>
+        <p className="text-sm text-muted-foreground">Loading...</p>
       ) : events.length === 0 ? (
         <p className="text-sm text-muted-foreground">No events recorded yet.</p>
       ) : (
-        <div className="divide-y divide-border">
+        <div className="space-y-2">
           {events.map((evt) => (
-            <div key={evt.id} className="py-2.5 flex flex-col gap-1">
-              <div className="flex items-center gap-2 text-sm">
+            <div key={evt.id} className="p-4 rounded-lg border bg-card">
+              <div className="flex items-center gap-2 mb-1">
                 <Badge variant="outline" className="text-xs font-mono">
                   {evt.type}
                 </Badge>
-                <span className="text-muted-foreground text-xs">
+                <span className="text-xs text-muted-foreground">
                   {new Date(evt.created_at).toLocaleString()}
                 </span>
                 {evt.actor_user_id && (
@@ -61,7 +59,7 @@ const Events = () => {
                 )}
               </div>
               {evt.metadata && Object.keys(evt.metadata).length > 0 && (
-                <pre className="text-xs bg-muted rounded px-2 py-1 font-mono text-foreground overflow-x-auto">
+                <pre className="text-xs bg-muted rounded px-2 py-1 font-mono text-foreground overflow-x-auto mt-2">
                   {JSON.stringify(evt.metadata, null, 2)}
                 </pre>
               )}

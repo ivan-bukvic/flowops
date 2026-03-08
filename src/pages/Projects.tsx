@@ -1,11 +1,22 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useOrg } from "@/contexts/OrgContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import PageHeader from "@/components/shared/PageHeader";
+import DataTable, { Column } from "@/components/shared/DataTable";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Plus, Pencil, Trash2 } from "lucide-react";
 
 interface ProjectRow {
   id: string;
@@ -18,31 +29,41 @@ interface ProjectRow {
 const Projects = () => {
   const { selectedOrgId } = useOrg();
   const { user } = useAuth();
-  const [projectsList, setProjectsList] = useState<ProjectRow[]>([]);
+  const navigate = useNavigate();
+  const [projects, setProjects] = useState<ProjectRow[]>([]);
+  const [loading, setLoading] = useState(true);
   const [currentRole, setCurrentRole] = useState<string | null>(null);
-  const [projectName, setProjectName] = useState("");
-  const [projectDescription, setProjectDescription] = useState("");
-  const [formError, setFormError] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
+
+  // Create modal
+  const [showCreate, setShowCreate] = useState(false);
+  const [createName, setCreateName] = useState("");
+  const [createDesc, setCreateDesc] = useState("");
+  const [createError, setCreateError] = useState<string | null>(null);
+  const [creating, setCreating] = useState(false);
+
+  // Edit modal
+  const [editProject, setEditProject] = useState<ProjectRow | null>(null);
   const [editName, setEditName] = useState("");
-  const [editDescription, setEditDescription] = useState("");
-  const [isUpdating, setIsUpdating] = useState(false);
-  const [updateError, setUpdateError] = useState("");
+  const [editDesc, setEditDesc] = useState("");
+  const [editError, setEditError] = useState("");
+  const [updating, setUpdating] = useState(false);
+
+  const canCreate = currentRole === "owner" || currentRole === "admin";
 
   const fetchProjects = async () => {
     if (!selectedOrgId) return;
+    setLoading(true);
     const { data } = await supabase
       .from("projects")
       .select("id, name, description, created_by, created_at")
       .eq("org_id", selectedOrgId)
       .is("deleted_at", null)
       .order("created_at", { ascending: false });
-    setProjectsList((data as ProjectRow[]) ?? []);
+    setProjects((data as ProjectRow[]) ?? []);
+    setLoading(false);
   };
 
   useEffect(() => {
-    if (!selectedOrgId) return;
     fetchProjects();
   }, [selectedOrgId]);
 
@@ -51,21 +72,86 @@ const Projects = () => {
       setCurrentRole(null);
       return;
     }
-    const fetchRole = async () => {
-      const { data } = await supabase
-        .from("organization_members")
-        .select("role")
-        .eq("org_id", selectedOrgId)
-        .eq("user_id", user.id)
-        .maybeSingle();
-      setCurrentRole(data?.role ?? null);
-    };
-    fetchRole();
+    supabase
+      .from("organization_members")
+      .select("role")
+      .eq("org_id", selectedOrgId)
+      .eq("user_id", user.id)
+      .maybeSingle()
+      .then(({ data }) => setCurrentRole(data?.role ?? null));
   }, [selectedOrgId, user]);
+
+  const handleCreate = async () => {
+    if (!selectedOrgId || !user || !createName.trim()) return;
+    setCreateError(null);
+    setCreating(true);
+
+    const { data: newProject, error } = await supabase
+      .from("projects")
+      .insert({
+        org_id: selectedOrgId,
+        name: createName.trim(),
+        description: createDesc.trim() || null,
+        created_by: user.id,
+      })
+      .select("id, name")
+      .single();
+
+    if (error) {
+      setCreating(false);
+      setCreateError(error.code === "23505" ? "A project with this name already exists." : error.message);
+      return;
+    }
+
+    supabase.rpc("emit_event", {
+      p_org_id: selectedOrgId,
+      p_type: "PROJECT_CREATED" as const,
+      p_metadata: { project_id: (newProject as any).id, project_name: (newProject as any).name } as unknown as undefined,
+    }).then(undefined, () => {});
+
+    setCreateName("");
+    setCreateDesc("");
+    setCreating(false);
+    setShowCreate(false);
+    fetchProjects();
+  };
+
+  const handleUpdate = async () => {
+    if (!editName.trim() || !editProject || !selectedOrgId) return;
+    setEditError("");
+    setUpdating(true);
+
+    const { data, error } = await supabase
+      .from("projects")
+      .update({ name: editName.trim(), description: editDesc.trim() || null })
+      .eq("id", editProject.id)
+      .eq("org_id", selectedOrgId)
+      .select();
+
+    if (error) {
+      setUpdating(false);
+      setEditError(error.code === "23505" ? "Name already exists" : "Update failed");
+      return;
+    }
+    if (!data || data.length === 0) {
+      setUpdating(false);
+      setEditError("No permission to edit this project");
+      return;
+    }
+
+    supabase.rpc("emit_event", {
+      p_org_id: selectedOrgId,
+      p_type: "PROJECT_UPDATED" as const,
+      p_metadata: { project_id: editProject.id, new_name: editName.trim() } as unknown as undefined,
+    }).then(undefined, () => {});
+
+    setUpdating(false);
+    setEditProject(null);
+    fetchProjects();
+  };
 
   const handleDelete = async (project: ProjectRow) => {
     if (!selectedOrgId) return;
-
     const { error } = await supabase
       .from("projects")
       .update({ deleted_at: new Date().toISOString() })
@@ -73,200 +159,154 @@ const Projects = () => {
       .eq("org_id", selectedOrgId);
 
     if (error) {
-      console.error("DELETE ERROR:", error);
-      alert("Delete failed. Check console.");
+      alert("Delete failed");
       return;
     }
 
-    await supabase.rpc("emit_event", {
+    supabase.rpc("emit_event", {
       p_org_id: selectedOrgId,
       p_type: "PROJECT_DELETED" as const,
-      p_metadata: {
-        project_id: project.id,
-        project_name: project.name,
-      } as unknown as undefined,
-    });
+      p_metadata: { project_id: project.id, project_name: project.name } as unknown as undefined,
+    }).then(undefined, () => {});
 
     fetchProjects();
   };
 
-  const handleSave = async () => {
-    if (!editName.trim()) {
-      setUpdateError("Project name required");
-      return;
-    }
-    if (!selectedOrgId || !editingProjectId) return;
-    setUpdateError("");
-    setIsUpdating(true);
-
-    const { data, error } = await supabase
-      .from("projects")
-      .update({
-        name: editName.trim(),
-        description: editDescription.trim() || null,
-      })
-      .eq("id", editingProjectId)
-      .eq("org_id", selectedOrgId)
-      .select();
-
-    if (error) {
-      setIsUpdating(false);
-      if (error.code === "23505") {
-        setUpdateError("Project name already exists");
-      } else {
-        setUpdateError("Update failed");
-      }
-      return;
-    }
-
-    if (!data || data.length === 0) {
-      setIsUpdating(false);
-      setUpdateError("You do not have permission to edit this project");
-      return;
-    }
-
-    await supabase.rpc("emit_event", {
-      p_org_id: selectedOrgId,
-      p_type: "PROJECT_UPDATED" as const,
-      p_metadata: {
-        project_id: editingProjectId,
-        new_name: editName.trim(),
-      } as unknown as undefined,
-    });
-
-    setIsUpdating(false);
-    setEditingProjectId(null);
-    fetchProjects();
-  };
-
-  const canCreate = currentRole === "owner" || currentRole === "admin";
-
-  const handleCreate = async () => {
-    if (!selectedOrgId || !user || !projectName.trim()) return;
-    setFormError(null);
-    setIsSubmitting(true);
-
-    const { data: newProject, error } = await supabase
-      .from("projects")
-      .insert({
-        org_id: selectedOrgId,
-        name: projectName.trim(),
-        description: projectDescription.trim() || null,
-        created_by: user.id,
-      })
-      .select("id, name, description, created_by, created_at")
-      .single();
-
-    if (error) {
-      setIsSubmitting(false);
-      if (error.code === "23505") {
-        setFormError("A project with this name already exists in this workspace.");
-      } else {
-        setFormError(error.message);
-      }
-      return;
-    }
-
-    supabase
-      .rpc("emit_event", {
-        p_org_id: selectedOrgId,
-        p_type: "PROJECT_CREATED" as const,
-        p_metadata: {
-          project_id: (newProject as ProjectRow).id,
-          project_name: (newProject as ProjectRow).name,
-        } as unknown as undefined,
-      })
-      .then(undefined, () => {});
-
-    setProjectName("");
-    setProjectDescription("");
-    setIsSubmitting(false);
-    fetchProjects();
-  };
+  const columns: Column<ProjectRow>[] = [
+    {
+      key: "name",
+      header: "Project Name",
+      render: (row) => (
+        <span className="font-medium text-foreground">{row.name}</span>
+      ),
+    },
+    {
+      key: "description",
+      header: "Description",
+      render: (row) => (
+        <span className="text-muted-foreground text-sm truncate max-w-[300px] block">
+          {row.description || "—"}
+        </span>
+      ),
+    },
+    {
+      key: "created_at",
+      header: "Created",
+      render: (row) => (
+        <span className="text-sm text-muted-foreground">
+          {new Date(row.created_at).toLocaleDateString()}
+        </span>
+      ),
+    },
+    ...(canCreate
+      ? [
+          {
+            key: "actions" as const,
+            header: "Actions",
+            className: "w-[100px]",
+            render: (row: ProjectRow) => (
+              <div className="flex items-center gap-1">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setEditProject(row);
+                    setEditName(row.name);
+                    setEditDesc(row.description ?? "");
+                    setEditError("");
+                  }}
+                >
+                  <Pencil className="h-3.5 w-3.5" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-destructive hover:text-destructive"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDelete(row);
+                  }}
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </Button>
+              </div>
+            ),
+          },
+        ]
+      : []),
+  ];
 
   return (
-    <main className="flex-1 px-6 py-4">
-      <h1 className="text-lg font-semibold text-foreground mb-3">Projects</h1>
+    <main className="p-6">
+      <PageHeader
+        title="Projects"
+        description="Manage your workspace projects"
+        actionLabel={canCreate ? "Create Project" : undefined}
+        actionIcon={Plus}
+        onAction={() => setShowCreate(true)}
+      />
 
-      {canCreate && (
-        <div className="mb-4 space-y-2 max-w-md">
-          <Input placeholder="Project name" value={projectName} onChange={(e) => setProjectName(e.target.value)} />
-          <Textarea
-            placeholder="Description (optional)"
-            value={projectDescription}
-            onChange={(e) => setProjectDescription(e.target.value)}
-            className="min-h-[60px]"
-          />
-          {formError && <p className="text-sm text-destructive">{formError}</p>}
-          <Button onClick={handleCreate} disabled={isSubmitting || !projectName.trim()} size="sm">
-            {isSubmitting ? "Creating..." : "Create Project"}
-          </Button>
-        </div>
-      )}
+      <DataTable
+        columns={columns}
+        data={projects}
+        loading={loading}
+        emptyMessage="No projects yet."
+        onRowClick={(row) => navigate(`/projects/${row.id}`)}
+      />
 
-      {projectsList.length === 0 ? (
-        <p className="text-sm text-muted-foreground">No projects yet.</p>
-      ) : (
-        <div className="divide-y divide-border">
-          {projectsList.map((project) => (
-            <div key={project.id} className="py-2.5">
-              {editingProjectId === project.id ? (
-                <div className="space-y-2 max-w-md">
-                  <Input value={editName} onChange={(e) => setEditName(e.target.value)} placeholder="Project name" />
-                  <Textarea
-                    value={editDescription}
-                    onChange={(e) => setEditDescription(e.target.value)}
-                    placeholder="Description (optional)"
-                    className="min-h-[60px]"
-                  />
-                  {updateError && <p className="text-sm text-destructive">{updateError}</p>}
-                  <div className="flex items-center gap-2">
-                    <Button size="sm" disabled={isUpdating || !editName.trim()} onClick={handleSave}>
-                      {isUpdating ? "Saving..." : "Save"}
-                    </Button>
-                    <Button size="sm" variant="ghost" onClick={() => setEditingProjectId(null)} disabled={isUpdating}>
-                      Cancel
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <div className="flex items-start justify-between">
-                  <div>
-                    <Link
-                      to={`/projects/${project.id}`}
-                      className="text-sm font-semibold text-foreground hover:underline"
-                    >
-                      {project.name}
-                    </Link>
-                    <p className="text-xs text-muted-foreground">{new Date(project.created_at).toLocaleString()}</p>
-                  </div>
-                  {canCreate && (
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => {
-                          setEditingProjectId(project.id);
-                          setEditName(project.name);
-                          setEditDescription(project.description ?? "");
-                          setUpdateError("");
-                        }}
-                        className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(project)}
-                        className="text-xs text-muted-foreground hover:text-destructive transition-colors"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  )}
-                </div>
-              )}
+      {/* Create Modal */}
+      <Dialog open={showCreate} onOpenChange={setShowCreate}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Create Project</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label>Project Name</Label>
+              <Input value={createName} onChange={(e) => setCreateName(e.target.value)} placeholder="My Project" />
             </div>
-          ))}
-        </div>
-      )}
+            <div className="space-y-2">
+              <Label>Description</Label>
+              <Textarea value={createDesc} onChange={(e) => setCreateDesc(e.target.value)} placeholder="Optional description" className="min-h-[80px]" />
+            </div>
+            {createError && <p className="text-sm text-destructive">{createError}</p>}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowCreate(false)}>Cancel</Button>
+            <Button onClick={handleCreate} disabled={creating || !createName.trim()}>
+              {creating ? "Creating..." : "Create"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Modal */}
+      <Dialog open={!!editProject} onOpenChange={(open) => !open && setEditProject(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Project</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label>Project Name</Label>
+              <Input value={editName} onChange={(e) => setEditName(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label>Description</Label>
+              <Textarea value={editDesc} onChange={(e) => setEditDesc(e.target.value)} className="min-h-[80px]" />
+            </div>
+            {editError && <p className="text-sm text-destructive">{editError}</p>}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditProject(null)}>Cancel</Button>
+            <Button onClick={handleUpdate} disabled={updating || !editName.trim()}>
+              {updating ? "Saving..." : "Save"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </main>
   );
 };
