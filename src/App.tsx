@@ -4,29 +4,29 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
-import { OrgProvider } from "@/contexts/OrgContext";
-import RequireAuth from "@/components/RequireAuth";
+import AuthenticatedLayout from "@/components/layout/AuthenticatedLayout";
 import RequireOrg from "@/components/RequireOrg";
-import TopBar from "@/components/TopBar";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import CreateWorkspace from "./pages/CreateWorkspace";
 import Dashboard from "./pages/Dashboard";
-import Events from "./pages/Events";
 import Projects from "./pages/Projects";
 import ProjectDetail from "./pages/ProjectDetail";
+import Documents from "./pages/Documents";
+import AI from "./pages/AI";
+import Automations from "./pages/Automations";
+import Events from "./pages/Events";
+import Integrations from "./pages/Integrations";
+import Settings from "./pages/Settings";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
-const AuthenticatedLayout = ({ children }: { children: React.ReactNode }) => (
-  <RequireAuth>
-    <OrgProvider>
-      <TopBar />
-      {children}
-    </OrgProvider>
-  </RequireAuth>
+const OrgPage = ({ children }: { children: React.ReactNode }) => (
+  <AuthenticatedLayout>
+    <RequireOrg>{children}</RequireOrg>
+  </AuthenticatedLayout>
 );
 
 const App = () => (
@@ -47,38 +47,15 @@ const App = () => (
                 </AuthenticatedLayout>
               }
             />
-            <Route
-              path="/dashboard"
-              element={
-                <AuthenticatedLayout>
-                  <RequireOrg><Dashboard /></RequireOrg>
-                </AuthenticatedLayout>
-              }
-            />
-            <Route
-              path="/events"
-              element={
-                <AuthenticatedLayout>
-                  <RequireOrg><Events /></RequireOrg>
-                </AuthenticatedLayout>
-              }
-            />
-            <Route
-              path="/projects"
-              element={
-                <AuthenticatedLayout>
-                  <RequireOrg><Projects /></RequireOrg>
-                </AuthenticatedLayout>
-              }
-            />
-            <Route
-              path="/projects/:projectId"
-              element={
-                <AuthenticatedLayout>
-                  <RequireOrg><ProjectDetail /></RequireOrg>
-                </AuthenticatedLayout>
-              }
-            />
+            <Route path="/dashboard" element={<OrgPage><Dashboard /></OrgPage>} />
+            <Route path="/projects" element={<OrgPage><Projects /></OrgPage>} />
+            <Route path="/projects/:projectId" element={<OrgPage><ProjectDetail /></OrgPage>} />
+            <Route path="/documents" element={<OrgPage><Documents /></OrgPage>} />
+            <Route path="/ai" element={<OrgPage><AI /></OrgPage>} />
+            <Route path="/automations" element={<OrgPage><Automations /></OrgPage>} />
+            <Route path="/events" element={<OrgPage><Events /></OrgPage>} />
+            <Route path="/integrations" element={<OrgPage><Integrations /></OrgPage>} />
+            <Route path="/settings" element={<OrgPage><Settings /></OrgPage>} />
             <Route path="/" element={<Index />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
