@@ -46,6 +46,72 @@ export type Database = {
           },
         ]
       }
+      ai_queries: {
+        Row: {
+          answer: string | null
+          created_at: string | null
+          id: string
+          project_id: string | null
+          question: string | null
+        }
+        Insert: {
+          answer?: string | null
+          created_at?: string | null
+          id?: string
+          project_id?: string | null
+          question?: string | null
+        }
+        Update: {
+          answer?: string | null
+          created_at?: string | null
+          id?: string
+          project_id?: string | null
+          question?: string | null
+        }
+        Relationships: []
+      }
+      automation_logs: {
+        Row: {
+          created_at: string | null
+          event_id: string | null
+          id: string
+          result_json: Json | null
+          rule_id: string | null
+          status: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          event_id?: string | null
+          id?: string
+          result_json?: Json | null
+          rule_id?: string | null
+          status?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          event_id?: string | null
+          id?: string
+          result_json?: Json | null
+          rule_id?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "automation_logs_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "automation_logs_rule_id_fkey"
+            columns: ["rule_id"]
+            isOneToOne: false
+            referencedRelation: "automation_rules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       automation_rules: {
         Row: {
           action_type: string
@@ -98,6 +164,8 @@ export type Database = {
             | Database["public"]["Enums"]["document_status"]
             | null
           project_id: string | null
+          raw_text: string | null
+          retry_count: number | null
           summary: string | null
           uploaded_by: string | null
         }
@@ -114,6 +182,8 @@ export type Database = {
             | Database["public"]["Enums"]["document_status"]
             | null
           project_id?: string | null
+          raw_text?: string | null
+          retry_count?: number | null
           summary?: string | null
           uploaded_by?: string | null
         }
@@ -130,6 +200,8 @@ export type Database = {
             | Database["public"]["Enums"]["document_status"]
             | null
           project_id?: string | null
+          raw_text?: string | null
+          retry_count?: number | null
           summary?: string | null
           uploaded_by?: string | null
         }
@@ -146,6 +218,38 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      embeddings: {
+        Row: {
+          chunk_text: string | null
+          created_at: string | null
+          document_id: string | null
+          embedding: string | null
+          id: string
+        }
+        Insert: {
+          chunk_text?: string | null
+          created_at?: string | null
+          document_id?: string | null
+          embedding?: string | null
+          id?: string
+        }
+        Update: {
+          chunk_text?: string | null
+          created_at?: string | null
+          document_id?: string | null
+          embedding?: string | null
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "embeddings_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
             referencedColumns: ["id"]
           },
         ]
@@ -373,10 +477,19 @@ export type Database = {
         Args: { p_org_id: string }
         Returns: {
           email: string
-          role: string
           user_id: string
         }[]
       }
+      match_documents: {
+        Args: { match_count?: number; query_embedding: string }
+        Returns: {
+          chunk_text: string
+          document_id: string
+          id: string
+          similarity: number
+        }[]
+      }
+      run_automation_engine: { Args: never; Returns: undefined }
       soft_delete_organization: {
         Args: { p_org_id: string }
         Returns: undefined
@@ -387,7 +500,12 @@ export type Database = {
       }
     }
     Enums: {
-      document_status: "uploaded" | "processing" | "completed" | "failed"
+      document_status:
+        | "uploaded"
+        | "processing"
+        | "completed"
+        | "failed"
+        | "retry"
       event_type:
         | "WORKSPACE_CREATED"
         | "OWNERSHIP_TRANSFERRED"
@@ -527,7 +645,13 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      document_status: ["uploaded", "processing", "completed", "failed"],
+      document_status: [
+        "uploaded",
+        "processing",
+        "completed",
+        "failed",
+        "retry",
+      ],
       event_type: [
         "WORKSPACE_CREATED",
         "OWNERSHIP_TRANSFERRED",
