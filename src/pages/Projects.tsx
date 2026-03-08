@@ -56,11 +56,16 @@ const Projects = () => {
     setLoading(true);
     const { data } = await supabase
       .from("projects")
-      .select("id, name, description, created_by, created_at")
+      .select("id, name, description, created_by, created_at, project_members(id)")
       .eq("org_id", selectedOrgId)
       .is("deleted_at", null)
       .order("created_at", { ascending: false });
-    setProjects((data as ProjectRow[]) ?? []);
+    setProjects(
+      ((data as any[]) ?? []).map((p) => ({
+        ...p,
+        member_count: Array.isArray(p.project_members) ? p.project_members.length : 0,
+      }))
+    );
     setLoading(false);
   };
 
