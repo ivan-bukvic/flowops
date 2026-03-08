@@ -17,6 +17,7 @@ interface EventRow {
 
 const Dashboard = () => {
   const { selectedOrgId } = useOrg();
+  const navigate = useNavigate();
   const [projectCount, setProjectCount] = useState(0);
   const [docCount, setDocCount] = useState(0);
   const [automationCount, setAutomationCount] = useState(0);
