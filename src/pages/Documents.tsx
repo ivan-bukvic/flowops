@@ -18,6 +18,7 @@ interface DocumentRow {
 
 const Documents = () => {
   const { selectedOrgId } = useOrg();
+  const navigate = useNavigate();
   const [documents, setDocuments] = useState<DocumentRow[]>([]);
   const [loading, setLoading] = useState(true);
 
