@@ -13,6 +13,7 @@ import Dashboard from "./pages/Dashboard";
 import Projects from "./pages/Projects";
 import ProjectDetail from "./pages/ProjectDetail";
 import Documents from "./pages/Documents";
+import DocumentDetail from "./pages/DocumentDetail";
 import AI from "./pages/AI";
 import Automations from "./pages/Automations";
 import Events from "./pages/Events";
