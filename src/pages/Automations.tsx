@@ -121,18 +121,18 @@ const Automations = () => {
       render: (row) => <span className="text-sm font-mono">{row.action_type}</span>,
     },
     {
-      key: "status",
-      header: "Status",
-      render: () => <StatusBadge status="active" />,
-    },
-    {
-      key: "created_at",
-      header: "Created",
+      key: "last_run",
+      header: "Last Run",
       render: (row) => (
         <span className="text-sm text-muted-foreground">
-          {row.created_at ? new Date(row.created_at).toLocaleDateString() : "—"}
+          {row.last_run ? formatTimeAgo(new Date(row.last_run)) : "Never"}
         </span>
       ),
+    },
+    {
+      key: "last_status",
+      header: "Status",
+      render: (row) => <StatusBadge status={row.last_status ?? "inactive"} />,
     },
   ];
 
