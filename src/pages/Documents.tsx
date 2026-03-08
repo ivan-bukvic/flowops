@@ -5,6 +5,7 @@ import PageHeader from "@/components/shared/PageHeader";
 import DataTable, { Column } from "@/components/shared/DataTable";
 import StatusBadge from "@/components/shared/StatusBadge";
 import { Upload } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface DocumentRow {
   id: string;
