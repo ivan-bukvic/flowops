@@ -24,6 +24,7 @@ interface ProjectRow {
   description: string | null;
   created_by: string;
   created_at: string;
+  member_count?: number;
 }
 
 const Projects = () => {
