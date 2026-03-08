@@ -59,11 +59,21 @@ const Automations = () => {
     setLoading(true);
     const { data } = await supabase
       .from("automation_rules")
-      .select("id, trigger_type, action_type, config_json, created_at")
+      .select("id, trigger_type, action_type, config_json, created_at, automation_logs(status, created_at)")
       .eq("org_id", selectedOrgId)
       .is("deleted_at", null)
       .order("created_at", { ascending: false });
-    setRules((data as AutomationRow[]) ?? []);
+    setRules(
+      ((data as any[]) ?? []).map((r) => {
+        const logs: AutomationLog[] = Array.isArray(r.automation_logs) ? r.automation_logs : [];
+        const sorted = logs.sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        return {
+          ...r,
+          last_run: sorted[0]?.created_at ?? null,
+          last_status: sorted[0]?.status ?? null,
+        };
+      })
+    );
     setLoading(false);
   };
 
