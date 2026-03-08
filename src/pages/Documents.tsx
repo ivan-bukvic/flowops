@@ -92,6 +92,7 @@ const Documents = () => {
         data={documents}
         loading={loading}
         emptyMessage="No documents uploaded yet."
+        onRowClick={(row) => navigate(`/documents/${row.id}`)}
       />
     </main>
   );

@@ -196,6 +196,15 @@ const Projects = () => {
       ),
     },
     {
+      key: "members",
+      header: "Members",
+      render: (row) => (
+        <span className="text-sm text-muted-foreground">
+          {row.member_count ?? 0} {(row.member_count ?? 0) === 1 ? "member" : "members"}
+        </span>
+      ),
+    },
+    {
       key: "created_at",
       header: "Created",
       render: (row) => (
