@@ -24,16 +24,34 @@ import {
 } from "@/components/ui/select";
 import { Plus, Trash2 } from "lucide-react";
 
+interface AutomationLog {
+  status: string | null;
+  created_at: string | null;
+}
+
 interface AutomationRow {
   id: string;
   trigger_type: string;
   action_type: string;
   config_json: Record<string, any> | null;
   created_at: string | null;
+  last_run?: string | null;
+  last_status?: string | null;
 }
 
 const TRIGGERS = ["PROJECT_CREATED", "PROJECT_UPDATED", "PROJECT_DELETED", "MEMBER_ADDED", "MEMBER_REMOVED"];
 const ACTIONS = ["EMAIL", "WEBHOOK", "LOG"];
+
+function formatTimeAgo(date: Date): string {
+  const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
+  if (seconds < 60) return `${seconds}s ago`;
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  return `${days}d ago`;
+}
 
 const Automations = () => {
   const { selectedOrgId } = useOrg();
@@ -52,11 +70,21 @@ const Automations = () => {
     setLoading(true);
     const { data } = await supabase
       .from("automation_rules")
-      .select("id, trigger_type, action_type, config_json, created_at")
+      .select("id, trigger_type, action_type, config_json, created_at, automation_logs(status, created_at)")
       .eq("org_id", selectedOrgId)
       .is("deleted_at", null)
       .order("created_at", { ascending: false });
-    setRules((data as AutomationRow[]) ?? []);
+    setRules(
+      ((data as any[]) ?? []).map((r) => {
+        const logs: AutomationLog[] = Array.isArray(r.automation_logs) ? r.automation_logs : [];
+        const sorted = logs.sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        return {
+          ...r,
+          last_run: sorted[0]?.created_at ?? null,
+          last_status: sorted[0]?.status ?? null,
+        };
+      })
+    );
     setLoading(false);
   };
 
@@ -104,18 +132,18 @@ const Automations = () => {
       render: (row) => <span className="text-sm font-mono">{row.action_type}</span>,
     },
     {
-      key: "status",
-      header: "Status",
-      render: () => <StatusBadge status="active" />,
-    },
-    {
-      key: "created_at",
-      header: "Created",
+      key: "last_run",
+      header: "Last Run",
       render: (row) => (
         <span className="text-sm text-muted-foreground">
-          {row.created_at ? new Date(row.created_at).toLocaleDateString() : "—"}
+          {row.last_run ? formatTimeAgo(new Date(row.last_run)) : "Never"}
         </span>
       ),
+    },
+    {
+      key: "last_status",
+      header: "Status",
+      render: (row) => <StatusBadge status={row.last_status ?? "inactive"} />,
     },
   ];
 

@@ -24,6 +24,7 @@ interface ProjectRow {
   description: string | null;
   created_by: string;
   created_at: string;
+  member_count?: number;
 }
 
 const Projects = () => {
@@ -55,11 +56,16 @@ const Projects = () => {
     setLoading(true);
     const { data } = await supabase
       .from("projects")
-      .select("id, name, description, created_by, created_at")
+      .select("id, name, description, created_by, created_at, project_members(id)")
       .eq("org_id", selectedOrgId)
       .is("deleted_at", null)
       .order("created_at", { ascending: false });
-    setProjects((data as ProjectRow[]) ?? []);
+    setProjects(
+      ((data as any[]) ?? []).map((p) => ({
+        ...p,
+        member_count: Array.isArray(p.project_members) ? p.project_members.length : 0,
+      }))
+    );
     setLoading(false);
   };
 
@@ -186,6 +192,15 @@ const Projects = () => {
       render: (row) => (
         <span className="text-muted-foreground text-sm truncate max-w-[300px] block">
           {row.description || "—"}
+        </span>
+      ),
+    },
+    {
+      key: "members",
+      header: "Members",
+      render: (row) => (
+        <span className="text-sm text-muted-foreground">
+          {row.member_count ?? 0} {(row.member_count ?? 0) === 1 ? "member" : "members"}
         </span>
       ),
     },

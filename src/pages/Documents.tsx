@@ -5,6 +5,7 @@ import PageHeader from "@/components/shared/PageHeader";
 import DataTable, { Column } from "@/components/shared/DataTable";
 import StatusBadge from "@/components/shared/StatusBadge";
 import { Upload } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface DocumentRow {
   id: string;
@@ -17,6 +18,7 @@ interface DocumentRow {
 
 const Documents = () => {
   const { selectedOrgId } = useOrg();
+  const navigate = useNavigate();
   const [documents, setDocuments] = useState<DocumentRow[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -90,6 +92,7 @@ const Documents = () => {
         data={documents}
         loading={loading}
         emptyMessage="No documents uploaded yet."
+        onRowClick={(row) => navigate(`/documents/${row.id}`)}
       />
     </main>
   );

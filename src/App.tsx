@@ -13,6 +13,7 @@ import Dashboard from "./pages/Dashboard";
 import Projects from "./pages/Projects";
 import ProjectDetail from "./pages/ProjectDetail";
 import Documents from "./pages/Documents";
+import DocumentDetail from "./pages/DocumentDetail";
 import AI from "./pages/AI";
 import Automations from "./pages/Automations";
 import Events from "./pages/Events";
@@ -51,6 +52,7 @@ const App = () => (
             <Route path="/projects" element={<OrgPage><Projects /></OrgPage>} />
             <Route path="/projects/:projectId" element={<OrgPage><ProjectDetail /></OrgPage>} />
             <Route path="/documents" element={<OrgPage><Documents /></OrgPage>} />
+            <Route path="/documents/:documentId" element={<OrgPage><DocumentDetail /></OrgPage>} />
             <Route path="/ai" element={<OrgPage><AI /></OrgPage>} />
             <Route path="/automations" element={<OrgPage><Automations /></OrgPage>} />
             <Route path="/events" element={<OrgPage><Events /></OrgPage>} />
