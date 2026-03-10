@@ -4,10 +4,12 @@ import { supabase } from "@/integrations/supabase/client";
 import PageHeader from "@/components/shared/PageHeader";
 import DataTable, { Column } from "@/components/shared/DataTable";
 import StatusBadge from "@/components/shared/StatusBadge";
+import AutomationActivity from "@/components/automations/AutomationActivity";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Dialog,
   DialogContent,
@@ -22,7 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus } from "lucide-react";
 
 interface AutomationLog {
   status: string | null;
@@ -157,7 +159,18 @@ const Automations = () => {
         onAction={() => setShowCreate(true)}
       />
 
-      <DataTable columns={columns} data={rules} loading={loading} emptyMessage="No automation rules yet." />
+      <Tabs defaultValue="rules" className="mt-4">
+        <TabsList>
+          <TabsTrigger value="rules">Rules</TabsTrigger>
+          <TabsTrigger value="activity">Activity</TabsTrigger>
+        </TabsList>
+        <TabsContent value="rules">
+          <DataTable columns={columns} data={rules} loading={loading} emptyMessage="No automation rules yet." />
+        </TabsContent>
+        <TabsContent value="activity">
+          <AutomationActivity />
+        </TabsContent>
+      </Tabs>
 
       <Dialog open={showCreate} onOpenChange={setShowCreate}>
         <DialogContent>
