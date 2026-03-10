@@ -84,6 +84,10 @@ const AutomationActivity = () => {
     },
   ];
 
+  if (error) {
+    return <p className="text-sm text-destructive py-8 text-center">Failed to load automation activity.</p>;
+  }
+
   return (
     <DataTable
       columns={columns}
