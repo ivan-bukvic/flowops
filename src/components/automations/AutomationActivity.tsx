@@ -21,12 +21,15 @@ interface ApiRow {
 const AutomationActivity = () => {
   const [rows, setRows] = useState<ActivityRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     const fetchActivity = async () => {
       setLoading(true);
+      setError(false);
       try {
         const res = await fetch("http://localhost:3000/automations/activity");
+        if (!res.ok) throw new Error("Request failed");
         const data: ApiRow[] = await res.json();
         const mapped = data
           .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
@@ -40,6 +43,7 @@ const AutomationActivity = () => {
           }));
         setRows(mapped);
       } catch {
+        setError(true);
         setRows([]);
       }
       setLoading(false);
