@@ -99,7 +99,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
       </div>
 
       {/* Trigger Card */}
-      <div className="rounded-[10px] border border-border bg-card p-5">
+    <div className="rounded-[10px] border border-border bg-card p-5 shadow-[0_1px_3px_0_rgba(0,0,0,0.04)]">
         <div className="mb-4">
           <h3 className="text-sm font-semibold text-foreground">Trigger</h3>
           <p className="text-[13px] text-muted-foreground mt-0.5">
