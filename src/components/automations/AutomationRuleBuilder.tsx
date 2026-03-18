@@ -109,7 +109,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
         <div className="space-y-1.5">
           <Label className="text-[13px] text-foreground/80">Event Type</Label>
           <Select value={trigger} onValueChange={setTrigger}>
-            <SelectTrigger className="h-10 rounded-lg text-sm">
+            <SelectTrigger className="h-10 rounded-lg text-sm focus:ring-1 focus:ring-ring">
               <SelectValue placeholder="Select event" />
             </SelectTrigger>
             <SelectContent>
@@ -141,7 +141,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
           <div className="space-y-1.5">
             <Label className="text-[13px] text-foreground/80">Action Type</Label>
             <Select value={action} onValueChange={setAction}>
-              <SelectTrigger className="h-10 rounded-lg text-sm">
+              <SelectTrigger className="h-10 rounded-lg text-sm focus:ring-1 focus:ring-ring">
                 <SelectValue placeholder="Select action" />
               </SelectTrigger>
               <SelectContent>
@@ -237,7 +237,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
         <Button
           onClick={handleCreate}
           disabled={creating || !isValid()}
-          className="h-10 px-4 rounded-lg text-sm font-medium"
+          className="h-10 px-5 rounded-lg text-sm font-medium bg-primary text-primary-foreground hover:opacity-90 transition-opacity"
         >
           {creating ? "Creating..." : "Create Automation"}
         </Button>

@@ -7,8 +7,8 @@ const statusStyles: Record<string, string> = {
   failed: "bg-destructive/10 text-destructive",
   retry: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400",
   active: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
-  inactive: "bg-muted text-muted-foreground",
-  pending: "bg-muted text-muted-foreground",
+  inactive: "bg-secondary text-secondary-foreground",
+  pending: "bg-secondary text-secondary-foreground",
 };
 
 interface StatusBadgeProps {
@@ -16,7 +16,7 @@ interface StatusBadgeProps {
 }
 
 const StatusBadge = ({ status }: StatusBadgeProps) => (
-  <Badge variant="outline" className={`text-xs font-medium border-0 ${statusStyles[status] ?? ""}`}>
+  <Badge variant="outline" className={`text-xs font-medium border-0 px-2.5 py-0.5 rounded-md ${statusStyles[status] ?? "bg-secondary text-secondary-foreground"}`}>
     {status}
   </Badge>
 );
