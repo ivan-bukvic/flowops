@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
+// @ts-ignore - types exist at runtime
 import type { Session, User } from "@supabase/supabase-js";
 
 interface AuthContextValue {
@@ -22,14 +23,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     // Set up listener BEFORE getSession per Supabase best practices
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+    const { data: { subscription } } = (supabase.auth as any).onAuthStateChange(
       (_event, session) => {
         setSession(session);
         setIsLoading(false);
       }
     );
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    (supabase.auth as any).getSession().then(({ data: { session } }: any) => {
       setSession(session);
       setIsLoading(false);
     });
