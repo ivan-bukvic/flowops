@@ -5,26 +5,8 @@ import PageHeader from "@/components/shared/PageHeader";
 import DataTable, { Column } from "@/components/shared/DataTable";
 import StatusBadge from "@/components/shared/StatusBadge";
 import AutomationActivity from "@/components/automations/AutomationActivity";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
+import AutomationRuleBuilder from "@/components/automations/AutomationRuleBuilder";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Plus } from "lucide-react";
 
 interface AutomationLog {
   status: string | null;
@@ -41,9 +23,6 @@ interface AutomationRow {
   last_status?: string | null;
 }
 
-const TRIGGERS = ["PROJECT_CREATED", "PROJECT_UPDATED", "PROJECT_DELETED", "MEMBER_ADDED", "MEMBER_REMOVED"];
-const ACTIONS = ["EMAIL", "WEBHOOK", "LOG"];
-
 function formatTimeAgo(date: Date): string {
   const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
   if (seconds < 60) return `${seconds}s ago`;
@@ -59,13 +38,6 @@ const Automations = () => {
   const { selectedOrgId } = useOrg();
   const [rules, setRules] = useState<AutomationRow[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showCreate, setShowCreate] = useState(false);
-  const [trigger, setTrigger] = useState("");
-  const [action, setAction] = useState("");
-  const [email, setEmail] = useState("");
-  const [subject, setSubject] = useState("");
-  const [message, setMessage] = useState("");
-  const [creating, setCreating] = useState(false);
 
   const fetchRules = async () => {
     if (!selectedOrgId) return;
@@ -93,34 +65,6 @@ const Automations = () => {
   useEffect(() => {
     fetchRules();
   }, [selectedOrgId]);
-
-  const handleCreate = async () => {
-    if (!selectedOrgId || !trigger || !action) return;
-    setCreating(true);
-
-    const config: Record<string, any> = {};
-    if (action === "EMAIL") {
-      config.email = email;
-      config.subject = subject;
-      config.message = message;
-    }
-
-    await supabase.from("automation_rules").insert({
-      org_id: selectedOrgId,
-      trigger_type: trigger,
-      action_type: action,
-      config_json: config,
-    });
-
-    setCreating(false);
-    setShowCreate(false);
-    setTrigger("");
-    setAction("");
-    setEmail("");
-    setSubject("");
-    setMessage("");
-    fetchRules();
-  };
 
   const columns: Column<AutomationRow>[] = [
     {
@@ -154,81 +98,24 @@ const Automations = () => {
       <PageHeader
         title="Automations"
         description="Event-driven automation rules"
-        actionLabel="Create Automation"
-        actionIcon={Plus}
-        onAction={() => setShowCreate(true)}
       />
 
       <Tabs defaultValue="rules" className="mt-4">
         <TabsList>
           <TabsTrigger value="rules">Rules</TabsTrigger>
+          <TabsTrigger value="existing">Existing Rules</TabsTrigger>
           <TabsTrigger value="activity">Activity</TabsTrigger>
         </TabsList>
         <TabsContent value="rules">
+          <AutomationRuleBuilder onCreated={fetchRules} />
+        </TabsContent>
+        <TabsContent value="existing">
           <DataTable columns={columns} data={rules} loading={loading} emptyMessage="No automation rules yet." />
         </TabsContent>
         <TabsContent value="activity">
           <AutomationActivity />
         </TabsContent>
       </Tabs>
-
-      <Dialog open={showCreate} onOpenChange={setShowCreate}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Create Automation</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label>Trigger</Label>
-              <Select value={trigger} onValueChange={setTrigger}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select trigger" />
-                </SelectTrigger>
-                <SelectContent>
-                  {TRIGGERS.map((t) => (
-                    <SelectItem key={t} value={t}>{t}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label>Action</Label>
-              <Select value={action} onValueChange={setAction}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select action" />
-                </SelectTrigger>
-                <SelectContent>
-                  {ACTIONS.map((a) => (
-                    <SelectItem key={a} value={a}>{a}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            {action === "EMAIL" && (
-              <>
-                <div className="space-y-2">
-                  <Label>Email</Label>
-                  <Input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="recipient@example.com" />
-                </div>
-                <div className="space-y-2">
-                  <Label>Subject</Label>
-                  <Input value={subject} onChange={(e) => setSubject(e.target.value)} placeholder="Subject" />
-                </div>
-                <div className="space-y-2">
-                  <Label>Message</Label>
-                  <Textarea value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Email body" className="min-h-[80px]" />
-                </div>
-              </>
-            )}
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowCreate(false)}>Cancel</Button>
-            <Button onClick={handleCreate} disabled={creating || !trigger || !action}>
-              {creating ? "Creating..." : "Create"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </main>
   );
 };
