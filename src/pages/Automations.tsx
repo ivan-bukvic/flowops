@@ -101,10 +101,10 @@ const Automations = () => {
       />
 
       <Tabs defaultValue="rules" className="mt-4">
-        <TabsList>
-          <TabsTrigger value="rules">Rules</TabsTrigger>
-          <TabsTrigger value="existing">Existing Rules</TabsTrigger>
-          <TabsTrigger value="activity">Activity</TabsTrigger>
+        <TabsList className="bg-transparent border-b border-border rounded-none p-0 h-auto gap-4">
+          <TabsTrigger value="rules" className="rounded-none border-b-2 border-transparent px-1 pb-2 pt-1 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none text-muted-foreground hover:text-foreground">Rules</TabsTrigger>
+          <TabsTrigger value="existing" className="rounded-none border-b-2 border-transparent px-1 pb-2 pt-1 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none text-muted-foreground hover:text-foreground">Existing Rules</TabsTrigger>
+          <TabsTrigger value="activity" className="rounded-none border-b-2 border-transparent px-1 pb-2 pt-1 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none text-muted-foreground hover:text-foreground">Activity</TabsTrigger>
         </TabsList>
         <TabsContent value="rules">
           <AutomationRuleBuilder onCreated={fetchRules} />
