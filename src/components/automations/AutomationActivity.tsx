@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useOrg } from "@/contexts/OrgContext";
 import DataTable, { Column } from "@/components/shared/DataTable";
 import StatusBadge from "@/components/shared/StatusBadge";
 
@@ -10,37 +12,34 @@ interface ActivityRow {
   action_type: string;
 }
 
-interface ApiRow {
-  id: string;
-  status: string;
-  created_at: string;
-  automation_rules: { action_type: string; trigger_type: string };
-  events: { type: string };
-}
-
 const AutomationActivity = () => {
+  const { selectedOrgId } = useOrg();
   const [rows, setRows] = useState<ActivityRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
   useEffect(() => {
     const fetchActivity = async () => {
+      if (!selectedOrgId) return;
       setLoading(true);
       setError(false);
       try {
-        const res = await fetch("http://localhost:3000/automations/activity");
-        if (!res.ok) throw new Error("Request failed");
-        const data: ApiRow[] = await res.json();
-        const mapped = data
-          .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-          .slice(0, 50)
-          .map((r) => ({
-            id: r.id,
-            status: r.status,
-            created_at: r.created_at,
-            event_type: r.events?.type ?? "—",
-            action_type: r.automation_rules?.action_type ?? "—",
-          }));
+        const { data, error: queryError } = await supabase
+          .from("automation_logs")
+          .select("id, status, created_at, automation_rules!inner(action_type, trigger_type, org_id), events(type)")
+          .eq("automation_rules.org_id", selectedOrgId)
+          .order("created_at", { ascending: false })
+          .limit(50);
+
+        if (queryError) throw queryError;
+
+        const mapped = (data ?? []).map((r: any) => ({
+          id: r.id,
+          status: r.status ?? "pending",
+          created_at: r.created_at,
+          event_type: r.events?.type ?? "—",
+          action_type: r.automation_rules?.action_type ?? "—",
+        }));
         setRows(mapped);
       } catch {
         setError(true);
@@ -49,7 +48,7 @@ const AutomationActivity = () => {
       setLoading(false);
     };
     fetchActivity();
-  }, []);
+  }, [selectedOrgId]);
 
   const columns: Column<ActivityRow>[] = [
     {
