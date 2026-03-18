@@ -1,40 +1,30 @@
 
 
-## Plan: Auto-trigger automation engine on event insert
+# Fix: Show member emails in the project members dropdown
 
-**Problem**: `run_automation_engine()` only runs when manually invoked. Events don't automatically generate automation logs.
+## Problem
+The org members query in `ProjectDetail.tsx` tries to select `email` directly from the `organization_members` table, which doesn't have that column. This causes a 400 error, resulting in an empty dropdown.
 
-**Solution**: Create a Postgres trigger on the `events` table that calls `run_automation_engine()` after every `INSERT`.
+## Solution
+Use the existing `get_org_members_with_email` RPC function instead of querying the table directly. This function is a `SECURITY DEFINER` that joins `organization_members` with `profiles` to return `user_id`, `email`, and `role` -- exactly what we need.
 
-### Implementation
+## Changes
 
-One migration file with:
+**File: `src/pages/ProjectDetail.tsx`**
 
-1. A trigger function wrapper:
-```sql
-CREATE OR REPLACE FUNCTION public.trigger_run_automation_engine()
-RETURNS trigger
-LANGUAGE plpgsql
-SECURITY DEFINER
-AS $$
-BEGIN
-  PERFORM public.run_automation_engine();
-  RETURN NEW;
-END;
-$$;
+Replace the org members fetch `useEffect` (currently around lines 117-127) that does:
+```ts
+supabase
+  .from("organization_members")
+  .select("user_id, email")
+  .eq("org_id", selectedOrgId)
 ```
 
-2. An `AFTER INSERT` trigger on `events`:
-```sql
-CREATE TRIGGER trg_run_automation_engine
-AFTER INSERT ON public.events
-FOR EACH ROW
-EXECUTE FUNCTION public.trigger_run_automation_engine();
+With an RPC call:
+```ts
+supabase
+  .rpc("get_org_members_with_email", { p_org_id: selectedOrgId })
 ```
 
-### Result
-
-The flow becomes: `emit_event()` inserts into `events` → trigger fires → `run_automation_engine()` matches new event against rules → `automation_logs` rows created → Activity UI shows data on next load.
-
-No UI or schema changes needed. No new tables or columns.
+Then map the results to set `orgMembers` with `user_id` and `email` from the RPC response. The dropdown will then display actual email addresses instead of user IDs.
 
