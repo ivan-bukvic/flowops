@@ -141,7 +141,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
           <div className="space-y-1.5">
             <Label className="text-[13px] text-foreground/80">Action Type</Label>
             <Select value={action} onValueChange={setAction}>
-              <SelectTrigger className="h-10 rounded-lg text-sm">
+              <SelectTrigger className="h-10 rounded-lg text-sm focus:ring-1 focus:ring-ring">
                 <SelectValue placeholder="Select action" />
               </SelectTrigger>
               <SelectContent>
