@@ -75,7 +75,10 @@ export type Database = {
           created_at: string | null
           event_id: string | null
           id: string
+          last_error: string | null
+          next_retry_at: string | null
           result_json: Json | null
+          retry_count: number | null
           rule_id: string | null
           status: string | null
         }
@@ -83,7 +86,10 @@ export type Database = {
           created_at?: string | null
           event_id?: string | null
           id?: string
+          last_error?: string | null
+          next_retry_at?: string | null
           result_json?: Json | null
+          retry_count?: number | null
           rule_id?: string | null
           status?: string | null
         }
@@ -91,7 +97,10 @@ export type Database = {
           created_at?: string | null
           event_id?: string | null
           id?: string
+          last_error?: string | null
+          next_retry_at?: string | null
           result_json?: Json | null
+          retry_count?: number | null
           rule_id?: string | null
           status?: string | null
         }
