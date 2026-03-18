@@ -16,7 +16,7 @@ interface StatusBadgeProps {
 }
 
 const StatusBadge = ({ status }: StatusBadgeProps) => (
-  <Badge variant="outline" className={`text-xs font-medium border-0 ${statusStyles[status] ?? ""}`}>
+  <Badge variant="outline" className={`text-xs font-medium border-0 px-2.5 py-0.5 rounded-md ${statusStyles[status] ?? "bg-secondary text-secondary-foreground"}`}>
     {status}
   </Badge>
 );
