@@ -130,10 +130,6 @@ const Automations = () => {
 
       <div className="flex items-center gap-3 mb-6 p-4 rounded-lg border bg-card">
         <span className="text-sm font-medium text-muted-foreground mr-auto">Automation Control</span>
-        <Button onClick={handleRunAutomations} disabled={runningRpc} size="sm" variant="outline">
-          {runningRpc ? <Loader2 className="h-4 w-4 animate-spin" /> : <Play className="h-4 w-4" />}
-          Run Automations
-        </Button>
         <Button onClick={handleExecuteAutomations} disabled={runningEdge} size="sm">
           {runningEdge ? <Loader2 className="h-4 w-4 animate-spin" /> : <Zap className="h-4 w-4" />}
           Execute Automations
