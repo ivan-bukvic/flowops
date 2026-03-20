@@ -48,7 +48,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
   };
 
   const handleCreate = async () => {
-    if (!selectedOrgId || !isValid()) return;
+    if (!selectedOrgId || creating || !isValid()) return;
     setCreating(true);
 
     const config: Record<string, any> = {};
@@ -305,8 +305,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
       <div className="flex justify-end mt-8">
         <Button
           onClick={handleCreate}
-          disabled={creating || !isValid()}
-          className="h-11 px-8 rounded-lg text-sm font-semibold bg-primary text-primary-foreground shadow-md hover:shadow-lg hover:bg-primary/85 transition-all duration-200 ease-out active:scale-[0.97] disabled:opacity-40 disabled:shadow-none"
+          className="h-11 px-8 rounded-lg text-sm font-semibold bg-primary text-primary-foreground shadow-md hover:shadow-lg hover:bg-primary/85 transition-all duration-200 ease-out active:scale-[0.97]"
         >
           {creating ? "Creating..." : "Create Automation"}
         </Button>
