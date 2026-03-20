@@ -104,7 +104,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
       </div>
 
       {/* Trigger Card */}
-    <div className="rounded-[10px] border border-border bg-card p-5 shadow-[0_1px_3px_0_rgba(0,0,0,0.04)]">
+      <div className="rounded-[10px] border border-border bg-card p-5 shadow-[0_1px_3px_0_rgba(0,0,0,0.04)]">
         <div className="mb-4">
           <h3 className="text-[15px] font-semibold text-foreground">Trigger</h3>
           <p className="text-[13px] text-muted-foreground mt-0.5">
@@ -129,8 +129,11 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
       </div>
 
       {/* Flow Indicator */}
-      <div className="flex justify-center py-2">
-        <ArrowDown className="h-4 w-4 text-muted-foreground/60" />
+      <div className="flex justify-center py-3">
+        <div className="flex flex-col items-center gap-0.5">
+          <div className="w-px h-3 bg-border" />
+          <ArrowDown className="h-4 w-4 text-muted-foreground/60" />
+        </div>
       </div>
 
       {/* Action Card */}
@@ -142,28 +145,44 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
           </p>
         </div>
 
-        <div className="space-y-4">
-          <div className="space-y-1.5">
-            <Label className="text-[13px] text-foreground/80">Action Type</Label>
-            <Select value={action} onValueChange={setAction}>
-              <SelectTrigger className="h-10 rounded-lg text-sm focus:ring-1 focus:ring-ring">
-                <SelectValue placeholder="Select action" />
-              </SelectTrigger>
-              <SelectContent>
-                {ACTIONS.map((a) => (
-                  <SelectItem key={a} value={a}>
-                    {a.replace(/_/g, " ")}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+        <div className="space-y-1.5">
+          <Label className="text-[13px] text-foreground/80">Action Type</Label>
+          <Select value={action} onValueChange={setAction}>
+            <SelectTrigger className="h-10 rounded-lg text-sm focus:ring-1 focus:ring-ring">
+              <SelectValue placeholder="Select action" />
+            </SelectTrigger>
+            <SelectContent>
+              {ACTIONS.map((a) => (
+                <SelectItem key={a} value={a}>
+                  {a.replace(/_/g, " ")}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      {/* Email Setup — only when EMAIL action */}
+      {action === "EMAIL" && (
+        <>
+          <div className="flex justify-center py-3">
+            <div className="flex flex-col items-center gap-0.5">
+              <div className="w-px h-3 bg-border" />
+              <ArrowDown className="h-4 w-4 text-muted-foreground/60" />
+            </div>
           </div>
 
-          {/* Dynamic Fields */}
-          {action === "EMAIL" && (
-            <div className="space-y-4 pt-2 animate-in fade-in-0 slide-in-from-top-1 duration-200">
+          <div className="rounded-[10px] border border-border bg-card p-5 shadow-[0_1px_3px_0_rgba(0,0,0,0.04)] animate-in fade-in-0 slide-in-from-top-2 duration-300">
+            <div className="mb-4">
+              <h3 className="text-[15px] font-semibold text-foreground">Email Setup</h3>
+              <p className="text-[13px] text-muted-foreground mt-0.5">
+                Configure the email that will be sent
+              </p>
+            </div>
+
+            <div className="space-y-4">
               <div className="space-y-1.5">
-                <Label className="text-[13px] text-foreground/80">Email</Label>
+                <Label className="text-[13px] text-foreground/80">To</Label>
                 <Input
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -186,14 +205,47 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder="Email body content"
-                  className="min-h-[80px] rounded-lg text-sm"
+                  className="min-h-[100px] rounded-lg text-sm"
                 />
               </div>
-            </div>
-          )}
 
-          {action === "SLACK_MESSAGE" && (
-            <div className="space-y-4 pt-2 animate-in fade-in-0 slide-in-from-top-1 duration-200">
+              {/* Variable helper */}
+              <div className="rounded-lg border border-border/60 bg-muted/40 px-4 py-3">
+                <p className="text-xs font-medium text-muted-foreground mb-1.5">You can use variables:</p>
+                <div className="flex flex-wrap gap-2">
+                  {["{project_name}", "{user_email}", "{event_type}"].map((v) => (
+                    <code
+                      key={v}
+                      className="text-xs bg-background border border-border rounded px-2 py-0.5 font-mono text-foreground/70"
+                    >
+                      {v}
+                    </code>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Slack fields */}
+      {action === "SLACK_MESSAGE" && (
+        <>
+          <div className="flex justify-center py-3">
+            <div className="flex flex-col items-center gap-0.5">
+              <div className="w-px h-3 bg-border" />
+              <ArrowDown className="h-4 w-4 text-muted-foreground/60" />
+            </div>
+          </div>
+
+          <div className="rounded-[10px] border border-border bg-card p-5 shadow-[0_1px_3px_0_rgba(0,0,0,0.04)] animate-in fade-in-0 slide-in-from-top-2 duration-300">
+            <div className="mb-4">
+              <h3 className="text-[15px] font-semibold text-foreground">Slack Setup</h3>
+              <p className="text-[13px] text-muted-foreground mt-0.5">
+                Configure the Slack message
+              </p>
+            </div>
+            <div className="space-y-4">
               <div className="space-y-1.5">
                 <Label className="text-[13px] text-foreground/80">Webhook URL</Label>
                 <Input
@@ -202,9 +254,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
                   placeholder="https://hooks.slack.com/services/..."
                   className="h-10 rounded-lg text-sm"
                 />
-                <p className="text-xs text-muted-foreground/70 mt-1">
-                  Slack incoming webhook URL
-                </p>
+                <p className="text-xs text-muted-foreground/70 mt-1">Slack incoming webhook URL</p>
               </div>
               <div className="space-y-1.5">
                 <Label className="text-[13px] text-foreground/80">Message</Label>
@@ -216,33 +266,47 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
                 />
               </div>
             </div>
-          )}
+          </div>
+        </>
+      )}
 
-          {action === "GOOGLE_CALENDAR_EVENT" && (
-            <div className="space-y-4 pt-2 animate-in fade-in-0 slide-in-from-top-1 duration-200">
-              <div className="space-y-1.5">
-                <Label className="text-[13px] text-foreground/80">Title</Label>
-                <Input
-                  value={calendarTitle}
-                  onChange={(e) => setCalendarTitle(e.target.value)}
-                  placeholder="Calendar event title (optional)"
-                  className="h-10 rounded-lg text-sm"
-                />
-                <p className="text-xs text-muted-foreground/70 mt-1">
-                  Leave empty to use the trigger event name
-                </p>
-              </div>
+      {/* Google Calendar fields */}
+      {action === "GOOGLE_CALENDAR_EVENT" && (
+        <>
+          <div className="flex justify-center py-3">
+            <div className="flex flex-col items-center gap-0.5">
+              <div className="w-px h-3 bg-border" />
+              <ArrowDown className="h-4 w-4 text-muted-foreground/60" />
             </div>
-          )}
-        </div>
-      </div>
+          </div>
+
+          <div className="rounded-[10px] border border-border bg-card p-5 shadow-[0_1px_3px_0_rgba(0,0,0,0.04)] animate-in fade-in-0 slide-in-from-top-2 duration-300">
+            <div className="mb-4">
+              <h3 className="text-[15px] font-semibold text-foreground">Calendar Setup</h3>
+              <p className="text-[13px] text-muted-foreground mt-0.5">
+                Configure the calendar event
+              </p>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-[13px] text-foreground/80">Title</Label>
+              <Input
+                value={calendarTitle}
+                onChange={(e) => setCalendarTitle(e.target.value)}
+                placeholder="Calendar event title (optional)"
+                className="h-10 rounded-lg text-sm"
+              />
+              <p className="text-xs text-muted-foreground/70 mt-1">Leave empty to use the trigger event name</p>
+            </div>
+          </div>
+        </>
+      )}
 
       {/* Create Button */}
-      <div className="flex justify-end mt-6">
+      <div className="flex justify-end mt-8">
         <Button
           onClick={handleCreate}
           disabled={creating || !isValid()}
-          className="h-10 px-6 rounded-lg text-sm font-semibold bg-primary text-primary-foreground hover:brightness-90 transition-all"
+          className="h-10 px-6 rounded-lg text-sm font-semibold bg-primary text-primary-foreground hover:brightness-90 transition-all active:scale-[0.97]"
         >
           {creating ? "Creating..." : "Create Automation"}
         </Button>
