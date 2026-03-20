@@ -48,7 +48,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
   };
 
   const handleCreate = async () => {
-    if (!selectedOrgId || !isValid()) return;
+    if (!selectedOrgId || creating || !isValid()) return;
     setCreating(true);
 
     const config: Record<string, any> = {};
