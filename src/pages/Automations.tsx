@@ -8,7 +8,7 @@ import AutomationActivity from "@/components/automations/AutomationActivity";
 import AutomationRuleBuilder from "@/components/automations/AutomationRuleBuilder";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Play, Zap, Loader2 } from "lucide-react";
+import { Zap, Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 interface AutomationLog {
