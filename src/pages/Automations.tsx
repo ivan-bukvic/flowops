@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useOrg } from "@/contexts/OrgContext";
 import { supabase } from "@/integrations/supabase/client";
 import PageHeader from "@/components/shared/PageHeader";
@@ -7,6 +7,9 @@ import StatusBadge from "@/components/shared/StatusBadge";
 import AutomationActivity from "@/components/automations/AutomationActivity";
 import AutomationRuleBuilder from "@/components/automations/AutomationRuleBuilder";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Play, Zap, Loader2 } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 
 interface AutomationLog {
   status: string | null;
