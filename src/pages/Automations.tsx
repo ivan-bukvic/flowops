@@ -39,22 +39,7 @@ function formatTimeAgo(date: Date): string {
 
 const Automations = () => {
   const { selectedOrgId } = useOrg();
-  const [runningRpc, setRunningRpc] = useState(false);
   const [runningEdge, setRunningEdge] = useState(false);
-
-  const handleRunAutomations = async () => {
-    setRunningRpc(true);
-    try {
-      const { error } = await supabase.rpc("run_automation_engine");
-      if (error) throw error;
-      toast({ title: "Automations engine executed", description: "Pending logs have been created." });
-      fetchRules();
-    } catch (e: any) {
-      toast({ title: "Error", description: e.message, variant: "destructive" });
-    } finally {
-      setRunningRpc(false);
-    }
-  };
 
   const handleExecuteAutomations = async () => {
     setRunningEdge(true);
