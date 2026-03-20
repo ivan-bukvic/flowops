@@ -1,30 +1,13 @@
 
 
-# Fix: Show member emails in the project members dropdown
+## Plan: Make "Create Automation" Button Always Appear Active
 
-## Problem
-The org members query in `ProjectDetail.tsx` tries to select `email` directly from the `organization_members` table, which doesn't have that column. This causes a 400 error, resulting in an empty dropdown.
+**Current state**: The button has `disabled={creating || !isValid()}` which applies `disabled:opacity-40 disabled:shadow-none`, making it look faded when form fields are incomplete.
 
-## Solution
-Use the existing `get_org_members_with_email` RPC function instead of querying the table directly. This function is a `SECURITY DEFINER` that joins `organization_members` with `profiles` to return `user_id`, `email`, and `role` -- exactly what we need.
+**Changes** (single file: `src/components/automations/AutomationRuleBuilder.tsx`, lines 306-312):
 
-## Changes
-
-**File: `src/pages/ProjectDetail.tsx`**
-
-Replace the org members fetch `useEffect` (currently around lines 117-127) that does:
-```ts
-supabase
-  .from("organization_members")
-  .select("user_id, email")
-  .eq("org_id", selectedOrgId)
-```
-
-With an RPC call:
-```ts
-supabase
-  .rpc("get_org_members_with_email", { p_org_id: selectedOrgId })
-```
-
-Then map the results to set `orgMembers` with `user_id` and `email` from the RPC response. The dropdown will then display actual email addresses instead of user IDs.
+1. Remove `disabled` prop entirely (keep `creating` guard in `onClick` handler instead)
+2. Remove `disabled:opacity-40 disabled:shadow-none` classes
+3. Keep all hover/active effects intact
+4. Update `onClick` to early-return if `creating` or `!isValid()` so behavior is preserved without visual disabling
 
