@@ -8,7 +8,7 @@ import AutomationActivity from "@/components/automations/AutomationActivity";
 import AutomationRuleBuilder from "@/components/automations/AutomationRuleBuilder";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Play, Zap, Loader2 } from "lucide-react";
+import { Zap, Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 interface AutomationLog {
@@ -39,22 +39,7 @@ function formatTimeAgo(date: Date): string {
 
 const Automations = () => {
   const { selectedOrgId } = useOrg();
-  const [runningRpc, setRunningRpc] = useState(false);
   const [runningEdge, setRunningEdge] = useState(false);
-
-  const handleRunAutomations = async () => {
-    setRunningRpc(true);
-    try {
-      const { error } = await supabase.rpc("run_automation_engine");
-      if (error) throw error;
-      toast({ title: "Automations engine executed", description: "Pending logs have been created." });
-      fetchRules();
-    } catch (e: any) {
-      toast({ title: "Error", description: e.message, variant: "destructive" });
-    } finally {
-      setRunningRpc(false);
-    }
-  };
 
   const handleExecuteAutomations = async () => {
     setRunningEdge(true);
@@ -145,10 +130,6 @@ const Automations = () => {
 
       <div className="flex items-center gap-3 mb-6 p-4 rounded-lg border bg-card">
         <span className="text-sm font-medium text-muted-foreground mr-auto">Automation Control</span>
-        <Button onClick={handleRunAutomations} disabled={runningRpc} size="sm" variant="outline">
-          {runningRpc ? <Loader2 className="h-4 w-4 animate-spin" /> : <Play className="h-4 w-4" />}
-          Run Automations
-        </Button>
         <Button onClick={handleExecuteAutomations} disabled={runningEdge} size="sm">
           {runningEdge ? <Loader2 className="h-4 w-4 animate-spin" /> : <Zap className="h-4 w-4" />}
           Execute Automations
