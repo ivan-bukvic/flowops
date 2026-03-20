@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useOrg } from "@/contexts/OrgContext";
 import { supabase } from "@/integrations/supabase/client";
 import PageHeader from "@/components/shared/PageHeader";
@@ -7,6 +7,9 @@ import StatusBadge from "@/components/shared/StatusBadge";
 import AutomationActivity from "@/components/automations/AutomationActivity";
 import AutomationRuleBuilder from "@/components/automations/AutomationRuleBuilder";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Play, Zap, Loader2 } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 
 interface AutomationLog {
   status: string | null;
@@ -36,6 +39,47 @@ function formatTimeAgo(date: Date): string {
 
 const Automations = () => {
   const { selectedOrgId } = useOrg();
+  const [runningRpc, setRunningRpc] = useState(false);
+  const [runningEdge, setRunningEdge] = useState(false);
+
+  const handleRunAutomations = async () => {
+    setRunningRpc(true);
+    try {
+      const { error } = await supabase.rpc("run_automation_engine");
+      if (error) throw error;
+      toast({ title: "Automations engine executed", description: "Pending logs have been created." });
+      fetchRules();
+    } catch (e: any) {
+      toast({ title: "Error", description: e.message, variant: "destructive" });
+    } finally {
+      setRunningRpc(false);
+    }
+  };
+
+  const handleExecuteAutomations = async () => {
+    setRunningEdge(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch(
+        "https://spkpebxbkbksyezdnjpq.supabase.co/functions/v1/execute-automations",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session?.access_token ?? ""}`,
+          },
+        }
+      );
+      if (!res.ok) throw new Error(await res.text());
+      toast({ title: "Automations executed", description: "Edge function completed successfully." });
+      fetchRules();
+    } catch (e: any) {
+      toast({ title: "Error", description: e.message, variant: "destructive" });
+    } finally {
+      setRunningEdge(false);
+    }
+  };
+
   const [rules, setRules] = useState<AutomationRow[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -99,6 +143,18 @@ const Automations = () => {
         title="Automations"
         description="Event-driven automation rules"
       />
+
+      <div className="flex items-center gap-3 mb-6 p-4 rounded-lg border bg-card">
+        <span className="text-sm font-medium text-muted-foreground mr-auto">Automation Control</span>
+        <Button onClick={handleRunAutomations} disabled={runningRpc} size="sm" variant="outline">
+          {runningRpc ? <Loader2 className="h-4 w-4 animate-spin" /> : <Play className="h-4 w-4" />}
+          Run Automations
+        </Button>
+        <Button onClick={handleExecuteAutomations} disabled={runningEdge} size="sm">
+          {runningEdge ? <Loader2 className="h-4 w-4 animate-spin" /> : <Zap className="h-4 w-4" />}
+          Execute Automations
+        </Button>
+      </div>
 
       <Tabs defaultValue="rules" className="mt-4">
         <TabsList className="bg-transparent border-b border-border rounded-none p-0 h-auto gap-4">
