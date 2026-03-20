@@ -306,7 +306,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
         <Button
           onClick={handleCreate}
           disabled={creating || !isValid()}
-          className="h-10 px-6 rounded-lg text-sm font-semibold bg-primary text-primary-foreground hover:brightness-90 transition-all active:scale-[0.97]"
+          className="h-11 px-8 rounded-lg text-sm font-semibold bg-primary text-primary-foreground shadow-md hover:shadow-lg hover:bg-primary/85 transition-all duration-200 ease-out active:scale-[0.97] disabled:opacity-40 disabled:shadow-none"
         >
           {creating ? "Creating..." : "Create Automation"}
         </Button>
