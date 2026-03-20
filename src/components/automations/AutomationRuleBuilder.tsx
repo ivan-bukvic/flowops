@@ -176,7 +176,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
             <div className="mb-4">
               <h3 className="text-[15px] font-semibold text-foreground">Email Setup</h3>
               <p className="text-[13px] text-muted-foreground mt-0.5">
-                Configure the email that will be sent
+                This email will be sent automatically when the event happens
               </p>
             </div>
 
