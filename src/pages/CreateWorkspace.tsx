@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { triggerAutomations } from "@/lib/triggerAutomations";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useOrg } from "@/contexts/OrgContext";
@@ -55,7 +56,7 @@ const CreateWorkspace = () => {
         p_org_id: org.id,
         p_type: "WORKSPACE_CREATED" as const,
         p_metadata: { source: "app_workspace_creation" } as unknown as undefined,
-      }).then(undefined, () => {});
+      }).then(() => triggerAutomations(), () => {});
 
       setSelectedOrgId(org.id);
       navigate("/dashboard", { replace: true });

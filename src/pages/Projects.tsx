@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { triggerAutomations } from "@/lib/triggerAutomations";
 import { useNavigate } from "react-router-dom";
 import { useOrg } from "@/contexts/OrgContext";
 import { useAuth } from "@/contexts/AuthContext";
@@ -113,16 +114,7 @@ const Projects = () => {
       p_org_id: selectedOrgId,
       p_type: "PROJECT_CREATED" as const,
       p_metadata: { project_id: (newProject as any).id, project_name: (newProject as any).name } as unknown as undefined,
-    }).then(() => {
-      // Silently trigger automation execution after event is emitted
-      fetch("https://spkpebxbkbksyezdnjpq.supabase.co/functions/v1/execute-automations", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNwa3BlYnhia2Jrc3llemRuanBxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4NTUwNzAsImV4cCI6MjA4NzQzMTA3MH0.3qGZOFWAhUAfLM00ahcsbmSLG3hZZAxGU9FDZ2Iyi_s",
-        },
-      }).catch(() => {});
-    }, () => {});
+    }).then(() => triggerAutomations(), () => {});
 
     setCreateName("");
     setCreateDesc("");
@@ -158,7 +150,7 @@ const Projects = () => {
       p_org_id: selectedOrgId,
       p_type: "PROJECT_UPDATED" as const,
       p_metadata: { project_id: editProject.id, new_name: editName.trim() } as unknown as undefined,
-    }).then(undefined, () => {});
+    }).then(() => triggerAutomations(), () => {});
 
     setUpdating(false);
     setEditProject(null);
@@ -182,7 +174,7 @@ const Projects = () => {
       p_org_id: selectedOrgId,
       p_type: "PROJECT_DELETED" as const,
       p_metadata: { project_id: project.id, project_name: project.name } as unknown as undefined,
-    }).then(undefined, () => {});
+    }).then(() => triggerAutomations(), () => {});
 
     fetchProjects();
   };
