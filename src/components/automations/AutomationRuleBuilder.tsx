@@ -15,13 +15,15 @@ import {
 import { ArrowDown } from "lucide-react";
 import { toast } from "sonner";
 
-const TRIGGERS = [
-  "PROJECT_CREATED",
-  "PROJECT_UPDATED",
-  "PROJECT_DELETED",
-  "PROJECT_MEMBER_ADDED",
-  "PROJECT_MEMBER_REMOVED",
-];
+const TRIGGER_MAP: Record<string, string> = {
+  "Project Created": "PROJECT_CREATED",
+  "Project Updated": "PROJECT_UPDATED",
+  "Member Added": "MEMBER_ADDED",
+  "Project Member Added": "PROJECT_MEMBER_ADDED",
+  "Project Member Removed": "PROJECT_MEMBER_REMOVED",
+};
+
+const TRIGGER_LABELS = Object.keys(TRIGGER_MAP);
 
 const ACTIONS = ["EMAIL", "SLACK_MESSAGE", "GOOGLE_CALENDAR_EVENT", "WEBHOOK", "LOG"];
 
@@ -65,7 +67,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
 
     const { error } = await supabase.from("automation_rules").insert({
       org_id: selectedOrgId,
-      trigger_type: trigger,
+      trigger_type: TRIGGER_MAP[trigger] || trigger,
       action_type: action,
       config_json: config,
     });
@@ -118,9 +120,9 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
               <SelectValue placeholder="Select event" />
             </SelectTrigger>
             <SelectContent>
-              {TRIGGERS.map((t) => (
-                <SelectItem key={t} value={t}>
-                  {t.replace(/_/g, " ")}
+              {TRIGGER_LABELS.map((label) => (
+                <SelectItem key={label} value={label}>
+                  {label}
                 </SelectItem>
               ))}
             </SelectContent>
