@@ -194,7 +194,7 @@ const ProjectDetail = () => {
     supabase.rpc("emit_event", {
       p_org_id: selectedOrgId, p_type: "PROJECT_MEMBER_ADDED" as never,
       p_metadata: { project_id: projectId, user_id: selectedUserId, role: selectedRole },
-    }).then(() => {});
+    }).then(() => triggerAutomations(), () => {});
 
     setSelectedUserId("");
     setSelectedRole("viewer");

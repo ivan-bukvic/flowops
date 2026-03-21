@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { triggerAutomations } from "@/lib/triggerAutomations";
 import { useNavigate } from "react-router-dom";
 import { useOrg } from "@/contexts/OrgContext";
 import { useAuth } from "@/contexts/AuthContext";
