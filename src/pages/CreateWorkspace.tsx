@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { triggerAutomations } from "@/lib/triggerAutomations";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useOrg } from "@/contexts/OrgContext";
