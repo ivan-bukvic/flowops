@@ -15,13 +15,15 @@ import {
 import { ArrowDown } from "lucide-react";
 import { toast } from "sonner";
 
-const TRIGGERS = [
-  "PROJECT_CREATED",
-  "PROJECT_UPDATED",
-  "PROJECT_DELETED",
-  "PROJECT_MEMBER_ADDED",
-  "PROJECT_MEMBER_REMOVED",
-];
+const TRIGGER_MAP: Record<string, string> = {
+  "Project Created": "PROJECT_CREATED",
+  "Project Updated": "PROJECT_UPDATED",
+  "Member Added": "MEMBER_ADDED",
+  "Project Member Added": "PROJECT_MEMBER_ADDED",
+  "Project Member Removed": "PROJECT_MEMBER_REMOVED",
+};
+
+const TRIGGER_LABELS = Object.keys(TRIGGER_MAP);
 
 const ACTIONS = ["EMAIL", "SLACK_MESSAGE", "GOOGLE_CALENDAR_EVENT", "WEBHOOK", "LOG"];
 
