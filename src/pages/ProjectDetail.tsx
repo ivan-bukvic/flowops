@@ -109,20 +109,32 @@ const ProjectDetail = () => {
   const fetchMembers = async () => {
     if (!projectId) return;
     setMembersLoading(true);
-    const { data } = await supabase
+
+    // 1. Get project members
+    const { data: members } = await supabase
       .from("project_members")
-      .select(
-        `
-        id,
-        user_id,
-        role,
-        created_at,
-        profiles:profiles!project_members_user_id_fkey(email)
-      `,
-      )
+      .select("id, user_id, role, created_at")
       .eq("project_id", projectId)
       .order("created_at", { ascending: true });
-    setProjectMembers((data as unknown as MemberRow[]) ?? []);
+
+    if (!members || members.length === 0) {
+      setProjectMembers([]);
+      setMembersLoading(false);
+      return;
+    }
+
+    // 2. Get emails from profiles
+    const userIds = members.map((m: any) => m.user_id);
+
+    const { data: profiles } = await supabase.from("profiles").select("id, email").in("id", userIds);
+
+    // 3. Merge data
+    const merged = members.map((m: any) => ({
+      ...m,
+      profiles: profiles?.find((p: any) => p.id === m.user_id) || null,
+    }));
+
+    setProjectMembers(merged);
     setMembersLoading(false);
   };
 
