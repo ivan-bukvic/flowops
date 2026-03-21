@@ -67,7 +67,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
 
     const { error } = await supabase.from("automation_rules").insert({
       org_id: selectedOrgId,
-      trigger_type: trigger,
+      trigger_type: TRIGGER_MAP[trigger] || trigger,
       action_type: action,
       config_json: config,
     });
