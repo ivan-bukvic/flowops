@@ -8,9 +8,7 @@ const ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsI
  * then triggers the Edge Function to process them.
  */
 export function triggerAutomations(): void {
-  // First run the automation engine to create automation_logs entries
-  supabase.rpc("run_automation_engine").then(() => {
-    // Then trigger the Edge Function to process pending logs
+  Promise.resolve(supabase.rpc("run_automation_engine")).then(() => {
     fetch(EDGE_FUNCTION_URL, {
       method: "POST",
       headers: {
