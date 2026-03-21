@@ -12,13 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Upload, ArrowLeft } from "lucide-react";
 
 const supabase: any = rawSupabase;
@@ -117,14 +111,24 @@ const ProjectDetail = () => {
     setMembersLoading(true);
     const { data } = await supabase
       .from("project_members")
-      .select("id, user_id, role, created_at, profiles(email)")
+      .select(
+        `
+        id,
+        user_id,
+        role,
+        created_at,
+        profiles:profiles!project_members_user_id_fkey(email)
+      `,
+      )
       .eq("project_id", projectId)
       .order("created_at", { ascending: true });
     setProjectMembers((data as unknown as MemberRow[]) ?? []);
     setMembersLoading(false);
   };
 
-  useEffect(() => { fetchMembers(); }, [projectId]);
+  useEffect(() => {
+    fetchMembers();
+  }, [projectId]);
 
   useEffect(() => {
     if (!selectedOrgId || !user) return;
@@ -164,19 +168,35 @@ const ProjectDetail = () => {
     if (!selectedOrgId || !projectId || !user) return;
     const filePath = `${selectedOrgId}/${projectId}/${crypto.randomUUID()}-${file.name}`;
     const { error: uploadError } = await supabase.storage.from("documents").upload(filePath, file);
-    if (uploadError) { toast.error("File upload failed"); return; }
+    if (uploadError) {
+      toast.error("File upload failed");
+      return;
+    }
 
     const { error: insertError } = await supabase.from("documents").insert({
-      org_id: selectedOrgId, project_id: projectId, uploaded_by: user.id,
-      file_url: filePath, processing_status: "uploaded",
+      org_id: selectedOrgId,
+      project_id: projectId,
+      uploaded_by: user.id,
+      file_url: filePath,
+      processing_status: "uploaded",
     });
-    if (insertError) { toast.error("Failed to register document"); return; }
+    if (insertError) {
+      toast.error("Failed to register document");
+      return;
+    }
 
     toast.success("Document uploaded successfully");
-    setDocuments((prev) => [{
-      id: crypto.randomUUID(), file_url: filePath, processing_status: "uploaded",
-      summary: null, extracted_deadlines: null, created_at: new Date().toISOString(),
-    }, ...prev]);
+    setDocuments((prev) => [
+      {
+        id: crypto.randomUUID(),
+        file_url: filePath,
+        processing_status: "uploaded",
+        summary: null,
+        extracted_deadlines: null,
+        created_at: new Date().toISOString(),
+      },
+      ...prev,
+    ]);
   };
 
   const handleAddMember = async () => {
@@ -192,10 +212,16 @@ const ProjectDetail = () => {
       return;
     }
 
-    supabase.rpc("emit_event", {
-      p_org_id: selectedOrgId, p_type: "PROJECT_MEMBER_ADDED" as never,
-      p_metadata: { project_id: projectId, user_id: selectedUserId, role: selectedRole },
-    }).then(() => triggerAutomations(), () => {});
+    supabase
+      .rpc("emit_event", {
+        p_org_id: selectedOrgId,
+        p_type: "PROJECT_MEMBER_ADDED" as never,
+        p_metadata: { project_id: projectId, user_id: selectedUserId, role: selectedRole },
+      })
+      .then(
+        () => triggerAutomations(),
+        () => {},
+      );
 
     setSelectedUserId("");
     setSelectedRole("viewer");
@@ -204,55 +230,83 @@ const ProjectDetail = () => {
   };
 
   if (loading) {
-    return <main className="p-6"><p className="text-sm text-muted-foreground">Loading...</p></main>;
+    return (
+      <main className="p-6">
+        <p className="text-sm text-muted-foreground">Loading...</p>
+      </main>
+    );
   }
 
   if (!project) {
     return (
       <main className="p-6">
         <p className="text-sm text-muted-foreground">Project not found.</p>
-        <Link to="/projects" className="text-sm text-primary hover:underline mt-2 inline-block">Back to Projects</Link>
+        <Link to="/projects" className="text-sm text-primary hover:underline mt-2 inline-block">
+          Back to Projects
+        </Link>
       </main>
     );
   }
 
   const docColumns: Column<DocumentRow>[] = [
     {
-      key: "file_url", header: "Document",
-      render: (row) => <span className="text-sm font-medium truncate max-w-[250px] block">{row.file_url.split("/").pop()}</span>,
+      key: "file_url",
+      header: "Document",
+      render: (row) => (
+        <span className="text-sm font-medium truncate max-w-[250px] block">{row.file_url.split("/").pop()}</span>
+      ),
     },
     {
-      key: "processing_status", header: "Status",
+      key: "processing_status",
+      header: "Status",
       render: (row) => <StatusBadge status={row.processing_status} />,
     },
     {
-      key: "summary", header: "Summary",
-      render: (row) => <span className="text-sm text-muted-foreground truncate max-w-[250px] block">{row.summary || "—"}</span>,
+      key: "summary",
+      header: "Summary",
+      render: (row) => (
+        <span className="text-sm text-muted-foreground truncate max-w-[250px] block">{row.summary || "—"}</span>
+      ),
     },
     {
-      key: "created_at", header: "Uploaded",
-      render: (row) => <span className="text-sm text-muted-foreground">{new Date(row.created_at).toLocaleDateString()}</span>,
+      key: "created_at",
+      header: "Uploaded",
+      render: (row) => (
+        <span className="text-sm text-muted-foreground">{new Date(row.created_at).toLocaleDateString()}</span>
+      ),
     },
   ];
 
   const memberColumns: Column<MemberRow>[] = [
     {
-      key: "email", header: "User",
+      key: "email",
+      header: "User",
       render: (row) => <span className="text-sm font-medium">{row.profiles?.email ?? "Unknown"}</span>,
     },
     {
-      key: "role", header: "Role",
-      render: (row) => <Badge variant="outline" className="text-xs">{row.role}</Badge>,
+      key: "role",
+      header: "Role",
+      render: (row) => (
+        <Badge variant="outline" className="text-xs">
+          {row.role}
+        </Badge>
+      ),
     },
     {
-      key: "created_at", header: "Joined",
-      render: (row) => <span className="text-sm text-muted-foreground">{new Date(row.created_at).toLocaleDateString()}</span>,
+      key: "created_at",
+      header: "Joined",
+      render: (row) => (
+        <span className="text-sm text-muted-foreground">{new Date(row.created_at).toLocaleDateString()}</span>
+      ),
     },
   ];
 
   return (
     <main className="p-6">
-      <Link to="/projects" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-4">
+      <Link
+        to="/projects"
+        className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-4"
+      >
         <ArrowLeft className="h-4 w-4" /> Back to Projects
       </Link>
 
@@ -291,7 +345,9 @@ const ProjectDetail = () => {
               {projectEvents.map((evt) => (
                 <div key={evt.id} className="p-3 rounded-lg border bg-card">
                   <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="text-xs font-mono">{evt.type}</Badge>
+                    <Badge variant="outline" className="text-xs font-mono">
+                      {evt.type}
+                    </Badge>
                     <span className="text-xs text-muted-foreground">{new Date(evt.created_at).toLocaleString()}</span>
                   </div>
                 </div>
@@ -317,7 +373,12 @@ const ProjectDetail = () => {
               <Upload className="h-4 w-4 mr-1.5" /> Upload
             </Button>
           </div>
-          <DataTable columns={docColumns} data={documents} loading={documentsLoading} emptyMessage="No documents yet." />
+          <DataTable
+            columns={docColumns}
+            data={documents}
+            loading={documentsLoading}
+            emptyMessage="No documents yet."
+          />
         </TabsContent>
 
         <TabsContent value="ai">
@@ -335,7 +396,9 @@ const ProjectDetail = () => {
                 </SelectTrigger>
                 <SelectContent>
                   {orgMembers.map((m) => (
-                    <SelectItem key={m.user_id} value={m.user_id}>{m.email}</SelectItem>
+                    <SelectItem key={m.user_id} value={m.user_id}>
+                      {m.email}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -353,7 +416,12 @@ const ProjectDetail = () => {
               </Button>
             </div>
           )}
-          <DataTable columns={memberColumns} data={projectMembers} loading={membersLoading} emptyMessage="No members yet." />
+          <DataTable
+            columns={memberColumns}
+            data={projectMembers}
+            loading={membersLoading}
+            emptyMessage="No members yet."
+          />
         </TabsContent>
 
         <TabsContent value="settings">
