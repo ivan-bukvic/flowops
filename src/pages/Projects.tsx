@@ -149,7 +149,7 @@ const Projects = () => {
       p_org_id: selectedOrgId,
       p_type: "PROJECT_UPDATED" as const,
       p_metadata: { project_id: editProject.id, new_name: editName.trim() } as unknown as undefined,
-    }).then(undefined, () => {});
+    }).then(() => triggerAutomations(), () => {});
 
     setUpdating(false);
     setEditProject(null);
