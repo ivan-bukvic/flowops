@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
+import { triggerAutomations } from "@/lib/triggerAutomations";
 import { useOrg } from "@/contexts/OrgContext";
 import { supabase } from "@/integrations/supabase/client";
 import PageHeader from "@/components/shared/PageHeader";
