@@ -1,13 +1,14 @@
 
 
-## Plan: Make "Create Automation" Button Always Appear Active
+## Plan: Update Edge Function URL references
 
-**Current state**: The button has `disabled={creating || !isValid()}` which applies `disabled:opacity-40 disabled:shadow-none`, making it look faded when form fields are incomplete.
+Replace `execute-automations` with `process-automation-logs` in two files:
 
-**Changes** (single file: `src/components/automations/AutomationRuleBuilder.tsx`, lines 306-312):
+### 1. `src/lib/triggerAutomations.ts` (line 3)
+Update the `EDGE_FUNCTION_URL` constant.
 
-1. Remove `disabled` prop entirely (keep `creating` guard in `onClick` handler instead)
-2. Remove `disabled:opacity-40 disabled:shadow-none` classes
-3. Keep all hover/active effects intact
-4. Update `onClick` to early-return if `creating` or `!isValid()` so behavior is preserved without visual disabling
+### 2. `src/pages/Automations.tsx` (line ~49)
+Update the hardcoded URL in `handleExecuteAutomations`.
+
+No other changes — headers, auth, and logic stay the same.
 
