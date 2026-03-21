@@ -46,7 +46,7 @@ const Automations = () => {
     setRunningEdge(true);
     try {
       const res = await fetch(
-        "https://spkpebxbkbksyezdnjpq.supabase.co/functions/v1/execute-automations",
+        "https://spkpebxbkbksyezdnjpq.supabase.co/functions/v1/process-automation-logs",
         {
           method: "POST",
           headers: {
