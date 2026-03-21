@@ -120,9 +120,9 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
               <SelectValue placeholder="Select event" />
             </SelectTrigger>
             <SelectContent>
-              {TRIGGERS.map((t) => (
-                <SelectItem key={t} value={t}>
-                  {t.replace(/_/g, " ")}
+              {TRIGGER_LABELS.map((label) => (
+                <SelectItem key={label} value={label}>
+                  {label}
                 </SelectItem>
               ))}
             </SelectContent>
