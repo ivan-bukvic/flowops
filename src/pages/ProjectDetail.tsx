@@ -434,7 +434,7 @@ const ProjectDetail = () => {
             </div>
           )}
 
-          <p>Members count: {projectMembers.length}</p>
+          <pre>{JSON.stringify(projectMembers, null, 2)}</pre>
           <DataTable
             columns={memberColumns}
             data={projectMembers}
