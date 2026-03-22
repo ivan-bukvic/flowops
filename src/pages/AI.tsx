@@ -97,7 +97,7 @@ const AI = () => {
       <PageHeader title="AI Workspace" description="Ask questions about your documents and projects" />
 
       <div className="rounded-lg border border-border bg-card mb-6">
-        <CardContent className="p-5 space-y-4">
+        <div className="p-5 space-y-4">
           <div className="space-y-2">
             <Label>Ask AI</Label>
             <Textarea
