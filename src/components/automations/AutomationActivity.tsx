@@ -1,18 +1,9 @@
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useOrg } from "@/contexts/OrgContext";
-import StatusBadge from "@/components/shared/StatusBadge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, Activity } from "lucide-react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { RefreshCw, Activity, Zap, Mail, Bell } from "lucide-react";
 
 interface ActivityRow {
   id: string;
@@ -21,6 +12,21 @@ interface ActivityRow {
   event_type: string;
   action_type: string;
 }
+
+const statusStyles: Record<string, string> = {
+  completed: "bg-[hsl(160,84%,39%,0.08)] text-[hsl(160,84%,39%)]",
+  failed: "bg-[hsl(0,84%,60%,0.08)] text-[hsl(0,84%,60%)]",
+  pending: "bg-muted text-muted-foreground",
+  processing: "bg-[hsl(217,91%,60%,0.08)] text-[hsl(217,91%,60%)]",
+};
+
+const actionIcons: Record<string, typeof Mail> = {
+  email: Mail,
+  notification: Bell,
+};
+
+const formatEventType = (type: string) =>
+  type.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 
 const AutomationActivity = () => {
   const { selectedOrgId } = useOrg();
@@ -73,27 +79,17 @@ const AutomationActivity = () => {
 
   if (loading) {
     return (
-      <div className="mt-4 border border-border rounded-[10px] overflow-hidden bg-card shadow-[0_1px_3px_0_rgba(0,0,0,0.04)]">
-        <Table>
-          <TableHeader>
-            <TableRow className="bg-muted/40 hover:bg-muted/40">
-              <TableHead className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Time</TableHead>
-              <TableHead className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Event</TableHead>
-              <TableHead className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Action</TableHead>
-              <TableHead className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {Array.from({ length: 5 }).map((_, i) => (
-              <TableRow key={i}>
-                <TableCell className="py-4"><Skeleton className="h-4 w-36" /></TableCell>
-                <TableCell className="py-4"><Skeleton className="h-4 w-28" /></TableCell>
-                <TableCell className="py-4"><Skeleton className="h-4 w-24" /></TableCell>
-                <TableCell className="py-4"><Skeleton className="h-5 w-20 rounded-md" /></TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+      <div className="mt-4 space-y-2">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <div key={i} className="flex items-center gap-4 px-4 py-3.5 rounded-lg border border-border bg-card">
+            <Skeleton className="h-8 w-8 rounded-full shrink-0" />
+            <div className="flex-1 space-y-1.5">
+              <Skeleton className="h-3.5 w-32" />
+              <Skeleton className="h-3 w-48" />
+            </div>
+            <Skeleton className="h-5 w-20 rounded-md" />
+          </div>
+        ))}
       </div>
     );
   }
@@ -101,13 +97,11 @@ const AutomationActivity = () => {
   if (rows.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
-        <div className="rounded-full bg-muted p-3 mb-4">
-          <Activity className="h-6 w-6 text-muted-foreground" />
+        <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center mb-3">
+          <Activity className="h-5 w-5 text-muted-foreground" />
         </div>
-        <h3 className="text-sm font-semibold text-foreground mb-1">No automation activity yet</h3>
-        <p className="text-sm text-muted-foreground max-w-xs">
-          Run an automation to see activity here
-        </p>
+        <p className="text-sm font-medium text-foreground">No automation activity yet</p>
+        <p className="text-xs text-muted-foreground mt-1">Run an automation to see activity here.</p>
       </div>
     );
   }
@@ -126,43 +120,54 @@ const AutomationActivity = () => {
           <span className="text-xs">Refresh</span>
         </Button>
       </div>
-      <div className="border border-border rounded-[10px] overflow-hidden bg-card shadow-[0_1px_3px_0_rgba(0,0,0,0.04)]">
-        <Table>
-          <TableHeader>
-            <TableRow className="bg-muted/40 hover:bg-muted/40">
-              <TableHead className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Time</TableHead>
-              <TableHead className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Event</TableHead>
-              <TableHead className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Action</TableHead>
-              <TableHead className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {rows.map((row) => (
-              <TableRow key={row.id} className="hover:bg-muted/30 transition-colors">
-                <TableCell className="py-4">
-                  <span className="text-sm text-muted-foreground tabular-nums">
-                    {new Date(row.created_at).toLocaleString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
+
+      <div className="space-y-2">
+        {rows.map((row, index) => {
+          const ActionIcon = actionIcons[row.action_type] ?? Zap;
+          const isFirst = index === 0;
+
+          return (
+            <div
+              key={row.id}
+              className={`flex items-center gap-4 px-4 py-3.5 rounded-lg border border-border bg-card hover:bg-muted/30 transition-colors ${
+                isFirst ? "ring-1 ring-primary/10" : ""
+              }`}
+            >
+              <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center shrink-0">
+                <ActionIcon className="h-4 w-4 text-muted-foreground" />
+              </div>
+
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium text-foreground">
+                    {formatEventType(row.event_type)}
                   </span>
-                </TableCell>
-                <TableCell className="py-4">
-                  <span className="text-sm font-mono font-medium text-foreground">{row.event_type}</span>
-                </TableCell>
-                <TableCell className="py-4">
-                  <span className="text-sm font-mono text-muted-foreground">{row.action_type}</span>
-                </TableCell>
-                <TableCell className="py-4">
-                  <StatusBadge status={row.status} />
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+                  <span className="text-xs text-muted-foreground">→</span>
+                  <span className="text-xs text-muted-foreground capitalize">
+                    {row.action_type}
+                  </span>
+                </div>
+                <p className="text-xs text-muted-foreground mt-0.5 tabular-nums">
+                  {new Date(row.created_at).toLocaleString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </p>
+              </div>
+
+              <span
+                className={`inline-flex items-center text-xs font-medium px-2.5 py-0.5 rounded-md shrink-0 ${
+                  statusStyles[row.status] ?? statusStyles.pending
+                }`}
+              >
+                {row.status}
+              </span>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
