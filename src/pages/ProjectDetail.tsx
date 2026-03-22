@@ -107,6 +107,7 @@ const ProjectDetail = () => {
   }, [projectId, selectedOrgId]);
 
   const fetchMembers = async () => {
+    console.log("PROJECT ID:", projectId);
     if (!projectId) return;
     setMembersLoading(true);
 
