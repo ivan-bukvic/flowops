@@ -308,29 +308,7 @@ const ProjectDetail = () => {
     },
   ];
 
-  const memberColumns: Column<MemberRow>[] = [
-    {
-      key: "email",
-      header: "User",
-      render: (row) => <span className="text-sm font-medium">{row.profiles?.email ?? "Unknown"}</span>,
-    },
-    {
-      key: "role",
-      header: "Role",
-      render: (row) => (
-        <Badge variant="outline" className="text-xs">
-          {row.role}
-        </Badge>
-      ),
-    },
-    {
-      key: "created_at",
-      header: "Joined",
-      render: (row) => (
-        <span className="text-sm text-muted-foreground">{new Date(row.created_at).toLocaleDateString()}</span>
-      ),
-    },
-  ];
+  // memberColumns removed — using MembersList component instead
 
   return (
     <main className="p-6">
