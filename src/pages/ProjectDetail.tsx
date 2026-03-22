@@ -350,7 +350,7 @@ const ProjectDetail = () => {
           ) : (
             <div className="space-y-2">
               {projectEvents.map((evt) => (
-                <div key={evt.id} className="p-3 rounded-lg border bg-card">
+                <div key={evt.id} className="p-3 rounded-lg border border-border bg-card">
                   <div className="flex items-center gap-2">
                     <Badge variant="outline" className="text-xs font-mono">
                       {evt.type}
