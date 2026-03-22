@@ -342,7 +342,7 @@ const ProjectDetail = () => {
               </div>
           </div>
 
-          <h3 className="text-base font-semibold text-foreground mt-6 mb-3">Activity</h3>
+          <h3 className="text-sm font-medium text-foreground mt-6 mb-3">Activity</h3>
           {eventsLoading ? (
             <p className="text-sm text-muted-foreground">Loading...</p>
           ) : projectEvents.length === 0 ? (
