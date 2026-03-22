@@ -145,6 +145,8 @@ const ProjectDetail = () => {
   };
 
   useEffect(() => {
+    if (!projectId) return;
+
     fetchMembers();
   }, [projectId]);
 
