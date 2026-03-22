@@ -80,7 +80,7 @@ const Dashboard = () => {
         <StatCard title="AI Queries" value={loading ? "—" : aiCount} icon={Bot} />
       </div>
 
-      <h2 className="text-lg font-semibold text-foreground mb-4">Quick Actions</h2>
+      <h2 className="text-sm font-medium text-foreground mb-3">Quick Actions</h2>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
         <Button variant="outline" className="h-auto py-3 flex flex-col gap-1.5" onClick={() => navigate("/projects")}>
           <Plus className="h-4 w-4" />
