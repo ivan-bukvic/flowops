@@ -139,7 +139,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
       </div>
 
       {/* Action Card */}
-      <div className="rounded-[10px] border border-border bg-card p-5 shadow-[0_1px_3px_0_rgba(0,0,0,0.04)]">
+      <div className="rounded-lg border border-border bg-card p-5">
         <div className="mb-4">
           <h3 className="text-[15px] font-semibold text-foreground">Action</h3>
           <p className="text-[13px] text-muted-foreground mt-0.5">
