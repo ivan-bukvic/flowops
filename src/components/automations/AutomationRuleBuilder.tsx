@@ -106,7 +106,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
       </div>
 
       {/* Trigger Card */}
-      <div className="rounded-[10px] border border-border bg-card p-5 shadow-[0_1px_3px_0_rgba(0,0,0,0.04)]">
+      <div className="rounded-lg border border-border bg-card p-5">
         <div className="mb-4">
           <h3 className="text-[15px] font-semibold text-foreground">Trigger</h3>
           <p className="text-[13px] text-muted-foreground mt-0.5">
@@ -139,7 +139,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
       </div>
 
       {/* Action Card */}
-      <div className="rounded-[10px] border border-border bg-card p-5 shadow-[0_1px_3px_0_rgba(0,0,0,0.04)]">
+      <div className="rounded-lg border border-border bg-card p-5">
         <div className="mb-4">
           <h3 className="text-[15px] font-semibold text-foreground">Action</h3>
           <p className="text-[13px] text-muted-foreground mt-0.5">
@@ -174,7 +174,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
             </div>
           </div>
 
-          <div className="rounded-[10px] border border-border bg-card p-5 shadow-[0_1px_3px_0_rgba(0,0,0,0.04)] animate-in fade-in-0 slide-in-from-top-2 duration-300">
+          <div className="rounded-lg border border-border bg-card p-5 animate-in fade-in-0 slide-in-from-top-2 duration-300">
             <div className="mb-4">
               <h3 className="text-[15px] font-semibold text-foreground">Email Setup</h3>
               <p className="text-[13px] text-muted-foreground mt-0.5">
@@ -240,7 +240,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
             </div>
           </div>
 
-          <div className="rounded-[10px] border border-border bg-card p-5 shadow-[0_1px_3px_0_rgba(0,0,0,0.04)] animate-in fade-in-0 slide-in-from-top-2 duration-300">
+          <div className="rounded-lg border border-border bg-card p-5 animate-in fade-in-0 slide-in-from-top-2 duration-300">
             <div className="mb-4">
               <h3 className="text-[15px] font-semibold text-foreground">Slack Setup</h3>
               <p className="text-[13px] text-muted-foreground mt-0.5">
@@ -282,7 +282,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
             </div>
           </div>
 
-          <div className="rounded-[10px] border border-border bg-card p-5 shadow-[0_1px_3px_0_rgba(0,0,0,0.04)] animate-in fade-in-0 slide-in-from-top-2 duration-300">
+          <div className="rounded-lg border border-border bg-card p-5 animate-in fade-in-0 slide-in-from-top-2 duration-300">
             <div className="mb-4">
               <h3 className="text-[15px] font-semibold text-foreground">Calendar Setup</h3>
               <p className="text-[13px] text-muted-foreground mt-0.5">
@@ -307,7 +307,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
       <div className="flex justify-end mt-8">
         <Button
           onClick={handleCreate}
-          className="h-11 px-8 rounded-lg text-sm font-semibold bg-primary text-primary-foreground shadow-md hover:shadow-lg hover:bg-primary/85 transition-all duration-200 ease-out active:scale-[0.97]"
+          className="h-10 px-6 rounded-lg text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
         >
           {creating ? "Creating..." : "Create Automation"}
         </Button>
