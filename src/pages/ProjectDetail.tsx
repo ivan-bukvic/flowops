@@ -426,12 +426,7 @@ const ProjectDetail = () => {
             </div>
           )}
 
-          <DataTable
-            columns={memberColumns}
-            data={projectMembers}
-            loading={membersLoading}
-            emptyMessage="No members yet."
-          />
+          <MembersList members={projectMembers} loading={membersLoading} />
         </TabsContent>
 
         <TabsContent value="settings">
