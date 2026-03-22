@@ -7,6 +7,7 @@ import { supabase as rawSupabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import PageHeader from "@/components/shared/PageHeader";
 import DataTable, { Column } from "@/components/shared/DataTable";
+import MembersList from "@/components/projects/MembersList";
 import StatusBadge from "@/components/shared/StatusBadge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
