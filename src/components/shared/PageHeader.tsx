@@ -10,13 +10,13 @@ interface PageHeaderProps {
 }
 
 const PageHeader = ({ title, description, actionLabel, actionIcon: Icon, onAction }: PageHeaderProps) => (
-  <div className="flex items-center justify-between mb-6">
+  <div className="flex items-center justify-between mb-8">
     <div>
-      <h1 className="text-2xl font-semibold text-foreground">{title}</h1>
+      <h1 className="text-xl font-semibold text-foreground tracking-tight">{title}</h1>
       {description && <p className="text-sm text-muted-foreground mt-1">{description}</p>}
     </div>
     {actionLabel && onAction && (
-      <Button onClick={onAction} size="sm">
+      <Button onClick={onAction} size="sm" className="h-9">
         {Icon && <Icon className="h-4 w-4 mr-1.5" />}
         {actionLabel}
       </Button>
