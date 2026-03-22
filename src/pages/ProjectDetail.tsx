@@ -428,15 +428,13 @@ const ProjectDetail = () => {
         </TabsContent>
 
         <TabsContent value="settings">
-          <Card className="mt-4">
-            <CardContent className="p-5 space-y-3">
+          <div className="rounded-lg border border-border bg-card p-5 space-y-3 mt-4">
               <div>
                 <p className="text-xs text-muted-foreground">Project ID</p>
                 <p className="text-sm font-mono">{project.id}</p>
               </div>
               <p className="text-sm text-muted-foreground">Project settings coming soon.</p>
-            </CardContent>
-          </Card>
+          </div>
         </TabsContent>
       </Tabs>
     </main>
