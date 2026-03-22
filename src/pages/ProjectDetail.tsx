@@ -7,6 +7,7 @@ import { supabase as rawSupabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import PageHeader from "@/components/shared/PageHeader";
 import DataTable, { Column } from "@/components/shared/DataTable";
+import MembersList from "@/components/projects/MembersList";
 import StatusBadge from "@/components/shared/StatusBadge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -307,29 +308,7 @@ const ProjectDetail = () => {
     },
   ];
 
-  const memberColumns: Column<MemberRow>[] = [
-    {
-      key: "email",
-      header: "User",
-      render: (row) => <span className="text-sm font-medium">{row.profiles?.email ?? "Unknown"}</span>,
-    },
-    {
-      key: "role",
-      header: "Role",
-      render: (row) => (
-        <Badge variant="outline" className="text-xs">
-          {row.role}
-        </Badge>
-      ),
-    },
-    {
-      key: "created_at",
-      header: "Joined",
-      render: (row) => (
-        <span className="text-sm text-muted-foreground">{new Date(row.created_at).toLocaleDateString()}</span>
-      ),
-    },
-  ];
+  // memberColumns removed — using MembersList component instead
 
   return (
     <main className="p-6">
@@ -447,12 +426,7 @@ const ProjectDetail = () => {
             </div>
           )}
 
-          <DataTable
-            columns={memberColumns}
-            data={projectMembers}
-            loading={membersLoading}
-            emptyMessage="No members yet."
-          />
+          <MembersList members={projectMembers} loading={membersLoading} />
         </TabsContent>
 
         <TabsContent value="settings">
