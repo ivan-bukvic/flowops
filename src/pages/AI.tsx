@@ -126,10 +126,10 @@ const AI = () => {
               Submit
             </Button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
-      <h2 className="text-lg font-semibold text-foreground mb-3">Query History</h2>
+      <h2 className="text-sm font-medium text-foreground mb-3">Query History</h2>
       <DataTable columns={columns} data={queries} loading={loading} emptyMessage="No AI queries yet." />
     </main>
   );

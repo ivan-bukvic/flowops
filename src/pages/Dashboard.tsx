@@ -108,7 +108,7 @@ const Dashboard = () => {
       ) : (
         <div className="space-y-2">
           {recentEvents.map((evt) => (
-            <div key={evt.id} className="flex items-start gap-3 p-3 rounded-lg border bg-card">
+            <div key={evt.id} className="flex items-start gap-3 p-3 rounded-lg border border-border bg-card">
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <Badge variant="outline" className="text-xs font-mono shrink-0">
