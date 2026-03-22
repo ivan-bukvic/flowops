@@ -331,8 +331,7 @@ const ProjectDetail = () => {
         </TabsList>
 
         <TabsContent value="overview">
-          <Card className="mt-4">
-            <CardContent className="p-5 space-y-3">
+          <div className="rounded-lg border border-border bg-card p-5 space-y-3 mt-4">
               <div>
                 <p className="text-xs text-muted-foreground">Created</p>
                 <p className="text-sm">{new Date(project.created_at).toLocaleString()}</p>
@@ -341,8 +340,7 @@ const ProjectDetail = () => {
                 <p className="text-xs text-muted-foreground">Created By</p>
                 <p className="text-sm font-mono">{project.created_by}</p>
               </div>
-            </CardContent>
-          </Card>
+          </div>
 
           <h3 className="text-base font-semibold text-foreground mt-6 mb-3">Activity</h3>
           {eventsLoading ? (
