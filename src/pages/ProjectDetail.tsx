@@ -240,7 +240,12 @@ const ProjectDetail = () => {
       .rpc("emit_event", {
         p_org_id: selectedOrgId,
         p_type: "PROJECT_MEMBER_ADDED" as never,
-        p_metadata: { project_id: projectId, user_id: selectedUserId, role: selectedRole },
+        p_metadata: {
+          project_id: projectId,
+          project_name: project?.name || "Unknown Project",
+          user_id: selectedUserId,
+          role: selectedRole,
+        },
       })
       .then(
         () => triggerAutomations(),
