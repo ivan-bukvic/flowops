@@ -14,7 +14,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Card, CardContent } from "@/components/ui/card";
 import { Send } from "lucide-react";
 
 interface AiQueryRow {
@@ -96,8 +95,8 @@ const AI = () => {
     <main className="p-6">
       <PageHeader title="AI Workspace" description="Ask questions about your documents and projects" />
 
-      <Card className="mb-6">
-        <CardContent className="p-5 space-y-4">
+      <div className="rounded-lg border border-border bg-card mb-6">
+        <div className="p-5 space-y-4">
           <div className="space-y-2">
             <Label>Ask AI</Label>
             <Textarea
@@ -126,10 +125,10 @@ const AI = () => {
               Submit
             </Button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
-      <h2 className="text-lg font-semibold text-foreground mb-3">Query History</h2>
+      <h2 className="text-sm font-medium text-foreground mb-3">Query History</h2>
       <DataTable columns={columns} data={queries} loading={loading} emptyMessage="No AI queries yet." />
     </main>
   );

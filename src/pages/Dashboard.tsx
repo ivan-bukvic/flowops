@@ -80,7 +80,7 @@ const Dashboard = () => {
         <StatCard title="AI Queries" value={loading ? "—" : aiCount} icon={Bot} />
       </div>
 
-      <h2 className="text-lg font-semibold text-foreground mb-4">Quick Actions</h2>
+      <h2 className="text-sm font-medium text-foreground mb-3">Quick Actions</h2>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
         <Button variant="outline" className="h-auto py-3 flex flex-col gap-1.5" onClick={() => navigate("/projects")}>
           <Plus className="h-4 w-4" />
@@ -100,7 +100,7 @@ const Dashboard = () => {
         </Button>
       </div>
 
-      <h2 className="text-lg font-semibold text-foreground mb-3">Recent Activity</h2>
+      <h2 className="text-sm font-medium text-foreground mb-3">Recent Activity</h2>
       {loading ? (
         <p className="text-sm text-muted-foreground">Loading...</p>
       ) : recentEvents.length === 0 ? (
@@ -108,7 +108,7 @@ const Dashboard = () => {
       ) : (
         <div className="space-y-2">
           {recentEvents.map((evt) => (
-            <div key={evt.id} className="flex items-start gap-3 p-3 rounded-lg border bg-card">
+            <div key={evt.id} className="flex items-start gap-3 p-3 rounded-lg border border-border bg-card">
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <Badge variant="outline" className="text-xs font-mono shrink-0">

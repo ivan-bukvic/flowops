@@ -82,7 +82,7 @@ const Events = () => {
             const description = describeEvent(evt.type, evt.metadata ?? {});
 
             return (
-              <div key={evt.id} className="p-4 rounded-lg border bg-card">
+              <div key={evt.id} className="p-4 rounded-lg border border-border bg-card">
                 <div className="flex items-center gap-2 mb-1">
                   <Badge variant="outline" className="text-xs font-mono shrink-0">
                     {evt.type}

@@ -38,7 +38,7 @@ function DataTable<T extends Record<string, any>>({
   }
 
   return (
-    <div className="border border-border rounded-[10px] overflow-hidden bg-card shadow-[0_1px_3px_0_rgba(0,0,0,0.04)]">
+    <div className="border border-border rounded-lg overflow-hidden bg-card">
       <Table>
         <TableHeader>
           <TableRow className="bg-muted/40 hover:bg-muted/40">

@@ -12,7 +12,7 @@ import StatusBadge from "@/components/shared/StatusBadge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
+
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Upload, ArrowLeft } from "lucide-react";
 
@@ -331,8 +331,7 @@ const ProjectDetail = () => {
         </TabsList>
 
         <TabsContent value="overview">
-          <Card className="mt-4">
-            <CardContent className="p-5 space-y-3">
+          <div className="rounded-lg border border-border bg-card p-5 space-y-3 mt-4">
               <div>
                 <p className="text-xs text-muted-foreground">Created</p>
                 <p className="text-sm">{new Date(project.created_at).toLocaleString()}</p>
@@ -341,10 +340,9 @@ const ProjectDetail = () => {
                 <p className="text-xs text-muted-foreground">Created By</p>
                 <p className="text-sm font-mono">{project.created_by}</p>
               </div>
-            </CardContent>
-          </Card>
+          </div>
 
-          <h3 className="text-base font-semibold text-foreground mt-6 mb-3">Activity</h3>
+          <h3 className="text-sm font-medium text-foreground mt-6 mb-3">Activity</h3>
           {eventsLoading ? (
             <p className="text-sm text-muted-foreground">Loading...</p>
           ) : projectEvents.length === 0 ? (
@@ -352,7 +350,7 @@ const ProjectDetail = () => {
           ) : (
             <div className="space-y-2">
               {projectEvents.map((evt) => (
-                <div key={evt.id} className="p-3 rounded-lg border bg-card">
+                <div key={evt.id} className="p-3 rounded-lg border border-border bg-card">
                   <div className="flex items-center gap-2">
                     <Badge variant="outline" className="text-xs font-mono">
                       {evt.type}
@@ -430,15 +428,13 @@ const ProjectDetail = () => {
         </TabsContent>
 
         <TabsContent value="settings">
-          <Card className="mt-4">
-            <CardContent className="p-5 space-y-3">
+          <div className="rounded-lg border border-border bg-card p-5 space-y-3 mt-4">
               <div>
                 <p className="text-xs text-muted-foreground">Project ID</p>
                 <p className="text-sm font-mono">{project.id}</p>
               </div>
               <p className="text-sm text-muted-foreground">Project settings coming soon.</p>
-            </CardContent>
-          </Card>
+          </div>
         </TabsContent>
       </Tabs>
     </main>
