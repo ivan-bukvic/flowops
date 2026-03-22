@@ -100,7 +100,7 @@ const Dashboard = () => {
         </Button>
       </div>
 
-      <h2 className="text-lg font-semibold text-foreground mb-3">Recent Activity</h2>
+      <h2 className="text-sm font-medium text-foreground mb-3">Recent Activity</h2>
       {loading ? (
         <p className="text-sm text-muted-foreground">Loading...</p>
       ) : recentEvents.length === 0 ? (
