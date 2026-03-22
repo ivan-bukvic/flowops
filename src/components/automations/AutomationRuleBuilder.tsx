@@ -307,7 +307,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
       <div className="flex justify-end mt-8">
         <Button
           onClick={handleCreate}
-          className="h-11 px-8 rounded-lg text-sm font-semibold bg-primary text-primary-foreground shadow-md hover:shadow-lg hover:bg-primary/85 transition-all duration-200 ease-out active:scale-[0.97]"
+          className="h-10 px-6 rounded-lg text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
         >
           {creating ? "Creating..." : "Create Automation"}
         </Button>
