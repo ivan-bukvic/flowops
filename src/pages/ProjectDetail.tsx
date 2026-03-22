@@ -433,6 +433,8 @@ const ProjectDetail = () => {
               </Button>
             </div>
           )}
+
+          <p>Members count: {projectMembers.length}</p>
           <DataTable
             columns={memberColumns}
             data={projectMembers}
