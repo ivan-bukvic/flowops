@@ -107,14 +107,14 @@ const ProjectDetail = () => {
   }, [projectId, selectedOrgId]);
 
   const fetchMembers = async () => {
-    if (!project?.id) return;
+    if (!project) return;
 
     setMembersLoading(true);
 
+    // TEMP: fetch ALL members (no filter)
     const { data: members, error } = await supabase
       .from("project_members")
-      .select("id, user_id, role, created_at")
-      .eq("project_id", project.id);
+      .select("id, user_id, role, created_at, project_id");
 
     if (error) {
       console.error("Error fetching members:", error);
@@ -123,17 +123,23 @@ const ProjectDetail = () => {
       return;
     }
 
-    if (!members || members.length === 0) {
+    console.log("ALL MEMBERS:", members);
+    console.log("CURRENT PROJECT ID:", project.id);
+
+    // FILTER MANUALLY (guaranteed match)
+    const filtered = (members || []).filter((m: any) => m.project_id === project.id);
+
+    if (filtered.length === 0) {
       setProjectMembers([]);
       setMembersLoading(false);
       return;
     }
 
-    const userIds = members.map((m: any) => m.user_id);
+    const userIds = filtered.map((m: any) => m.user_id);
 
     const { data: profiles } = await supabase.from("profiles").select("id, email").in("id", userIds);
 
-    const merged = members.map((m: any) => {
+    const merged = filtered.map((m: any) => {
       const profile = profiles?.find((p: any) => p.id === m.user_id);
 
       return {
