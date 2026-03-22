@@ -244,6 +244,7 @@ const ProjectDetail = () => {
           project_id: projectId,
           project_name: project?.name || "Unknown Project",
           user_id: selectedUserId,
+          user_email: orgMembers.find((m) => m.user_id === selectedUserId)?.email || "unknown@email.com",
           role: selectedRole,
         },
       })
