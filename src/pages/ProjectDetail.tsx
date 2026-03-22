@@ -107,15 +107,21 @@ const ProjectDetail = () => {
   }, [projectId, selectedOrgId]);
 
   const fetchMembers = async () => {
-    console.log("PROJECT ID:", projectId);
-    if (!projectId) return;
+    if (!project?.id) return;
+
     setMembersLoading(true);
 
-    // 1. Get project members
-    const { data: members } = await supabase
+    const { data: members, error } = await supabase
       .from("project_members")
       .select("id, user_id, role, created_at")
-      .eq("project_id", projectId);
+      .eq("project_id", project.id);
+
+    if (error) {
+      console.error("Error fetching members:", error);
+      setProjectMembers([]);
+      setMembersLoading(false);
+      return;
+    }
 
     if (!members || members.length === 0) {
       setProjectMembers([]);
@@ -123,19 +129,17 @@ const ProjectDetail = () => {
       return;
     }
 
-    // 2. Get profiles
     const userIds = members.map((m: any) => m.user_id);
 
     const { data: profiles } = await supabase.from("profiles").select("id, email").in("id", userIds);
 
-    // 3. Merge (FIXED)
     const merged = members.map((m: any) => {
       const profile = profiles?.find((p: any) => p.id === m.user_id);
 
       return {
         ...m,
         profiles: {
-          email: profile?.email || m.user_id, // fallback to id if missing
+          email: profile?.email || m.user_id,
         },
       };
     });
@@ -145,10 +149,10 @@ const ProjectDetail = () => {
   };
 
   useEffect(() => {
-    if (!projectId) return;
+    if (!project) return;
 
     fetchMembers();
-  }, [projectId]);
+  }, [project]);
 
   useEffect(() => {
     if (!selectedOrgId || !user) return;
