@@ -281,7 +281,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
                     value={calendarTitle}
                     onChange={(e) => setCalendarTitle(e.target.value)}
                     placeholder="Calendar event title (optional)"
-                    className="h-10 rounded-lg text-sm"
+                    className="h-11 rounded-lg text-sm border-border/80 focus:ring-1 focus:ring-primary focus:border-primary"
                   />
                   <p className="text-xs text-muted-foreground/70 mt-1">Leave empty to use the trigger event name</p>
                 </div>
