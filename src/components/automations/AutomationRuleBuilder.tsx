@@ -258,7 +258,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
                       value={webhookUrl}
                       onChange={(e) => setWebhookUrl(e.target.value)}
                       placeholder="https://hooks.slack.com/services/..."
-                      className="h-10 rounded-lg text-sm"
+                    className="h-11 rounded-lg text-sm border-border/80 focus:ring-1 focus:ring-primary focus:border-primary"
                     />
                     <p className="text-xs text-muted-foreground/70 mt-1">Slack incoming webhook URL</p>
                   </div>
@@ -268,7 +268,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
                       placeholder="Slack message content"
-                      className="min-h-[80px] rounded-lg text-sm"
+                      className="min-h-[80px] rounded-lg text-sm border-border/80 focus:ring-1 focus:ring-primary focus:border-primary"
                     />
                   </div>
                 </>
