@@ -8,7 +8,7 @@ interface StatCardProps {
 }
 
 const StatCard = ({ title, value, icon: Icon, description }: StatCardProps) => (
-  <div className="rounded-lg border border-border bg-card p-6">
+  <div className="rounded-lg border border-border/80 bg-card p-6 shadow-[0_1px_3px_0_rgba(0,0,0,0.04)]">
     <div className="flex items-start justify-between">
       <div>
         <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{title}</p>
