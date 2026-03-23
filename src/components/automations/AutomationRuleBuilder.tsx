@@ -49,13 +49,13 @@ const SectionHeader = ({
   title: string;
   description: string;
 }) => (
-  <div className="flex items-start gap-3 mb-5">
-    <div className="flex items-center justify-center h-8 w-8 rounded-lg border border-border bg-muted/50 shrink-0 mt-0.5">
-      <Icon className="h-4 w-4 text-muted-foreground" />
+  <div className="flex items-start gap-3 mb-6">
+    <div className="flex items-center justify-center h-9 w-9 rounded-lg border border-border bg-muted/50 shrink-0 mt-0.5">
+      <Icon className="h-4.5 w-4.5 text-muted-foreground" />
     </div>
     <div>
-      <h3 className="text-[15px] font-semibold text-foreground leading-tight">{title}</h3>
-      <p className="text-[13px] text-muted-foreground mt-0.5">{description}</p>
+      <h3 className="text-base font-semibold text-foreground leading-tight">{title}</h3>
+      <p className="text-[13px] text-muted-foreground mt-1">{description}</p>
     </div>
   </div>
 );
