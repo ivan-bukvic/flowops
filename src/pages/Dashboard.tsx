@@ -157,7 +157,7 @@ const Dashboard = () => {
       <PageHeader title="Dashboard" description="Overview of your workspace activity" />
 
       {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
         <StatCard title="Projects" value={loading ? "—" : projectCount} icon={FolderKanban} />
         <StatCard title="Documents" value={loading ? "—" : docCount} icon={FileText} />
         <StatCard title="Automations" value={loading ? "—" : automationCount} icon={Zap} />
