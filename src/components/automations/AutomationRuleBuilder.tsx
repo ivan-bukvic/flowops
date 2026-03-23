@@ -173,7 +173,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
       <SectionArrow />
 
       {/* Action */}
-      <div className="rounded-lg border border-border bg-card p-5">
+      <div className="rounded-lg border border-border/80 bg-card p-6 shadow-[0_1px_3px_0_rgba(0,0,0,0.04)]">
         <SectionHeader
           icon={Settings}
           title="Do this"
