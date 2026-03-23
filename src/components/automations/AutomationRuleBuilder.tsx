@@ -201,7 +201,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
         <>
           <SectionArrow />
 
-          <div className="rounded-lg border border-border bg-card p-5 animate-in fade-in-0 slide-in-from-top-2 duration-300">
+          <div className="rounded-lg border border-border/80 bg-card p-6 shadow-[0_1px_3px_0_rgba(0,0,0,0.04)] animate-in fade-in-0 slide-in-from-top-2 duration-300">
             <SectionHeader icon={configIcon} title={configTitle} description={configDesc} />
 
             <div className="space-y-4 pl-11">
