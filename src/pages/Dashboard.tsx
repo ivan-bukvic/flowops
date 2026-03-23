@@ -38,7 +38,7 @@ function getRole(m: Record<string, unknown>): string | null {
   return r ? r.charAt(0).toUpperCase() + r.slice(1) : null;
 }
 
-function describeEvent(type: string, metadata: Record<string, unknown>): { title: string; detail: string | null } {
+function describeEvent(type: string, metadata: Record<string, unknown>): { prefix: string; highlight: string | null; detail: string | null } {
   const m = metadata ?? {};
   const email = getEmail(m);
   const role = getRole(m);
@@ -51,29 +51,31 @@ function describeEvent(type: string, metadata: Record<string, unknown>): { title
 
   switch (type) {
     case "PROJECT_CREATED":
-      return { title: `Project created: ${projectName ?? "Untitled"}`, detail };
+      return { prefix: "Project created:", highlight: projectName ?? "Untitled", detail };
     case "PROJECT_UPDATED":
-      return { title: `Project updated: ${projectName ?? "Untitled"}`, detail };
+      return { prefix: "Project updated:", highlight: projectName ?? "Untitled", detail };
     case "PROJECT_DELETED":
-      return { title: `Project deleted: ${projectName ?? "Untitled"}`, detail };
+      return { prefix: "Project deleted:", highlight: projectName ?? "Untitled", detail };
     case "MEMBER_ADDED":
-      return { title: "Member added to workspace", detail };
+      return { prefix: "Member added to workspace", highlight: null, detail };
     case "MEMBER_REMOVED":
-      return { title: "Member removed from workspace", detail };
+      return { prefix: "Member removed from workspace", highlight: null, detail };
     case "PROJECT_MEMBER_ADDED":
-      return { title: `Member added to ${projectName ?? "project"}`, detail };
+      return { prefix: "Member added to", highlight: projectName ?? "project", detail };
     case "PROJECT_MEMBER_REMOVED":
-      return { title: `Member removed from ${projectName ?? "project"}`, detail };
+      return { prefix: "Member removed from", highlight: projectName ?? "project", detail };
     case "WORKSPACE_CREATED":
-      return { title: `Workspace created: ${(m.org_name as string) ?? "Untitled"}`, detail };
+      return { prefix: "Workspace created:", highlight: (m.org_name as string) ?? "Untitled", detail };
     case "OWNERSHIP_TRANSFERRED":
       return {
-        title: "Ownership transferred",
+        prefix: "Ownership transferred",
+        highlight: null,
         detail: m.new_owner_email ? `New owner: ${m.new_owner_email}` : detail,
       };
     default:
       return {
-        title: type.replace(/_/g, " ").toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase()),
+        prefix: type.replace(/_/g, " ").toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase()),
+        highlight: null,
         detail,
       };
   }
