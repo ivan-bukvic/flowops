@@ -213,7 +213,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="recipient@example.com"
-                      className="h-10 rounded-lg text-sm"
+                    className="h-11 rounded-lg text-sm border-border/80 focus:ring-1 focus:ring-primary focus:border-primary"
                     />
                   </div>
                   <div className="space-y-1.5">
@@ -222,7 +222,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
                       value={subject}
                       onChange={(e) => setSubject(e.target.value)}
                       placeholder="Notification subject"
-                      className="h-10 rounded-lg text-sm"
+                      className="h-11 rounded-lg text-sm border-border/80 focus:ring-1 focus:ring-primary focus:border-primary"
                     />
                   </div>
                   <div className="space-y-1.5">
@@ -231,7 +231,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
                       placeholder="Email body content"
-                      className="min-h-[100px] rounded-lg text-sm"
+                      className="min-h-[100px] rounded-lg text-sm border-border/80 focus:ring-1 focus:ring-primary focus:border-primary"
                     />
                   </div>
                   <div className="rounded-lg border border-border/60 bg-muted/40 px-4 py-3">
