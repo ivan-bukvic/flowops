@@ -120,7 +120,7 @@ const AutomationActivity = () => {
   if (rows.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
-        <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center mb-3">
+        <div className="h-11 w-11 rounded-full bg-muted flex items-center justify-center mb-3">
           <Activity className="h-5 w-5 text-muted-foreground" />
         </div>
         <p className="text-sm font-medium text-foreground">No automation activity yet</p>
