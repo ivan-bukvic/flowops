@@ -8,8 +8,7 @@ import {
   Plug,
   Settings,
 } from "lucide-react";
-import { NavLink } from "@/components/NavLink";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import {
   Sidebar,
   SidebarContent,
@@ -17,7 +16,6 @@ import {
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarMenu,
-  SidebarMenuButton,
   SidebarMenuItem,
   SidebarHeader,
   SidebarFooter,
@@ -46,6 +44,31 @@ export function AppSidebar() {
   const isActive = (path: string) =>
     location.pathname === path || location.pathname.startsWith(path + "/");
 
+  const renderItem = (item: (typeof mainItems)[0]) => {
+    const active = isActive(item.url);
+
+    return (
+      <SidebarMenuItem key={item.title}>
+        <Link
+          to={item.url}
+          className={`
+            relative flex items-center gap-3 rounded-md px-3 py-2 text-[13px] transition-colors
+            ${active
+              ? "bg-primary/[0.06] text-foreground font-semibold"
+              : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
+            }
+          `}
+        >
+          {active && (
+            <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-primary" />
+          )}
+          <item.icon className="h-4 w-4 shrink-0 text-muted-foreground" />
+          {!collapsed && <span>{item.title}</span>}
+        </Link>
+      </SidebarMenuItem>
+    );
+  };
+
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader className="border-b border-sidebar-border px-4 py-3">
@@ -59,45 +82,27 @@ export function AppSidebar() {
         )}
       </SidebarHeader>
 
-      <SidebarContent>
+      <SidebarContent className="px-2 py-3">
         <SidebarGroup>
-          <SidebarGroupLabel>Main</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-[10px] uppercase tracking-widest text-muted-foreground/60 font-medium px-3 mb-1">
+            Main
+          </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
-              {mainItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={isActive(item.url)}
-                  >
-                    <NavLink to={item.url} end={item.url === "/dashboard"}>
-                      <item.icon className="h-4 w-4" />
-                      {!collapsed && <span>{item.title}</span>}
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+            <SidebarMenu className="space-y-0.5">
+              {mainItems.map(renderItem)}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
 
+        <div className="my-3" />
+
         <SidebarGroup>
-          <SidebarGroupLabel>Workspace</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-[10px] uppercase tracking-widest text-muted-foreground/60 font-medium px-3 mb-1">
+            Workspace
+          </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
-              {secondaryItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={isActive(item.url)}
-                  >
-                    <NavLink to={item.url}>
-                      <item.icon className="h-4 w-4" />
-                      {!collapsed && <span>{item.title}</span>}
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+            <SidebarMenu className="space-y-0.5">
+              {secondaryItems.map(renderItem)}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -105,7 +110,7 @@ export function AppSidebar() {
 
       <SidebarFooter className="border-t border-sidebar-border p-2">
         {!collapsed && (
-          <p className="text-xs text-muted-foreground px-2">© FlowOps AI</p>
+          <p className="text-[11px] text-muted-foreground/50 px-2">© FlowOps AI</p>
         )}
       </SidebarFooter>
     </Sidebar>
