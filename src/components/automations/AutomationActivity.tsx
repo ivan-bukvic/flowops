@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useOrg } from "@/contexts/OrgContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, Activity, Zap, Mail, Bell } from "lucide-react";
+import { RefreshCw, Activity, Zap, Mail, Bell, MessageSquare, Calendar, Webhook } from "lucide-react";
 
 interface ActivityRow {
   id: string;
@@ -13,20 +13,43 @@ interface ActivityRow {
   action_type: string;
 }
 
-const statusStyles: Record<string, string> = {
-  completed: "bg-[hsl(160,84%,39%,0.08)] text-[hsl(160,84%,39%)]",
-  failed: "bg-[hsl(0,84%,60%,0.08)] text-[hsl(0,84%,60%)]",
-  pending: "bg-muted text-muted-foreground",
-  processing: "bg-[hsl(217,91%,60%,0.08)] text-[hsl(217,91%,60%)]",
+const statusStyles: Record<string, { classes: string; label: string }> = {
+  completed: { classes: "bg-[hsl(160,84%,39%,0.08)] text-[hsl(160,84%,39%)]", label: "Completed" },
+  failed: { classes: "bg-[hsl(0,84%,60%,0.08)] text-[hsl(0,84%,60%)]", label: "Failed" },
+  pending: { classes: "bg-muted text-muted-foreground", label: "Pending" },
+  processing: { classes: "bg-[hsl(217,91%,60%,0.08)] text-[hsl(217,91%,60%)]", label: "Processing" },
 };
 
-const actionIcons: Record<string, typeof Mail> = {
-  email: Mail,
-  notification: Bell,
+const actionIcons: Record<string, React.ElementType> = {
+  EMAIL: Mail,
+  SLACK_MESSAGE: MessageSquare,
+  GOOGLE_CALENDAR_EVENT: Calendar,
+  WEBHOOK: Webhook,
+  LOG: Activity,
 };
 
-const formatEventType = (type: string) =>
-  type.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+const eventLabels: Record<string, string> = {
+  PROJECT_CREATED: "Project created",
+  PROJECT_UPDATED: "Project updated",
+  PROJECT_DELETED: "Project deleted",
+  MEMBER_ADDED: "Member added",
+  MEMBER_REMOVED: "Member removed",
+  PROJECT_MEMBER_ADDED: "Project member added",
+  PROJECT_MEMBER_REMOVED: "Project member removed",
+  WORKSPACE_CREATED: "Workspace created",
+  OWNERSHIP_TRANSFERRED: "Ownership transferred",
+};
+
+const actionLabels: Record<string, string> = {
+  EMAIL: "Email sent",
+  SLACK_MESSAGE: "Slack message sent",
+  GOOGLE_CALENDAR_EVENT: "Calendar event created",
+  WEBHOOK: "Webhook fired",
+  LOG: "Logged",
+};
+
+const formatEvent = (type: string) => eventLabels[type] ?? type.replace(/_/g, " ").toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
+const formatAction = (type: string) => actionLabels[type] ?? type.replace(/_/g, " ").toLowerCase();
 
 const AutomationActivity = () => {
   const { selectedOrgId } = useOrg();
@@ -79,15 +102,15 @@ const AutomationActivity = () => {
 
   if (loading) {
     return (
-      <div className="mt-4 space-y-2">
+      <div className="mt-4 space-y-2.5">
         {Array.from({ length: 5 }).map((_, i) => (
-          <div key={i} className="flex items-center gap-4 px-4 py-3.5 rounded-lg border border-border bg-card">
-            <Skeleton className="h-8 w-8 rounded-full shrink-0" />
-            <div className="flex-1 space-y-1.5">
-              <Skeleton className="h-3.5 w-32" />
-              <Skeleton className="h-3 w-48" />
+          <div key={i} className="flex items-center gap-4 px-5 py-4 rounded-lg border border-border bg-card">
+            <Skeleton className="h-9 w-9 rounded-lg shrink-0" />
+            <div className="flex-1 space-y-2">
+              <Skeleton className="h-3.5 w-44" />
+              <Skeleton className="h-3 w-28" />
             </div>
-            <Skeleton className="h-5 w-20 rounded-md" />
+            <Skeleton className="h-6 w-20 rounded-md" />
           </div>
         ))}
       </div>
@@ -97,7 +120,7 @@ const AutomationActivity = () => {
   if (rows.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
-        <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center mb-3">
+        <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center mb-3">
           <Activity className="h-5 w-5 text-muted-foreground" />
         </div>
         <p className="text-sm font-medium text-foreground">No automation activity yet</p>
@@ -121,33 +144,30 @@ const AutomationActivity = () => {
         </Button>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-2.5">
         {rows.map((row, index) => {
-          const ActionIcon = actionIcons[row.action_type] ?? Zap;
+          const Icon = actionIcons[row.action_type] ?? Zap;
+          const status = statusStyles[row.status] ?? statusStyles.pending;
           const isFirst = index === 0;
 
           return (
             <div
               key={row.id}
-              className={`flex items-center gap-4 px-4 py-3.5 rounded-lg border border-border bg-card hover:bg-muted/30 transition-colors ${
+              className={`flex items-center gap-4 px-5 py-4 rounded-lg border border-border bg-card hover:bg-muted/30 transition-colors ${
                 isFirst ? "ring-1 ring-primary/10" : ""
               }`}
             >
-              <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center shrink-0">
-                <ActionIcon className="h-4 w-4 text-muted-foreground" />
+              <div className="h-9 w-9 rounded-lg border border-border bg-muted/50 flex items-center justify-center shrink-0">
+                <Icon className="h-4 w-4 text-muted-foreground" />
               </div>
 
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-foreground">
-                    {formatEventType(row.event_type)}
-                  </span>
-                  <span className="text-xs text-muted-foreground">→</span>
-                  <span className="text-xs text-muted-foreground capitalize">
-                    {row.action_type}
-                  </span>
-                </div>
-                <p className="text-xs text-muted-foreground mt-0.5 tabular-nums">
+                <p className="text-sm font-medium text-foreground leading-tight">
+                  {formatEvent(row.event_type)}
+                  <span className="text-muted-foreground font-normal"> → </span>
+                  <span className="text-muted-foreground font-normal">{formatAction(row.action_type)}</span>
+                </p>
+                <p className="text-xs text-muted-foreground mt-1 tabular-nums">
                   {new Date(row.created_at).toLocaleString("en-US", {
                     month: "short",
                     day: "numeric",
@@ -159,11 +179,9 @@ const AutomationActivity = () => {
               </div>
 
               <span
-                className={`inline-flex items-center text-xs font-medium px-2.5 py-0.5 rounded-md shrink-0 ${
-                  statusStyles[row.status] ?? statusStyles.pending
-                }`}
+                className={`inline-flex items-center text-xs font-medium px-2.5 py-1 rounded-md shrink-0 capitalize ${status.classes}`}
               >
-                {row.status}
+                {status.label}
               </span>
             </div>
           );
