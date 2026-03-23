@@ -144,7 +144,7 @@ const AutomationActivity = () => {
         </Button>
       </div>
 
-      <div className="space-y-2.5">
+      <div className="space-y-3">
         {rows.map((row, index) => {
           const Icon = actionIcons[row.action_type] ?? Zap;
           const status = statusStyles[row.status] ?? statusStyles.pending;
@@ -153,21 +153,21 @@ const AutomationActivity = () => {
           return (
             <div
               key={row.id}
-              className={`flex items-center gap-4 px-5 py-4 rounded-lg border border-border bg-card hover:bg-muted/30 transition-colors ${
+              className={`flex items-center gap-4 px-5 py-5 rounded-lg border border-border bg-card transition-colors cursor-default hover:bg-accent/40 ${
                 isFirst ? "ring-1 ring-primary/10" : ""
               }`}
             >
-              <div className="h-9 w-9 rounded-lg border border-border bg-muted/50 flex items-center justify-center shrink-0">
-                <Icon className="h-4 w-4 text-muted-foreground" />
+              <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center shrink-0">
+                <Icon className="h-[18px] w-[18px] text-muted-foreground" />
               </div>
 
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-foreground leading-tight">
+                <p className="text-[14px] font-semibold text-foreground leading-tight">
                   {formatEvent(row.event_type)}
-                  <span className="text-muted-foreground font-normal"> → </span>
-                  <span className="text-muted-foreground font-normal">{formatAction(row.action_type)}</span>
+                  <span className="text-muted-foreground font-normal text-sm"> → </span>
+                  <span className="text-muted-foreground font-normal text-sm">{formatAction(row.action_type)}</span>
                 </p>
-                <p className="text-xs text-muted-foreground mt-1 tabular-nums">
+                <p className="text-xs text-muted-foreground mt-1.5 tabular-nums">
                   {new Date(row.created_at).toLocaleString("en-US", {
                     month: "short",
                     day: "numeric",
@@ -179,7 +179,7 @@ const AutomationActivity = () => {
               </div>
 
               <span
-                className={`inline-flex items-center text-xs font-medium px-2.5 py-1 rounded-md shrink-0 capitalize ${status.classes}`}
+                className={`inline-flex items-center text-xs font-semibold px-3 py-1 rounded-full shrink-0 capitalize ${status.classes}`}
               >
                 {status.label}
               </span>
