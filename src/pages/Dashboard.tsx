@@ -29,65 +29,52 @@ const eventConfig: Record<string, { icon: React.ElementType; label: string }> = 
   OWNERSHIP_TRANSFERRED: { icon: ArrowRightLeft, label: "Ownership transferred" },
 };
 
-function describeEvent(type: string, metadata: Record<string, unknown>): { title: string; details: string[] } {
+function getEmail(m: Record<string, unknown>): string | null {
+  return (m.email ?? m.user_email ?? m.member_email ?? null) as string | null;
+}
+
+function getRole(m: Record<string, unknown>): string | null {
+  const r = (m.role ?? m.member_role ?? null) as string | null;
+  return r ? r.charAt(0).toUpperCase() + r.slice(1) : null;
+}
+
+function describeEvent(type: string, metadata: Record<string, unknown>): { title: string; detail: string | null } {
   const m = metadata ?? {};
+  const email = getEmail(m);
+  const role = getRole(m);
+  const projectName = (m.project_name as string) ?? null;
+
+  const detailParts: string[] = [];
+  if (email) detailParts.push(`User: ${email}`);
+  if (role) detailParts.push(`Role: ${role}`);
+  const detail = detailParts.length > 0 ? detailParts.join(" · ") : null;
 
   switch (type) {
     case "PROJECT_CREATED":
-      return {
-        title: `Project created: ${m.project_name ?? "Untitled"}`,
-        details: m.description ? [`Description: ${m.description}`] : [],
-      };
+      return { title: `Project created: ${projectName ?? "Untitled"}`, detail };
     case "PROJECT_UPDATED":
-      return {
-        title: `Project updated: ${m.project_name ?? "Untitled"}`,
-        details: [],
-      };
+      return { title: `Project updated: ${projectName ?? "Untitled"}`, detail };
     case "PROJECT_DELETED":
-      return {
-        title: `Project deleted: ${m.project_name ?? "Untitled"}`,
-        details: [],
-      };
+      return { title: `Project deleted: ${projectName ?? "Untitled"}`, detail };
     case "MEMBER_ADDED":
-      return {
-        title: "Member added to workspace",
-        details: [
-          ...(m.email ? [`User: ${m.email}`] : []),
-          ...(m.role ? [`Role: ${String(m.role).charAt(0).toUpperCase() + String(m.role).slice(1)}`] : []),
-        ],
-      };
+      return { title: "Member added to workspace", detail };
     case "MEMBER_REMOVED":
-      return {
-        title: "Member removed from workspace",
-        details: m.email ? [`User: ${m.email}`] : [],
-      };
+      return { title: "Member removed from workspace", detail };
     case "PROJECT_MEMBER_ADDED":
-      return {
-        title: `Member added to ${m.project_name ?? "project"}`,
-        details: [
-          ...(m.email ? [`User: ${m.email}`] : []),
-          ...(m.role ? [`Role: ${String(m.role).charAt(0).toUpperCase() + String(m.role).slice(1)}`] : []),
-        ],
-      };
+      return { title: `Member added to ${projectName ?? "project"}`, detail };
     case "PROJECT_MEMBER_REMOVED":
-      return {
-        title: `Member removed from ${m.project_name ?? "project"}`,
-        details: m.email ? [`User: ${m.email}`] : [],
-      };
+      return { title: `Member removed from ${projectName ?? "project"}`, detail };
     case "WORKSPACE_CREATED":
-      return {
-        title: `Workspace created: ${m.org_name ?? "Untitled"}`,
-        details: [],
-      };
+      return { title: `Workspace created: ${(m.org_name as string) ?? "Untitled"}`, detail };
     case "OWNERSHIP_TRANSFERRED":
       return {
         title: "Ownership transferred",
-        details: m.new_owner_email ? [`New owner: ${m.new_owner_email}`] : [],
+        detail: m.new_owner_email ? `New owner: ${m.new_owner_email}` : detail,
       };
     default:
       return {
         title: type.replace(/_/g, " ").toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase()),
-        details: [],
+        detail,
       };
   }
 }
