@@ -29,65 +29,52 @@ const eventConfig: Record<string, { icon: React.ElementType; label: string }> = 
   OWNERSHIP_TRANSFERRED: { icon: ArrowRightLeft, label: "Ownership transferred" },
 };
 
-function describeEvent(type: string, metadata: Record<string, unknown>): { title: string; details: string[] } {
+function getEmail(m: Record<string, unknown>): string | null {
+  return (m.email ?? m.user_email ?? m.member_email ?? null) as string | null;
+}
+
+function getRole(m: Record<string, unknown>): string | null {
+  const r = (m.role ?? m.member_role ?? null) as string | null;
+  return r ? r.charAt(0).toUpperCase() + r.slice(1) : null;
+}
+
+function describeEvent(type: string, metadata: Record<string, unknown>): { title: string; detail: string | null } {
   const m = metadata ?? {};
+  const email = getEmail(m);
+  const role = getRole(m);
+  const projectName = (m.project_name as string) ?? null;
+
+  const detailParts: string[] = [];
+  if (email) detailParts.push(`User: ${email}`);
+  if (role) detailParts.push(`Role: ${role}`);
+  const detail = detailParts.length > 0 ? detailParts.join(" · ") : null;
 
   switch (type) {
     case "PROJECT_CREATED":
-      return {
-        title: `Project created: ${m.project_name ?? "Untitled"}`,
-        details: m.description ? [`Description: ${m.description}`] : [],
-      };
+      return { title: `Project created: ${projectName ?? "Untitled"}`, detail };
     case "PROJECT_UPDATED":
-      return {
-        title: `Project updated: ${m.project_name ?? "Untitled"}`,
-        details: [],
-      };
+      return { title: `Project updated: ${projectName ?? "Untitled"}`, detail };
     case "PROJECT_DELETED":
-      return {
-        title: `Project deleted: ${m.project_name ?? "Untitled"}`,
-        details: [],
-      };
+      return { title: `Project deleted: ${projectName ?? "Untitled"}`, detail };
     case "MEMBER_ADDED":
-      return {
-        title: "Member added to workspace",
-        details: [
-          ...(m.email ? [`User: ${m.email}`] : []),
-          ...(m.role ? [`Role: ${String(m.role).charAt(0).toUpperCase() + String(m.role).slice(1)}`] : []),
-        ],
-      };
+      return { title: "Member added to workspace", detail };
     case "MEMBER_REMOVED":
-      return {
-        title: "Member removed from workspace",
-        details: m.email ? [`User: ${m.email}`] : [],
-      };
+      return { title: "Member removed from workspace", detail };
     case "PROJECT_MEMBER_ADDED":
-      return {
-        title: `Member added to ${m.project_name ?? "project"}`,
-        details: [
-          ...(m.email ? [`User: ${m.email}`] : []),
-          ...(m.role ? [`Role: ${String(m.role).charAt(0).toUpperCase() + String(m.role).slice(1)}`] : []),
-        ],
-      };
+      return { title: `Member added to ${projectName ?? "project"}`, detail };
     case "PROJECT_MEMBER_REMOVED":
-      return {
-        title: `Member removed from ${m.project_name ?? "project"}`,
-        details: m.email ? [`User: ${m.email}`] : [],
-      };
+      return { title: `Member removed from ${projectName ?? "project"}`, detail };
     case "WORKSPACE_CREATED":
-      return {
-        title: `Workspace created: ${m.org_name ?? "Untitled"}`,
-        details: [],
-      };
+      return { title: `Workspace created: ${(m.org_name as string) ?? "Untitled"}`, detail };
     case "OWNERSHIP_TRANSFERRED":
       return {
         title: "Ownership transferred",
-        details: m.new_owner_email ? [`New owner: ${m.new_owner_email}`] : [],
+        detail: m.new_owner_email ? `New owner: ${m.new_owner_email}` : detail,
       };
     default:
       return {
         title: type.replace(/_/g, " ").toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase()),
-        details: [],
+        detail,
       };
   }
 }
@@ -170,7 +157,7 @@ const Dashboard = () => {
       <PageHeader title="Dashboard" description="Overview of your workspace activity" />
 
       {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
         <StatCard title="Projects" value={loading ? "—" : projectCount} icon={FolderKanban} />
         <StatCard title="Documents" value={loading ? "—" : docCount} icon={FileText} />
         <StatCard title="Automations" value={loading ? "—" : automationCount} icon={Zap} />
@@ -184,10 +171,10 @@ const Dashboard = () => {
           <button
             key={action.label}
             onClick={action.onClick}
-            className="flex flex-col items-center gap-2.5 p-5 rounded-lg border border-border bg-card text-foreground hover:bg-accent/40 transition-colors cursor-pointer"
+            className="flex flex-col items-center gap-3 p-6 rounded-lg border border-border bg-card text-foreground hover:border-primary/30 hover:bg-accent/30 transition-all cursor-pointer group"
           >
-            <div className="h-9 w-9 rounded-lg bg-muted flex items-center justify-center">
-              <action.icon className="h-4.5 w-4.5 text-muted-foreground" />
+            <div className="h-10 w-10 rounded-full bg-muted group-hover:bg-primary/8 flex items-center justify-center transition-colors">
+              <action.icon className="h-[18px] w-[18px] text-muted-foreground group-hover:text-primary transition-colors" />
             </div>
             <span className="text-[13px] font-medium">{action.label}</span>
           </button>
@@ -218,33 +205,29 @@ const Dashboard = () => {
           <p className="text-xs text-muted-foreground mt-1">Activity will appear here as you use your workspace.</p>
         </div>
       ) : (
-        <div className="space-y-2.5">
+        <div className="space-y-3">
           {recentEvents.map((evt) => {
             const config = eventConfig[evt.type] ?? { icon: Zap, label: evt.type };
             const Icon = config.icon;
-            const { title, details } = describeEvent(evt.type, evt.metadata);
+            const { title, detail } = describeEvent(evt.type, evt.metadata);
 
             return (
               <div
                 key={evt.id}
-                className="flex items-start gap-4 px-5 py-4 rounded-lg border border-border bg-card hover:bg-accent/40 transition-colors"
+                className="flex items-start gap-4 px-5 py-5 rounded-lg border border-border bg-card hover:bg-accent/30 transition-colors"
               >
-                <div className="h-9 w-9 rounded-full bg-muted flex items-center justify-center shrink-0 mt-0.5">
-                  <Icon className="h-4 w-4 text-muted-foreground" />
+                <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center shrink-0 mt-0.5">
+                  <Icon className="h-[18px] w-[18px] text-muted-foreground" />
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <p className="text-[14px] font-semibold text-foreground leading-tight">{title}</p>
-                  {details.length > 0 && (
-                    <div className="mt-1 space-y-0.5">
-                      {details.map((d, i) => (
-                        <p key={i} className="text-xs text-muted-foreground">{d}</p>
-                      ))}
-                    </div>
+                  <p className="text-[14px] font-semibold text-foreground leading-snug">{title}</p>
+                  {detail && (
+                    <p className="text-[12px] text-muted-foreground mt-1.5 leading-relaxed">{detail}</p>
                   )}
                 </div>
 
-                <span className="text-xs text-muted-foreground whitespace-nowrap shrink-0 mt-0.5">
+                <span className="text-[11px] text-muted-foreground/70 whitespace-nowrap shrink-0 mt-1 tabular-nums">
                   {timeAgo(evt.created_at)}
                 </span>
               </div>

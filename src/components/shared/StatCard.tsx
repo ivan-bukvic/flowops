@@ -15,8 +15,8 @@ const StatCard = ({ title, value, icon: Icon, description }: StatCardProps) => (
         <p className="text-3xl font-bold text-foreground mt-2 tabular-nums">{value}</p>
         {description && <p className="text-xs text-muted-foreground mt-1.5">{description}</p>}
       </div>
-      <div className="h-10 w-10 rounded-lg bg-primary/8 flex items-center justify-center">
-        <Icon className="h-5 w-5 text-primary" />
+      <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center">
+        <Icon className="h-5 w-5 text-muted-foreground" />
       </div>
     </div>
   </div>
