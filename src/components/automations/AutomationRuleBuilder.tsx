@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowDown } from "lucide-react";
+import { ArrowDown, Zap, Settings, Mail, Calendar, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 
 const TRIGGER_MAP: Record<string, string> = {
@@ -30,6 +30,35 @@ const ACTIONS = ["EMAIL", "SLACK_MESSAGE", "GOOGLE_CALENDAR_EVENT", "WEBHOOK", "
 interface AutomationRuleBuilderProps {
   onCreated: () => void;
 }
+
+const SectionArrow = () => (
+  <div className="flex justify-center py-4">
+    <div className="flex flex-col items-center gap-1">
+      <div className="w-px h-4 bg-border" />
+      <ArrowDown className="h-4 w-4 text-muted-foreground/50" />
+    </div>
+  </div>
+);
+
+const SectionHeader = ({
+  icon: Icon,
+  title,
+  description,
+}: {
+  icon: React.ElementType;
+  title: string;
+  description: string;
+}) => (
+  <div className="flex items-start gap-3 mb-5">
+    <div className="flex items-center justify-center h-8 w-8 rounded-lg border border-border bg-muted/50 shrink-0 mt-0.5">
+      <Icon className="h-4 w-4 text-muted-foreground" />
+    </div>
+    <div>
+      <h3 className="text-[15px] font-semibold text-foreground leading-tight">{title}</h3>
+      <p className="text-[13px] text-muted-foreground mt-0.5">{description}</p>
+    </div>
+  </div>
+);
 
 const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
   const { selectedOrgId } = useOrg();
@@ -95,29 +124,40 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
     onCreated();
   };
 
+  const configIcon = action === "EMAIL" ? Mail
+    : action === "SLACK_MESSAGE" ? MessageSquare
+    : action === "GOOGLE_CALENDAR_EVENT" ? Calendar
+    : Settings;
+
+  const configTitle = action === "EMAIL" ? "Email Content"
+    : action === "SLACK_MESSAGE" ? "Slack Message"
+    : action === "GOOGLE_CALENDAR_EVENT" ? "Calendar Event"
+    : "Configuration";
+
+  const configDesc = action === "EMAIL"
+    ? "This email will be sent automatically when the event happens"
+    : action === "SLACK_MESSAGE"
+    ? "Configure the Slack message to send"
+    : action === "GOOGLE_CALENDAR_EVENT"
+    ? "Configure the calendar event details"
+    : "Set up the action details";
+
+  const hasConfig = ["EMAIL", "SLACK_MESSAGE", "GOOGLE_CALENDAR_EVENT"].includes(action);
+
   return (
     <div className="max-w-[720px] mx-auto py-8 px-6">
-      {/* Header */}
-      <div className="mb-8">
-        <h2 className="text-lg font-semibold text-foreground">Automation Rules</h2>
-        <p className="text-[13px] text-muted-foreground mt-1">
-          Create a new automation by defining a trigger and an action
-        </p>
-      </div>
-
-      {/* Trigger Card */}
+      {/* Trigger */}
       <div className="rounded-lg border border-border bg-card p-5">
-        <div className="mb-4">
-          <h3 className="text-[15px] font-semibold text-foreground">Trigger</h3>
-          <p className="text-[13px] text-muted-foreground mt-0.5">
-            Choose what starts the automation
-          </p>
-        </div>
-        <div className="space-y-1.5">
-          <Label className="text-[13px] text-foreground/80">Event Type</Label>
+        <SectionHeader
+          icon={Zap}
+          title="When this happens"
+          description="Choose what starts this automation"
+        />
+        <div className="space-y-1.5 pl-11">
+          <Label className="text-[13px] text-foreground/80">Event</Label>
           <Select value={trigger} onValueChange={setTrigger}>
             <SelectTrigger className="h-10 rounded-lg text-sm focus:ring-1 focus:ring-ring">
-              <SelectValue placeholder="Select event" />
+              <SelectValue placeholder="Select an event" />
             </SelectTrigger>
             <SelectContent>
               {TRIGGER_LABELS.map((label) => (
@@ -130,28 +170,20 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
         </div>
       </div>
 
-      {/* Flow Indicator */}
-      <div className="flex justify-center py-3">
-        <div className="flex flex-col items-center gap-0.5">
-          <div className="w-px h-3 bg-border" />
-          <ArrowDown className="h-4 w-4 text-muted-foreground/60" />
-        </div>
-      </div>
+      <SectionArrow />
 
-      {/* Action Card */}
+      {/* Action */}
       <div className="rounded-lg border border-border bg-card p-5">
-        <div className="mb-4">
-          <h3 className="text-[15px] font-semibold text-foreground">Action</h3>
-          <p className="text-[13px] text-muted-foreground mt-0.5">
-            Choose what happens after the trigger
-          </p>
-        </div>
-
-        <div className="space-y-1.5">
-          <Label className="text-[13px] text-foreground/80">Action Type</Label>
+        <SectionHeader
+          icon={Settings}
+          title="Do this"
+          description="Choose what happens next"
+        />
+        <div className="space-y-1.5 pl-11">
+          <Label className="text-[13px] text-foreground/80">Action</Label>
           <Select value={action} onValueChange={setAction}>
             <SelectTrigger className="h-10 rounded-lg text-sm focus:ring-1 focus:ring-ring">
-              <SelectValue placeholder="Select action" />
+              <SelectValue placeholder="Select an action" />
             </SelectTrigger>
             <SelectContent>
               {ACTIONS.map((a) => (
@@ -164,140 +196,96 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
         </div>
       </div>
 
-      {/* Email Setup — only when EMAIL action */}
-      {action === "EMAIL" && (
+      {/* Configuration — conditional */}
+      {hasConfig && (
         <>
-          <div className="flex justify-center py-3">
-            <div className="flex flex-col items-center gap-0.5">
-              <div className="w-px h-3 bg-border" />
-              <ArrowDown className="h-4 w-4 text-muted-foreground/60" />
-            </div>
-          </div>
+          <SectionArrow />
 
           <div className="rounded-lg border border-border bg-card p-5 animate-in fade-in-0 slide-in-from-top-2 duration-300">
-            <div className="mb-4">
-              <h3 className="text-[15px] font-semibold text-foreground">Email Setup</h3>
-              <p className="text-[13px] text-muted-foreground mt-0.5">
-                This email will be sent automatically when the event happens
-              </p>
-            </div>
+            <SectionHeader icon={configIcon} title={configTitle} description={configDesc} />
 
-            <div className="space-y-4">
-              <div className="space-y-1.5">
-                <Label className="text-[13px] text-foreground/80">To</Label>
-                <Input
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="recipient@example.com"
-                  className="h-10 rounded-lg text-sm"
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label className="text-[13px] text-foreground/80">Subject</Label>
-                <Input
-                  value={subject}
-                  onChange={(e) => setSubject(e.target.value)}
-                  placeholder="Notification subject"
-                  className="h-10 rounded-lg text-sm"
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label className="text-[13px] text-foreground/80">Message</Label>
-                <Textarea
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  placeholder="Email body content"
-                  className="min-h-[100px] rounded-lg text-sm"
-                />
-              </div>
+            <div className="space-y-4 pl-11">
+              {action === "EMAIL" && (
+                <>
+                  <div className="space-y-1.5">
+                    <Label className="text-[13px] text-foreground/80">To</Label>
+                    <Input
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="recipient@example.com"
+                      className="h-10 rounded-lg text-sm"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-[13px] text-foreground/80">Subject</Label>
+                    <Input
+                      value={subject}
+                      onChange={(e) => setSubject(e.target.value)}
+                      placeholder="Notification subject"
+                      className="h-10 rounded-lg text-sm"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-[13px] text-foreground/80">Message</Label>
+                    <Textarea
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      placeholder="Email body content"
+                      className="min-h-[100px] rounded-lg text-sm"
+                    />
+                  </div>
+                  <div className="rounded-lg border border-border/60 bg-muted/40 px-4 py-3">
+                    <p className="text-xs font-medium text-muted-foreground mb-1.5">You can use variables:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {["{project_name}", "{user_email}", "{event_type}"].map((v) => (
+                        <code
+                          key={v}
+                          className="text-xs bg-background border border-border rounded px-2 py-0.5 font-mono text-foreground/70"
+                        >
+                          {v}
+                        </code>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
 
-              {/* Variable helper */}
-              <div className="rounded-lg border border-border/60 bg-muted/40 px-4 py-3">
-                <p className="text-xs font-medium text-muted-foreground mb-1.5">You can use variables:</p>
-                <div className="flex flex-wrap gap-2">
-                  {["{project_name}", "{user_email}", "{event_type}"].map((v) => (
-                    <code
-                      key={v}
-                      className="text-xs bg-background border border-border rounded px-2 py-0.5 font-mono text-foreground/70"
-                    >
-                      {v}
-                    </code>
-                  ))}
+              {action === "SLACK_MESSAGE" && (
+                <>
+                  <div className="space-y-1.5">
+                    <Label className="text-[13px] text-foreground/80">Webhook URL</Label>
+                    <Input
+                      value={webhookUrl}
+                      onChange={(e) => setWebhookUrl(e.target.value)}
+                      placeholder="https://hooks.slack.com/services/..."
+                      className="h-10 rounded-lg text-sm"
+                    />
+                    <p className="text-xs text-muted-foreground/70 mt-1">Slack incoming webhook URL</p>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-[13px] text-foreground/80">Message</Label>
+                    <Textarea
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      placeholder="Slack message content"
+                      className="min-h-[80px] rounded-lg text-sm"
+                    />
+                  </div>
+                </>
+              )}
+
+              {action === "GOOGLE_CALENDAR_EVENT" && (
+                <div className="space-y-1.5">
+                  <Label className="text-[13px] text-foreground/80">Title</Label>
+                  <Input
+                    value={calendarTitle}
+                    onChange={(e) => setCalendarTitle(e.target.value)}
+                    placeholder="Calendar event title (optional)"
+                    className="h-10 rounded-lg text-sm"
+                  />
+                  <p className="text-xs text-muted-foreground/70 mt-1">Leave empty to use the trigger event name</p>
                 </div>
-              </div>
-            </div>
-          </div>
-        </>
-      )}
-
-      {/* Slack fields */}
-      {action === "SLACK_MESSAGE" && (
-        <>
-          <div className="flex justify-center py-3">
-            <div className="flex flex-col items-center gap-0.5">
-              <div className="w-px h-3 bg-border" />
-              <ArrowDown className="h-4 w-4 text-muted-foreground/60" />
-            </div>
-          </div>
-
-          <div className="rounded-lg border border-border bg-card p-5 animate-in fade-in-0 slide-in-from-top-2 duration-300">
-            <div className="mb-4">
-              <h3 className="text-[15px] font-semibold text-foreground">Slack Setup</h3>
-              <p className="text-[13px] text-muted-foreground mt-0.5">
-                Configure the Slack message
-              </p>
-            </div>
-            <div className="space-y-4">
-              <div className="space-y-1.5">
-                <Label className="text-[13px] text-foreground/80">Webhook URL</Label>
-                <Input
-                  value={webhookUrl}
-                  onChange={(e) => setWebhookUrl(e.target.value)}
-                  placeholder="https://hooks.slack.com/services/..."
-                  className="h-10 rounded-lg text-sm"
-                />
-                <p className="text-xs text-muted-foreground/70 mt-1">Slack incoming webhook URL</p>
-              </div>
-              <div className="space-y-1.5">
-                <Label className="text-[13px] text-foreground/80">Message</Label>
-                <Textarea
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  placeholder="Slack message content"
-                  className="min-h-[80px] rounded-lg text-sm"
-                />
-              </div>
-            </div>
-          </div>
-        </>
-      )}
-
-      {/* Google Calendar fields */}
-      {action === "GOOGLE_CALENDAR_EVENT" && (
-        <>
-          <div className="flex justify-center py-3">
-            <div className="flex flex-col items-center gap-0.5">
-              <div className="w-px h-3 bg-border" />
-              <ArrowDown className="h-4 w-4 text-muted-foreground/60" />
-            </div>
-          </div>
-
-          <div className="rounded-lg border border-border bg-card p-5 animate-in fade-in-0 slide-in-from-top-2 duration-300">
-            <div className="mb-4">
-              <h3 className="text-[15px] font-semibold text-foreground">Calendar Setup</h3>
-              <p className="text-[13px] text-muted-foreground mt-0.5">
-                Configure the calendar event
-              </p>
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-[13px] text-foreground/80">Title</Label>
-              <Input
-                value={calendarTitle}
-                onChange={(e) => setCalendarTitle(e.target.value)}
-                placeholder="Calendar event title (optional)"
-                className="h-10 rounded-lg text-sm"
-              />
-              <p className="text-xs text-muted-foreground/70 mt-1">Leave empty to use the trigger event name</p>
+              )}
             </div>
           </div>
         </>
@@ -307,6 +295,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
       <div className="flex justify-end mt-8">
         <Button
           onClick={handleCreate}
+          disabled={!isValid() || creating}
           className="h-10 px-6 rounded-lg text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
         >
           {creating ? "Creating..." : "Create Automation"}
