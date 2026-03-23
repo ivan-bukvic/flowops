@@ -3,9 +3,10 @@ import { useOrg } from "@/contexts/OrgContext";
 import { supabase } from "@/integrations/supabase/client";
 import PageHeader from "@/components/shared/PageHeader";
 import StatCard from "@/components/shared/StatCard";
-import { Badge } from "@/components/ui/badge";
-import { FolderKanban, FileText, Zap, Bot, Plus, Upload, Sparkles } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import {
+  FolderKanban, FileText, Zap, Bot, Plus, Upload, Sparkles,
+  UserPlus, UserMinus, FolderPlus, FolderEdit, Trash2, ArrowRightLeft, Building2,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface EventRow {
@@ -13,6 +14,94 @@ interface EventRow {
   type: string;
   metadata: Record<string, unknown>;
   created_at: string;
+  actor_user_id: string | null;
+}
+
+const eventConfig: Record<string, { icon: React.ElementType; label: string }> = {
+  PROJECT_CREATED: { icon: FolderPlus, label: "Project created" },
+  PROJECT_UPDATED: { icon: FolderEdit, label: "Project updated" },
+  PROJECT_DELETED: { icon: Trash2, label: "Project deleted" },
+  MEMBER_ADDED: { icon: UserPlus, label: "Member added" },
+  MEMBER_REMOVED: { icon: UserMinus, label: "Member removed" },
+  PROJECT_MEMBER_ADDED: { icon: UserPlus, label: "Member added to project" },
+  PROJECT_MEMBER_REMOVED: { icon: UserMinus, label: "Member removed from project" },
+  WORKSPACE_CREATED: { icon: Building2, label: "Workspace created" },
+  OWNERSHIP_TRANSFERRED: { icon: ArrowRightLeft, label: "Ownership transferred" },
+};
+
+function describeEvent(type: string, metadata: Record<string, unknown>): { title: string; details: string[] } {
+  const m = metadata ?? {};
+
+  switch (type) {
+    case "PROJECT_CREATED":
+      return {
+        title: `Project created: ${m.project_name ?? "Untitled"}`,
+        details: m.description ? [`Description: ${m.description}`] : [],
+      };
+    case "PROJECT_UPDATED":
+      return {
+        title: `Project updated: ${m.project_name ?? "Untitled"}`,
+        details: [],
+      };
+    case "PROJECT_DELETED":
+      return {
+        title: `Project deleted: ${m.project_name ?? "Untitled"}`,
+        details: [],
+      };
+    case "MEMBER_ADDED":
+      return {
+        title: "Member added to workspace",
+        details: [
+          ...(m.email ? [`User: ${m.email}`] : []),
+          ...(m.role ? [`Role: ${String(m.role).charAt(0).toUpperCase() + String(m.role).slice(1)}`] : []),
+        ],
+      };
+    case "MEMBER_REMOVED":
+      return {
+        title: "Member removed from workspace",
+        details: m.email ? [`User: ${m.email}`] : [],
+      };
+    case "PROJECT_MEMBER_ADDED":
+      return {
+        title: `Member added to ${m.project_name ?? "project"}`,
+        details: [
+          ...(m.email ? [`User: ${m.email}`] : []),
+          ...(m.role ? [`Role: ${String(m.role).charAt(0).toUpperCase() + String(m.role).slice(1)}`] : []),
+        ],
+      };
+    case "PROJECT_MEMBER_REMOVED":
+      return {
+        title: `Member removed from ${m.project_name ?? "project"}`,
+        details: m.email ? [`User: ${m.email}`] : [],
+      };
+    case "WORKSPACE_CREATED":
+      return {
+        title: `Workspace created: ${m.org_name ?? "Untitled"}`,
+        details: [],
+      };
+    case "OWNERSHIP_TRANSFERRED":
+      return {
+        title: "Ownership transferred",
+        details: m.new_owner_email ? [`New owner: ${m.new_owner_email}`] : [],
+      };
+    default:
+      return {
+        title: type.replace(/_/g, " ").toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase()),
+        details: [],
+      };
+  }
+}
+
+function timeAgo(dateStr: string): string {
+  const seconds = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000);
+  if (seconds < 60) return "Just now";
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  if (days < 7) return `${days}d ago`;
+  return new Date(dateStr).toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
 const Dashboard = () => {
@@ -52,7 +141,7 @@ const Dashboard = () => {
           .select("id", { count: "exact", head: true }),
         supabase
           .from("events")
-          .select("id, type, metadata, created_at")
+          .select("id, type, metadata, created_at, actor_user_id")
           .eq("org_id", selectedOrgId)
           .order("created_at", { ascending: false })
           .limit(10),
@@ -69,63 +158,98 @@ const Dashboard = () => {
     fetchStats();
   }, [selectedOrgId]);
 
+  const quickActions = [
+    { label: "Create Project", icon: Plus, onClick: () => navigate("/projects") },
+    { label: "Upload Document", icon: Upload, onClick: () => navigate("/documents") },
+    { label: "Create Automation", icon: Zap, onClick: () => navigate("/automations") },
+    { label: "Ask AI", icon: Sparkles, onClick: () => navigate("/ai") },
+  ];
+
   return (
     <main className="p-6">
       <PageHeader title="Dashboard" description="Overview of your workspace activity" />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      {/* Stats */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
         <StatCard title="Projects" value={loading ? "—" : projectCount} icon={FolderKanban} />
         <StatCard title="Documents" value={loading ? "—" : docCount} icon={FileText} />
         <StatCard title="Automations" value={loading ? "—" : automationCount} icon={Zap} />
         <StatCard title="AI Queries" value={loading ? "—" : aiCount} icon={Bot} />
       </div>
 
+      {/* Quick Actions */}
       <h2 className="text-sm font-medium text-foreground mb-3">Quick Actions</h2>
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
-        <Button variant="outline" className="h-auto py-3 flex flex-col gap-1.5" onClick={() => navigate("/projects")}>
-          <Plus className="h-4 w-4" />
-          <span className="text-xs">Create Project</span>
-        </Button>
-        <Button variant="outline" className="h-auto py-3 flex flex-col gap-1.5" onClick={() => navigate("/documents")}>
-          <Upload className="h-4 w-4" />
-          <span className="text-xs">Upload Document</span>
-        </Button>
-        <Button variant="outline" className="h-auto py-3 flex flex-col gap-1.5" onClick={() => navigate("/automations")}>
-          <Zap className="h-4 w-4" />
-          <span className="text-xs">Create Automation</span>
-        </Button>
-        <Button variant="outline" className="h-auto py-3 flex flex-col gap-1.5" onClick={() => navigate("/ai")}>
-          <Sparkles className="h-4 w-4" />
-          <span className="text-xs">Ask AI</span>
-        </Button>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-10">
+        {quickActions.map((action) => (
+          <button
+            key={action.label}
+            onClick={action.onClick}
+            className="flex flex-col items-center gap-2.5 p-5 rounded-lg border border-border bg-card text-foreground hover:bg-accent/40 transition-colors cursor-pointer"
+          >
+            <div className="h-9 w-9 rounded-lg bg-muted flex items-center justify-center">
+              <action.icon className="h-4.5 w-4.5 text-muted-foreground" />
+            </div>
+            <span className="text-[13px] font-medium">{action.label}</span>
+          </button>
+        ))}
       </div>
 
+      {/* Recent Activity */}
       <h2 className="text-sm font-medium text-foreground mb-3">Recent Activity</h2>
       {loading ? (
-        <p className="text-sm text-muted-foreground">Loading...</p>
-      ) : recentEvents.length === 0 ? (
-        <p className="text-sm text-muted-foreground">No recent activity.</p>
-      ) : (
-        <div className="space-y-2">
-          {recentEvents.map((evt) => (
-            <div key={evt.id} className="flex items-start gap-3 p-3 rounded-lg border border-border bg-card">
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="text-xs font-mono shrink-0">
-                    {evt.type}
-                  </Badge>
-                  <span className="text-xs text-muted-foreground">
-                    {new Date(evt.created_at).toLocaleString()}
-                  </span>
-                </div>
-                {evt.metadata && Object.keys(evt.metadata).length > 0 && (
-                  <p className="text-xs text-muted-foreground mt-1 truncate">
-                    {JSON.stringify(evt.metadata)}
-                  </p>
-                )}
+        <div className="space-y-3">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="flex items-center gap-4 px-5 py-4 rounded-lg border border-border bg-card animate-pulse">
+              <div className="h-9 w-9 rounded-full bg-muted shrink-0" />
+              <div className="flex-1 space-y-2">
+                <div className="h-3.5 w-48 bg-muted rounded" />
+                <div className="h-3 w-28 bg-muted rounded" />
               </div>
+              <div className="h-3 w-16 bg-muted rounded" />
             </div>
           ))}
+        </div>
+      ) : recentEvents.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-16 text-center rounded-lg border border-border bg-card">
+          <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center mb-3">
+            <Zap className="h-5 w-5 text-muted-foreground" />
+          </div>
+          <p className="text-sm font-medium text-foreground">No recent activity</p>
+          <p className="text-xs text-muted-foreground mt-1">Activity will appear here as you use your workspace.</p>
+        </div>
+      ) : (
+        <div className="space-y-2.5">
+          {recentEvents.map((evt) => {
+            const config = eventConfig[evt.type] ?? { icon: Zap, label: evt.type };
+            const Icon = config.icon;
+            const { title, details } = describeEvent(evt.type, evt.metadata);
+
+            return (
+              <div
+                key={evt.id}
+                className="flex items-start gap-4 px-5 py-4 rounded-lg border border-border bg-card hover:bg-accent/40 transition-colors"
+              >
+                <div className="h-9 w-9 rounded-full bg-muted flex items-center justify-center shrink-0 mt-0.5">
+                  <Icon className="h-4 w-4 text-muted-foreground" />
+                </div>
+
+                <div className="flex-1 min-w-0">
+                  <p className="text-[14px] font-semibold text-foreground leading-tight">{title}</p>
+                  {details.length > 0 && (
+                    <div className="mt-1 space-y-0.5">
+                      {details.map((d, i) => (
+                        <p key={i} className="text-xs text-muted-foreground">{d}</p>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <span className="text-xs text-muted-foreground whitespace-nowrap shrink-0 mt-0.5">
+                  {timeAgo(evt.created_at)}
+                </span>
+              </div>
+            );
+          })}
         </div>
       )}
     </main>
