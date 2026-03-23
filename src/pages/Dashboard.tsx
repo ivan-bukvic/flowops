@@ -159,7 +159,7 @@ const Dashboard = () => {
       <PageHeader title="Dashboard" description="Overview of your workspace activity" />
 
       {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-12">
         <StatCard title="Projects" value={loading ? "—" : projectCount} icon={FolderKanban} />
         <StatCard title="Documents" value={loading ? "—" : docCount} icon={FileText} />
         <StatCard title="Automations" value={loading ? "—" : automationCount} icon={Zap} />
@@ -167,43 +167,43 @@ const Dashboard = () => {
       </div>
 
       {/* Quick Actions */}
-      <h2 className="text-sm font-medium text-foreground mb-3">Quick Actions</h2>
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-10">
+      <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">Quick Actions</h2>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-12">
         {quickActions.map((action) => (
           <button
             key={action.label}
             onClick={action.onClick}
-            className="flex flex-col items-center gap-3 p-6 rounded-lg border border-border bg-card text-foreground hover:border-primary/30 hover:bg-accent/30 transition-all cursor-pointer group"
+            className="flex flex-col items-center gap-3 p-7 rounded-lg border border-border/80 bg-card text-foreground shadow-[0_1px_3px_0_rgba(0,0,0,0.04)] hover:shadow-[0_2px_8px_0_rgba(0,0,0,0.06)] hover:border-primary/25 transition-all cursor-pointer group"
           >
-            <div className="h-10 w-10 rounded-full bg-muted group-hover:bg-primary/8 flex items-center justify-center transition-colors">
-              <action.icon className="h-[18px] w-[18px] text-muted-foreground group-hover:text-primary transition-colors" />
+            <div className="h-11 w-11 rounded-full bg-muted/60 group-hover:bg-primary/[0.07] flex items-center justify-center transition-colors">
+              <action.icon className="h-5 w-5 text-muted-foreground group-hover:text-primary/80 transition-colors" />
             </div>
-            <span className="text-[13px] font-medium">{action.label}</span>
+            <span className="text-[13px] font-semibold">{action.label}</span>
           </button>
         ))}
       </div>
 
       {/* Recent Activity */}
-      <h2 className="text-sm font-medium text-foreground mb-3">Recent Activity</h2>
+      <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">Recent Activity</h2>
       {loading ? (
         <div className="space-y-3">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="flex items-center gap-4 px-5 py-4 rounded-lg border border-border bg-card animate-pulse">
-              <div className="h-9 w-9 rounded-full bg-muted shrink-0" />
-              <div className="flex-1 space-y-2">
-                <div className="h-3.5 w-48 bg-muted rounded" />
-                <div className="h-3 w-28 bg-muted rounded" />
+            <div key={i} className="flex items-center gap-4 px-6 py-5 rounded-lg border border-border/80 bg-card shadow-[0_1px_2px_0_rgba(0,0,0,0.03)] animate-pulse">
+              <div className="h-10 w-10 rounded-full bg-muted shrink-0" />
+              <div className="flex-1 space-y-2.5">
+                <div className="h-4 w-52 bg-muted rounded" />
+                <div className="h-3 w-32 bg-muted rounded" />
               </div>
               <div className="h-3 w-16 bg-muted rounded" />
             </div>
           ))}
         </div>
       ) : recentEvents.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 text-center rounded-lg border border-border bg-card">
-          <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center mb-3">
+        <div className="flex flex-col items-center justify-center py-16 text-center rounded-lg border border-border/80 bg-card shadow-[0_1px_2px_0_rgba(0,0,0,0.03)]">
+          <div className="h-11 w-11 rounded-full bg-muted flex items-center justify-center mb-3">
             <Zap className="h-5 w-5 text-muted-foreground" />
           </div>
-          <p className="text-sm font-medium text-foreground">No recent activity</p>
+          <p className="text-sm font-semibold text-foreground">No recent activity</p>
           <p className="text-xs text-muted-foreground mt-1">Activity will appear here as you use your workspace.</p>
         </div>
       ) : (
@@ -216,25 +216,25 @@ const Dashboard = () => {
             return (
               <div
                 key={evt.id}
-                className="flex items-start gap-4 px-6 py-5 rounded-lg border border-border bg-card hover:bg-accent/30 transition-colors"
+                className="flex items-start gap-4 px-6 py-5 rounded-lg border border-border/80 bg-card shadow-[0_1px_2px_0_rgba(0,0,0,0.03)] hover:shadow-[0_2px_8px_0_rgba(0,0,0,0.05)] hover:border-border transition-all"
               >
-                <div className="h-10 w-10 rounded-full bg-muted/70 flex items-center justify-center shrink-0 mt-0.5">
-                  <Icon className="h-[18px] w-[18px] text-muted-foreground/70" />
+                <div className="h-10 w-10 rounded-full bg-muted/60 flex items-center justify-center shrink-0 mt-0.5">
+                  <Icon className="h-[18px] w-[18px] text-muted-foreground/60" />
                 </div>
 
                 <div className="flex-1 min-w-0">
                   <p className="text-[15px] font-semibold text-foreground leading-snug">
                     {prefix}
                     {highlight && (
-                      <span className="text-foreground font-bold"> {highlight}</span>
+                      <span className="text-primary font-bold"> {highlight}</span>
                     )}
                   </p>
                   {detail && (
-                    <p className="text-[12px] text-muted-foreground/80 mt-1.5 leading-relaxed">{detail}</p>
+                    <p className="text-[12px] text-muted-foreground/70 mt-1.5 leading-relaxed">{detail}</p>
                   )}
                 </div>
 
-                <span className="text-[11px] text-muted-foreground/50 whitespace-nowrap shrink-0 mt-1.5 tabular-nums">
+                <span className="text-[11px] text-muted-foreground/40 whitespace-nowrap shrink-0 mt-1.5 tabular-nums">
                   {timeAgo(evt.created_at)}
                 </span>
               </div>
