@@ -32,10 +32,10 @@ interface AutomationRuleBuilderProps {
 }
 
 const SectionArrow = () => (
-  <div className="flex justify-center py-4">
+  <div className="flex justify-center py-5">
     <div className="flex flex-col items-center gap-1">
-      <div className="w-px h-4 bg-border" />
-      <ArrowDown className="h-4 w-4 text-muted-foreground/50" />
+      <div className="w-px h-5 bg-border" />
+      <ArrowDown className="h-5 w-5 text-muted-foreground/70" />
     </div>
   </div>
 );
