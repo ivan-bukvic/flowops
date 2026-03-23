@@ -32,10 +32,10 @@ interface AutomationRuleBuilderProps {
 }
 
 const SectionArrow = () => (
-  <div className="flex justify-center py-4">
+  <div className="flex justify-center py-5">
     <div className="flex flex-col items-center gap-1">
-      <div className="w-px h-4 bg-border" />
-      <ArrowDown className="h-4 w-4 text-muted-foreground/50" />
+      <div className="w-px h-5 bg-border" />
+      <ArrowDown className="h-5 w-5 text-muted-foreground/70" />
     </div>
   </div>
 );
@@ -49,13 +49,13 @@ const SectionHeader = ({
   title: string;
   description: string;
 }) => (
-  <div className="flex items-start gap-3 mb-5">
-    <div className="flex items-center justify-center h-8 w-8 rounded-lg border border-border bg-muted/50 shrink-0 mt-0.5">
-      <Icon className="h-4 w-4 text-muted-foreground" />
+  <div className="flex items-start gap-3 mb-6">
+    <div className="flex items-center justify-center h-9 w-9 rounded-lg border border-border bg-muted/50 shrink-0 mt-0.5">
+      <Icon className="h-4.5 w-4.5 text-muted-foreground" />
     </div>
     <div>
-      <h3 className="text-[15px] font-semibold text-foreground leading-tight">{title}</h3>
-      <p className="text-[13px] text-muted-foreground mt-0.5">{description}</p>
+      <h3 className="text-base font-semibold text-foreground leading-tight">{title}</h3>
+      <p className="text-[13px] text-muted-foreground mt-1">{description}</p>
     </div>
   </div>
 );
@@ -147,7 +147,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
   return (
     <div className="max-w-[720px] mx-auto py-8 px-6">
       {/* Trigger */}
-      <div className="rounded-lg border border-border bg-card p-5">
+      <div className="rounded-lg border border-border/80 bg-card p-6 shadow-[0_1px_3px_0_rgba(0,0,0,0.04)]">
         <SectionHeader
           icon={Zap}
           title="When this happens"
@@ -156,7 +156,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
         <div className="space-y-1.5 pl-11">
           <Label className="text-[13px] text-foreground/80">Event</Label>
           <Select value={trigger} onValueChange={setTrigger}>
-            <SelectTrigger className="h-10 rounded-lg text-sm focus:ring-1 focus:ring-ring">
+            <SelectTrigger className="h-11 rounded-lg text-sm border-border/80 focus:ring-1 focus:ring-primary focus:border-primary">
               <SelectValue placeholder="Select an event" />
             </SelectTrigger>
             <SelectContent>
@@ -173,7 +173,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
       <SectionArrow />
 
       {/* Action */}
-      <div className="rounded-lg border border-border bg-card p-5">
+      <div className="rounded-lg border border-border/80 bg-card p-6 shadow-[0_1px_3px_0_rgba(0,0,0,0.04)]">
         <SectionHeader
           icon={Settings}
           title="Do this"
@@ -182,7 +182,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
         <div className="space-y-1.5 pl-11">
           <Label className="text-[13px] text-foreground/80">Action</Label>
           <Select value={action} onValueChange={setAction}>
-            <SelectTrigger className="h-10 rounded-lg text-sm focus:ring-1 focus:ring-ring">
+            <SelectTrigger className="h-11 rounded-lg text-sm border-border/80 focus:ring-1 focus:ring-primary focus:border-primary">
               <SelectValue placeholder="Select an action" />
             </SelectTrigger>
             <SelectContent>
@@ -201,7 +201,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
         <>
           <SectionArrow />
 
-          <div className="rounded-lg border border-border bg-card p-5 animate-in fade-in-0 slide-in-from-top-2 duration-300">
+          <div className="rounded-lg border border-border/80 bg-card p-6 shadow-[0_1px_3px_0_rgba(0,0,0,0.04)] animate-in fade-in-0 slide-in-from-top-2 duration-300">
             <SectionHeader icon={configIcon} title={configTitle} description={configDesc} />
 
             <div className="space-y-4 pl-11">
@@ -213,7 +213,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="recipient@example.com"
-                      className="h-10 rounded-lg text-sm"
+                    className="h-11 rounded-lg text-sm border-border/80 focus:ring-1 focus:ring-primary focus:border-primary"
                     />
                   </div>
                   <div className="space-y-1.5">
@@ -222,7 +222,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
                       value={subject}
                       onChange={(e) => setSubject(e.target.value)}
                       placeholder="Notification subject"
-                      className="h-10 rounded-lg text-sm"
+                      className="h-11 rounded-lg text-sm border-border/80 focus:ring-1 focus:ring-primary focus:border-primary"
                     />
                   </div>
                   <div className="space-y-1.5">
@@ -231,7 +231,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
                       placeholder="Email body content"
-                      className="min-h-[100px] rounded-lg text-sm"
+                      className="min-h-[100px] rounded-lg text-sm border-border/80 focus:ring-1 focus:ring-primary focus:border-primary"
                     />
                   </div>
                   <div className="rounded-lg border border-border/60 bg-muted/40 px-4 py-3">
@@ -258,7 +258,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
                       value={webhookUrl}
                       onChange={(e) => setWebhookUrl(e.target.value)}
                       placeholder="https://hooks.slack.com/services/..."
-                      className="h-10 rounded-lg text-sm"
+                    className="h-11 rounded-lg text-sm border-border/80 focus:ring-1 focus:ring-primary focus:border-primary"
                     />
                     <p className="text-xs text-muted-foreground/70 mt-1">Slack incoming webhook URL</p>
                   </div>
@@ -268,7 +268,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
                       placeholder="Slack message content"
-                      className="min-h-[80px] rounded-lg text-sm"
+                      className="min-h-[80px] rounded-lg text-sm border-border/80 focus:ring-1 focus:ring-primary focus:border-primary"
                     />
                   </div>
                 </>
@@ -281,7 +281,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
                     value={calendarTitle}
                     onChange={(e) => setCalendarTitle(e.target.value)}
                     placeholder="Calendar event title (optional)"
-                    className="h-10 rounded-lg text-sm"
+                    className="h-11 rounded-lg text-sm border-border/80 focus:ring-1 focus:ring-primary focus:border-primary"
                   />
                   <p className="text-xs text-muted-foreground/70 mt-1">Leave empty to use the trigger event name</p>
                 </div>
@@ -296,7 +296,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
         <Button
           onClick={handleCreate}
           disabled={!isValid() || creating}
-          className="h-10 px-6 rounded-lg text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+          className="h-11 px-8 rounded-lg text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/85 transition-colors shadow-md"
         >
           {creating ? "Creating..." : "Create Automation"}
         </Button>
