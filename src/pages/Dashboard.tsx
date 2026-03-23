@@ -205,33 +205,29 @@ const Dashboard = () => {
           <p className="text-xs text-muted-foreground mt-1">Activity will appear here as you use your workspace.</p>
         </div>
       ) : (
-        <div className="space-y-2.5">
+        <div className="space-y-3">
           {recentEvents.map((evt) => {
             const config = eventConfig[evt.type] ?? { icon: Zap, label: evt.type };
             const Icon = config.icon;
-            const { title, details } = describeEvent(evt.type, evt.metadata);
+            const { title, detail } = describeEvent(evt.type, evt.metadata);
 
             return (
               <div
                 key={evt.id}
-                className="flex items-start gap-4 px-5 py-4 rounded-lg border border-border bg-card hover:bg-accent/40 transition-colors"
+                className="flex items-start gap-4 px-5 py-5 rounded-lg border border-border bg-card hover:bg-accent/30 transition-colors"
               >
-                <div className="h-9 w-9 rounded-full bg-muted flex items-center justify-center shrink-0 mt-0.5">
-                  <Icon className="h-4 w-4 text-muted-foreground" />
+                <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center shrink-0 mt-0.5">
+                  <Icon className="h-[18px] w-[18px] text-muted-foreground" />
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <p className="text-[14px] font-semibold text-foreground leading-tight">{title}</p>
-                  {details.length > 0 && (
-                    <div className="mt-1 space-y-0.5">
-                      {details.map((d, i) => (
-                        <p key={i} className="text-xs text-muted-foreground">{d}</p>
-                      ))}
-                    </div>
+                  <p className="text-[14px] font-semibold text-foreground leading-snug">{title}</p>
+                  {detail && (
+                    <p className="text-[12px] text-muted-foreground mt-1.5 leading-relaxed">{detail}</p>
                   )}
                 </div>
 
-                <span className="text-xs text-muted-foreground whitespace-nowrap shrink-0 mt-0.5">
+                <span className="text-[11px] text-muted-foreground/70 whitespace-nowrap shrink-0 mt-1 tabular-nums">
                   {timeAgo(evt.created_at)}
                 </span>
               </div>
