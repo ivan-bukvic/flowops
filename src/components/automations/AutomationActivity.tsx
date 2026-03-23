@@ -102,15 +102,15 @@ const AutomationActivity = () => {
 
   if (loading) {
     return (
-      <div className="mt-4 space-y-2.5">
+      <div className="mt-4 space-y-3">
         {Array.from({ length: 5 }).map((_, i) => (
-          <div key={i} className="flex items-center gap-4 px-5 py-4 rounded-lg border border-border bg-card">
-            <Skeleton className="h-9 w-9 rounded-lg shrink-0" />
+          <div key={i} className="flex items-center gap-4 px-5 py-5 rounded-lg border border-border bg-card">
+            <Skeleton className="h-10 w-10 rounded-full shrink-0" />
             <div className="flex-1 space-y-2">
-              <Skeleton className="h-3.5 w-44" />
+              <Skeleton className="h-4 w-48" />
               <Skeleton className="h-3 w-28" />
             </div>
-            <Skeleton className="h-6 w-20 rounded-md" />
+            <Skeleton className="h-6 w-22 rounded-full" />
           </div>
         ))}
       </div>
