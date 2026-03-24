@@ -240,8 +240,9 @@ const Dashboard = () => {
       ) : (
         <div className="space-y-3.5">
           {recentEvents.map((evt, idx) => {
-            const config = eventConfig[evt.type] ?? { icon: Zap, label: evt.type };
+            const config = eventConfig[evt.type] ?? { icon: Zap, label: evt.type, category: "automation" as EventCategory };
             const Icon = config.icon;
+            const style = categoryStyles[config.category];
             const { prefix, highlight, detail } = describeEvent(evt.type, evt.metadata);
 
             return (
@@ -249,8 +250,8 @@ const Dashboard = () => {
                 key={evt.id}
                 className={`flex items-start gap-4 px-6 py-5 rounded-lg border bg-card shadow-[0_1px_2px_0_rgba(0,0,0,0.03)] hover:shadow-[0_3px_10px_0_rgba(0,0,0,0.06)] hover:border-primary/20 hover:bg-accent/30 transition-all duration-150 ${idx === 0 ? "border-primary/20" : "border-border/80"}`}
               >
-                <div className="h-10 w-10 rounded-full bg-muted/70 flex items-center justify-center shrink-0 mt-0.5">
-                  <Icon className="h-[18px] w-[18px] text-muted-foreground/70" />
+                <div className={`h-10 w-10 rounded-full ${style.bg} flex items-center justify-center shrink-0 mt-0.5`}>
+                  <Icon className={`h-[18px] w-[18px] ${style.text}`} />
                 </div>
 
                 <div className="flex-1 min-w-0">
