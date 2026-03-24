@@ -52,17 +52,17 @@ export function AppSidebar() {
         <Link
           to={item.url}
           className={`
-            relative flex items-center gap-3 rounded-md px-3 py-2 text-[13px] transition-colors
+            relative flex items-center gap-3 rounded-md px-3 py-2 text-[13px] transition-all duration-150
             ${active
-              ? "bg-primary/[0.06] text-foreground font-semibold"
-              : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
+              ? "bg-primary/[0.08] text-foreground font-semibold"
+              : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
             }
           `}
         >
           {active && (
-            <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-primary" />
+            <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3.5px] h-5 rounded-r-full bg-primary" />
           )}
-          <item.icon className="h-4 w-4 shrink-0 text-muted-foreground" />
+          <item.icon className={`h-4 w-4 shrink-0 transition-colors ${active ? "text-primary" : "text-muted-foreground"}`} />
           {!collapsed && <span>{item.title}</span>}
         </Link>
       </SidebarMenuItem>
