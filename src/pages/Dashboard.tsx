@@ -207,8 +207,8 @@ const Dashboard = () => {
           <p className="text-xs text-muted-foreground mt-1">Activity will appear here as you use your workspace.</p>
         </div>
       ) : (
-        <div className="space-y-3">
-          {recentEvents.map((evt) => {
+        <div className="space-y-3.5">
+          {recentEvents.map((evt, idx) => {
             const config = eventConfig[evt.type] ?? { icon: Zap, label: evt.type };
             const Icon = config.icon;
             const { prefix, highlight, detail } = describeEvent(evt.type, evt.metadata);
@@ -216,10 +216,10 @@ const Dashboard = () => {
             return (
               <div
                 key={evt.id}
-                className="flex items-start gap-4 px-6 py-5 rounded-lg border border-border/80 bg-card shadow-[0_1px_2px_0_rgba(0,0,0,0.03)] hover:shadow-[0_2px_8px_0_rgba(0,0,0,0.05)] hover:border-border transition-all"
+                className={`flex items-start gap-4 px-6 py-5 rounded-lg border bg-card shadow-[0_1px_2px_0_rgba(0,0,0,0.03)] hover:shadow-[0_3px_10px_0_rgba(0,0,0,0.06)] hover:border-primary/20 hover:bg-accent/30 transition-all duration-150 ${idx === 0 ? "border-primary/20" : "border-border/80"}`}
               >
-                <div className="h-10 w-10 rounded-full bg-muted/60 flex items-center justify-center shrink-0 mt-0.5">
-                  <Icon className="h-[18px] w-[18px] text-muted-foreground/60" />
+                <div className="h-10 w-10 rounded-full bg-muted/70 flex items-center justify-center shrink-0 mt-0.5">
+                  <Icon className="h-[18px] w-[18px] text-muted-foreground/70" />
                 </div>
 
                 <div className="flex-1 min-w-0">
@@ -230,7 +230,7 @@ const Dashboard = () => {
                     )}
                   </p>
                   {detail && (
-                    <p className="text-[12px] text-muted-foreground/70 mt-1.5 leading-relaxed">{detail}</p>
+                    <p className="text-[12px] text-muted-foreground/60 mt-1.5 leading-relaxed">{detail}</p>
                   )}
                 </div>
 
