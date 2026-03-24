@@ -159,7 +159,7 @@ const Dashboard = () => {
       <PageHeader title="Dashboard" description="Overview of your workspace activity" />
 
       {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-12">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-14">
         <StatCard title="Projects" value={loading ? "—" : projectCount} icon={FolderKanban} />
         <StatCard title="Documents" value={loading ? "—" : docCount} icon={FileText} />
         <StatCard title="Automations" value={loading ? "—" : automationCount} icon={Zap} />
@@ -167,13 +167,13 @@ const Dashboard = () => {
       </div>
 
       {/* Quick Actions */}
-      <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">Quick Actions</h2>
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-12">
+      <h2 className="text-sm font-bold uppercase tracking-wide text-foreground/80 mb-5">Quick Actions</h2>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-5 mb-14">
         {quickActions.map((action) => (
           <button
             key={action.label}
             onClick={action.onClick}
-            className="flex flex-col items-center gap-3 p-7 rounded-lg border border-border/80 bg-card text-foreground shadow-[0_1px_3px_0_rgba(0,0,0,0.04)] hover:shadow-[0_2px_8px_0_rgba(0,0,0,0.06)] hover:border-primary/25 transition-all cursor-pointer group"
+            className="flex flex-col items-center gap-3 p-8 rounded-lg border border-border bg-muted/30 text-foreground shadow-[0_1px_3px_0_rgba(0,0,0,0.04)] hover:shadow-[0_2px_10px_0_rgba(0,0,0,0.07)] hover:border-primary/30 hover:bg-primary/[0.03] transition-all cursor-pointer group"
           >
             <div className="h-11 w-11 rounded-full bg-muted/60 group-hover:bg-primary/[0.07] flex items-center justify-center transition-colors">
               <action.icon className="h-5 w-5 text-muted-foreground group-hover:text-primary/80 transition-colors" />
@@ -184,7 +184,7 @@ const Dashboard = () => {
       </div>
 
       {/* Recent Activity */}
-      <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">Recent Activity</h2>
+      <h2 className="text-sm font-bold uppercase tracking-wide text-foreground/80 mb-5">Recent Activity</h2>
       {loading ? (
         <div className="space-y-3">
           {Array.from({ length: 4 }).map((_, i) => (
