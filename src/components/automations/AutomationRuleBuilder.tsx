@@ -160,11 +160,12 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
   return (
     <div className="max-w-[720px] mx-auto py-8 px-6">
       {/* Trigger */}
-      <div className="rounded-lg border border-border/80 bg-card p-6 shadow-[0_1px_3px_0_rgba(0,0,0,0.04)]">
+      <div className="rounded-lg border border-border/80 bg-card p-7 shadow-[0_2px_8px_0_rgba(0,0,0,0.05)]">
         <SectionHeader
           icon={Zap}
           title="When this happens"
           description="Choose what starts this automation"
+          variant="trigger"
         />
         <div className="space-y-1.5 pl-11">
           <Label className="text-[13px] text-foreground/80">Event</Label>
