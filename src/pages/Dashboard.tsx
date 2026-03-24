@@ -159,7 +159,7 @@ const Dashboard = () => {
       <PageHeader title="Dashboard" description="Overview of your workspace activity" />
 
       {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-12">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-14">
         <StatCard title="Projects" value={loading ? "—" : projectCount} icon={FolderKanban} />
         <StatCard title="Documents" value={loading ? "—" : docCount} icon={FileText} />
         <StatCard title="Automations" value={loading ? "—" : automationCount} icon={Zap} />
@@ -167,8 +167,8 @@ const Dashboard = () => {
       </div>
 
       {/* Quick Actions */}
-      <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">Quick Actions</h2>
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-12">
+      <h2 className="text-sm font-bold uppercase tracking-wide text-foreground/80 mb-5">Quick Actions</h2>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-5 mb-14">
         {quickActions.map((action) => (
           <button
             key={action.label}
