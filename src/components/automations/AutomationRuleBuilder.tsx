@@ -32,33 +32,46 @@ interface AutomationRuleBuilderProps {
 }
 
 const SectionArrow = () => (
-  <div className="flex justify-center py-5">
-    <div className="flex flex-col items-center gap-1">
-      <div className="w-px h-5 bg-border" />
-      <ArrowDown className="h-5 w-5 text-muted-foreground/70" />
+  <div className="flex justify-center py-6">
+    <div className="flex flex-col items-center gap-1.5">
+      <div className="w-px h-6 bg-primary/20" />
+      <div className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center">
+        <ArrowDown className="h-4 w-4 text-primary/60" />
+      </div>
     </div>
   </div>
 );
+
+const iconStyles: Record<string, { bg: string; text: string }> = {
+  trigger: { bg: "bg-blue-500/10", text: "text-blue-600" },
+  action: { bg: "bg-violet-500/10", text: "text-violet-600" },
+  config: { bg: "bg-amber-500/10", text: "text-amber-600" },
+};
 
 const SectionHeader = ({
   icon: Icon,
   title,
   description,
+  variant = "config",
 }: {
   icon: React.ElementType;
   title: string;
   description: string;
-}) => (
-  <div className="flex items-start gap-3 mb-6">
-    <div className="flex items-center justify-center h-9 w-9 rounded-lg border border-border bg-muted/50 shrink-0 mt-0.5">
-      <Icon className="h-4.5 w-4.5 text-muted-foreground" />
+  variant?: "trigger" | "action" | "config";
+}) => {
+  const style = iconStyles[variant];
+  return (
+    <div className="flex items-start gap-3.5 mb-6">
+      <div className={`flex items-center justify-center h-10 w-10 rounded-lg ${style.bg} shrink-0 mt-0.5`}>
+        <Icon className={`h-[18px] w-[18px] ${style.text}`} />
+      </div>
+      <div>
+        <h3 className="text-[15px] font-bold text-foreground leading-tight">{title}</h3>
+        <p className="text-[13px] text-muted-foreground/70 mt-1">{description}</p>
+      </div>
     </div>
-    <div>
-      <h3 className="text-base font-semibold text-foreground leading-tight">{title}</h3>
-      <p className="text-[13px] text-muted-foreground mt-1">{description}</p>
-    </div>
-  </div>
-);
+  );
+};
 
 const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
   const { selectedOrgId } = useOrg();
