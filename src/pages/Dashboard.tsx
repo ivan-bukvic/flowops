@@ -173,12 +173,12 @@ const Dashboard = () => {
           <button
             key={action.label}
             onClick={action.onClick}
-            className="flex flex-col items-center gap-3 p-8 rounded-lg border border-border bg-muted/30 text-foreground shadow-[0_1px_3px_0_rgba(0,0,0,0.04)] hover:shadow-[0_2px_10px_0_rgba(0,0,0,0.07)] hover:border-primary/30 hover:bg-primary/[0.03] transition-all cursor-pointer group"
+            className="flex flex-col items-center justify-center gap-4 p-8 rounded-lg border border-border bg-muted/30 text-foreground shadow-[0_1px_3px_0_rgba(0,0,0,0.04)] hover:shadow-[0_4px_12px_0_rgba(0,0,0,0.08)] hover:border-primary/40 hover:bg-primary/[0.04] transition-all duration-150 cursor-pointer group"
           >
-            <div className="h-11 w-11 rounded-full bg-muted/60 group-hover:bg-primary/[0.07] flex items-center justify-center transition-colors">
-              <action.icon className="h-5 w-5 text-muted-foreground group-hover:text-primary/80 transition-colors" />
+            <div className="h-11 w-11 rounded-full bg-muted/70 group-hover:bg-primary/10 flex items-center justify-center transition-colors duration-150">
+              <action.icon className="h-5 w-5 text-muted-foreground/80 group-hover:text-primary transition-colors duration-150" />
             </div>
-            <span className="text-[13px] font-semibold">{action.label}</span>
+            <span className="text-[13px] font-semibold text-foreground/90 group-hover:text-foreground transition-colors">{action.label}</span>
           </button>
         ))}
       </div>
