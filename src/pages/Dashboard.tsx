@@ -17,16 +17,25 @@ interface EventRow {
   actor_user_id: string | null;
 }
 
-const eventConfig: Record<string, { icon: React.ElementType; label: string }> = {
-  PROJECT_CREATED: { icon: FolderPlus, label: "Project created" },
-  PROJECT_UPDATED: { icon: FolderEdit, label: "Project updated" },
-  PROJECT_DELETED: { icon: Trash2, label: "Project deleted" },
-  MEMBER_ADDED: { icon: UserPlus, label: "Member added" },
-  MEMBER_REMOVED: { icon: UserMinus, label: "Member removed" },
-  PROJECT_MEMBER_ADDED: { icon: UserPlus, label: "Member added to project" },
-  PROJECT_MEMBER_REMOVED: { icon: UserMinus, label: "Member removed from project" },
-  WORKSPACE_CREATED: { icon: Building2, label: "Workspace created" },
-  OWNERSHIP_TRANSFERRED: { icon: ArrowRightLeft, label: "Ownership transferred" },
+type EventCategory = "member" | "project" | "workspace" | "automation";
+
+const categoryStyles: Record<EventCategory, { bg: string; text: string }> = {
+  member: { bg: "bg-blue-500/10", text: "text-blue-600" },
+  project: { bg: "bg-emerald-500/10", text: "text-emerald-600" },
+  workspace: { bg: "bg-amber-500/10", text: "text-amber-600" },
+  automation: { bg: "bg-violet-500/10", text: "text-violet-600" },
+};
+
+const eventConfig: Record<string, { icon: React.ElementType; label: string; category: EventCategory }> = {
+  PROJECT_CREATED: { icon: FolderPlus, label: "Project created", category: "project" },
+  PROJECT_UPDATED: { icon: FolderEdit, label: "Project updated", category: "project" },
+  PROJECT_DELETED: { icon: Trash2, label: "Project deleted", category: "project" },
+  MEMBER_ADDED: { icon: UserPlus, label: "Member added", category: "member" },
+  MEMBER_REMOVED: { icon: UserMinus, label: "Member removed", category: "member" },
+  PROJECT_MEMBER_ADDED: { icon: UserPlus, label: "Member added to project", category: "member" },
+  PROJECT_MEMBER_REMOVED: { icon: UserMinus, label: "Member removed from project", category: "member" },
+  WORKSPACE_CREATED: { icon: Building2, label: "Workspace created", category: "workspace" },
+  OWNERSHIP_TRANSFERRED: { icon: ArrowRightLeft, label: "Ownership transferred", category: "workspace" },
 };
 
 function getEmail(m: Record<string, unknown>): string | null {
@@ -231,8 +240,9 @@ const Dashboard = () => {
       ) : (
         <div className="space-y-3.5">
           {recentEvents.map((evt, idx) => {
-            const config = eventConfig[evt.type] ?? { icon: Zap, label: evt.type };
+            const config = eventConfig[evt.type] ?? { icon: Zap, label: evt.type, category: "automation" as EventCategory };
             const Icon = config.icon;
+            const style = categoryStyles[config.category];
             const { prefix, highlight, detail } = describeEvent(evt.type, evt.metadata);
 
             return (
@@ -240,8 +250,8 @@ const Dashboard = () => {
                 key={evt.id}
                 className={`flex items-start gap-4 px-6 py-5 rounded-lg border bg-card shadow-[0_1px_2px_0_rgba(0,0,0,0.03)] hover:shadow-[0_3px_10px_0_rgba(0,0,0,0.06)] hover:border-primary/20 hover:bg-accent/30 transition-all duration-150 ${idx === 0 ? "border-primary/20" : "border-border/80"}`}
               >
-                <div className="h-10 w-10 rounded-full bg-muted/70 flex items-center justify-center shrink-0 mt-0.5">
-                  <Icon className="h-[18px] w-[18px] text-muted-foreground/70" />
+                <div className={`h-10 w-10 rounded-full ${style.bg} flex items-center justify-center shrink-0 mt-0.5`}>
+                  <Icon className={`h-[18px] w-[18px] ${style.text}`} />
                 </div>
 
                 <div className="flex-1 min-w-0">
