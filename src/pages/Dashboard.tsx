@@ -154,9 +154,31 @@ const Dashboard = () => {
     { label: "Ask AI", icon: Sparkles, onClick: () => navigate("/ai") },
   ];
 
+  const statusParts: string[] = [];
+  if (!loading) {
+    if (projectCount > 0) statusParts.push(`${projectCount} project${projectCount !== 1 ? "s" : ""}`);
+    if (automationCount > 0) statusParts.push(`${automationCount} automation${automationCount !== 1 ? "s" : ""} active`);
+    if (docCount > 0) statusParts.push(`${docCount} document${docCount !== 1 ? "s" : ""}`);
+  }
+
   return (
     <main className="p-6">
-      <PageHeader title="Dashboard" description="Overview of your workspace activity" />
+      {/* Hero Banner */}
+      <div className="rounded-lg border border-primary/10 bg-primary/[0.03] px-7 py-6 mb-8 flex items-center gap-5">
+        <div className="h-11 w-11 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+          <LayoutDashboard className="h-5 w-5 text-primary" />
+        </div>
+        <div>
+          <h1 className="text-lg font-bold text-foreground">Welcome back</h1>
+          <p className="text-[13px] text-muted-foreground mt-0.5">
+            {loading
+              ? "Loading workspace…"
+              : statusParts.length > 0
+                ? statusParts.join(" · ")
+                : "Your workspace is ready. Get started below."}
+          </p>
+        </div>
+      </div>
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-14">
