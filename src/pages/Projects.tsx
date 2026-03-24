@@ -17,7 +17,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { Plus, Pencil, Trash2, Users, FolderKanban } from "lucide-react";
 
 interface ProjectRow {
   id: string;
@@ -184,25 +184,29 @@ const Projects = () => {
       key: "name",
       header: "Project Name",
       render: (row) => (
-        <span className="font-medium text-foreground">{row.name}</span>
-      ),
-    },
-    {
-      key: "description",
-      header: "Description",
-      render: (row) => (
-        <span className="text-muted-foreground text-sm truncate max-w-[300px] block">
-          {row.description || "—"}
-        </span>
+        <div className="flex items-center gap-3">
+          <div className="h-8 w-8 rounded-md bg-primary/[0.08] flex items-center justify-center shrink-0">
+            <FolderKanban className="h-4 w-4 text-primary" />
+          </div>
+          <div>
+            <span className="font-semibold text-foreground text-[14px]">{row.name}</span>
+            {row.description && (
+              <p className="text-[12px] text-muted-foreground/60 truncate max-w-[280px]">{row.description}</p>
+            )}
+          </div>
+        </div>
       ),
     },
     {
       key: "members",
       header: "Members",
       render: (row) => (
-        <span className="text-sm text-muted-foreground">
-          {row.member_count ?? 0} {(row.member_count ?? 0) === 1 ? "member" : "members"}
-        </span>
+        <div className="flex items-center gap-1.5">
+          <Users className="h-3.5 w-3.5 text-muted-foreground/50" />
+          <span className="text-[13px] text-muted-foreground font-medium">
+            {row.member_count ?? 0}
+          </span>
+        </div>
       ),
     },
     {
@@ -221,11 +225,11 @@ const Projects = () => {
             header: "Actions",
             className: "w-[100px]",
             render: (row: ProjectRow) => (
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-0.5">
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-8 w-8"
+                  className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted/60"
                   onClick={(e) => {
                     e.stopPropagation();
                     setEditProject(row);
@@ -239,7 +243,7 @@ const Projects = () => {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-8 w-8 text-destructive hover:text-destructive"
+                  className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                   onClick={(e) => {
                     e.stopPropagation();
                     handleDelete(row);
