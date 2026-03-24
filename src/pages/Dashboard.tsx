@@ -184,7 +184,7 @@ const Dashboard = () => {
       </div>
 
       {/* Recent Activity */}
-      <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">Recent Activity</h2>
+      <h2 className="text-sm font-bold uppercase tracking-wide text-foreground/80 mb-5">Recent Activity</h2>
       {loading ? (
         <div className="space-y-3">
           {Array.from({ length: 4 }).map((_, i) => (
