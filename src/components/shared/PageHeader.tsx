@@ -16,8 +16,8 @@ const PageHeader = ({ title, description, actionLabel, actionIcon: Icon, onActio
       {description && <p className="text-sm text-muted-foreground mt-1">{description}</p>}
     </div>
     {actionLabel && onAction && (
-      <Button onClick={onAction} size="sm" className="h-9">
-        {Icon && <Icon className="h-4 w-4 mr-1.5" />}
+      <Button onClick={onAction} className="shadow-sm">
+        {Icon && <Icon className="h-4 w-4 mr-2" />}
         {actionLabel}
       </Button>
     )}

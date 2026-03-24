@@ -225,11 +225,11 @@ const Projects = () => {
             header: "Actions",
             className: "w-[100px]",
             render: (row: ProjectRow) => (
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-0.5">
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-8 w-8"
+                  className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted/60"
                   onClick={(e) => {
                     e.stopPropagation();
                     setEditProject(row);
@@ -243,7 +243,7 @@ const Projects = () => {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-8 w-8 text-destructive hover:text-destructive"
+                  className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                   onClick={(e) => {
                     e.stopPropagation();
                     handleDelete(row);

@@ -38,12 +38,12 @@ function DataTable<T extends Record<string, any>>({
   }
 
   return (
-    <div className="border border-border rounded-lg overflow-hidden bg-card">
+    <div className="border border-border/80 rounded-lg overflow-hidden bg-card shadow-[0_1px_3px_0_rgba(0,0,0,0.04)]">
       <Table>
         <TableHeader>
-          <TableRow className="bg-muted/40 hover:bg-muted/40">
+          <TableRow className="bg-muted/40 hover:bg-muted/40 border-b border-border/80">
             {columns.map((col) => (
-              <TableHead key={col.key} className={`text-xs font-medium text-muted-foreground uppercase tracking-wider ${col.className ?? ""}`}>
+              <TableHead key={col.key} className={`text-[11px] font-semibold text-muted-foreground/70 uppercase tracking-wider h-10 ${col.className ?? ""}`}>
                 {col.header}
               </TableHead>
             ))}
@@ -53,11 +53,11 @@ function DataTable<T extends Record<string, any>>({
           {data.map((row, i) => (
             <TableRow
               key={row.id ?? i}
-              className={onRowClick ? "cursor-pointer hover:bg-muted/30" : ""}
+              className={`border-b border-border/60 last:border-0 transition-colors duration-100 ${onRowClick ? "cursor-pointer hover:bg-accent/40" : ""}`}
               onClick={() => onRowClick?.(row)}
             >
               {columns.map((col) => (
-                <TableCell key={col.key} className={`py-4 ${col.className ?? ""}`}>
+                <TableCell key={col.key} className={`py-4.5 ${col.className ?? ""}`}>
                   {col.render ? col.render(row) : row[col.key]}
                 </TableCell>
               ))}
