@@ -173,7 +173,7 @@ const Dashboard = () => {
           <button
             key={action.label}
             onClick={action.onClick}
-            className="flex flex-col items-center gap-3 p-7 rounded-lg border border-border/80 bg-card text-foreground shadow-[0_1px_3px_0_rgba(0,0,0,0.04)] hover:shadow-[0_2px_8px_0_rgba(0,0,0,0.06)] hover:border-primary/25 transition-all cursor-pointer group"
+            className="flex flex-col items-center gap-3 p-8 rounded-lg border border-border bg-muted/30 text-foreground shadow-[0_1px_3px_0_rgba(0,0,0,0.04)] hover:shadow-[0_2px_10px_0_rgba(0,0,0,0.07)] hover:border-primary/30 hover:bg-primary/[0.03] transition-all cursor-pointer group"
           >
             <div className="h-11 w-11 rounded-full bg-muted/60 group-hover:bg-primary/[0.07] flex items-center justify-center transition-colors">
               <action.icon className="h-5 w-5 text-muted-foreground group-hover:text-primary/80 transition-colors" />
