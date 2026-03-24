@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import PageHeader from "@/components/shared/PageHeader";
 import StatCard from "@/components/shared/StatCard";
 import {
-  FolderKanban, FileText, Zap, Bot, Plus, Upload, Sparkles,
+  FolderKanban, FileText, Zap, Bot, Plus, Upload, Sparkles, LayoutDashboard,
   UserPlus, UserMinus, FolderPlus, FolderEdit, Trash2, ArrowRightLeft, Building2,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
