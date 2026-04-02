@@ -71,7 +71,7 @@ export function AppSidebar() {
 
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader className="border-b border-sidebar-border px-4 py-3">
+      <SidebarHeader className="px-4 py-4">
         {!collapsed && (
           <span className="text-base font-bold text-sidebar-foreground tracking-tight">
             FlowOps
@@ -82,9 +82,11 @@ export function AppSidebar() {
         )}
       </SidebarHeader>
 
-      <SidebarContent className="px-2 py-3">
+      <SidebarContent className="px-2 pt-2 pb-3">
+        <div className="mx-3 mb-4 h-px bg-sidebar-border" />
+
         <SidebarGroup>
-          <SidebarGroupLabel className="text-[10px] uppercase tracking-widest text-muted-foreground/60 font-medium px-3 mb-1">
+          <SidebarGroupLabel className="text-[11px] uppercase tracking-[0.1em] text-muted-foreground/70 font-semibold px-3 mb-2">
             Main
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -94,10 +96,10 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <div className="my-3" />
+        <div className="my-5" />
 
         <SidebarGroup>
-          <SidebarGroupLabel className="text-[10px] uppercase tracking-widest text-muted-foreground/60 font-medium px-3 mb-1">
+          <SidebarGroupLabel className="text-[11px] uppercase tracking-[0.1em] text-muted-foreground/70 font-semibold px-3 mb-2">
             Workspace
           </SidebarGroupLabel>
           <SidebarGroupContent>

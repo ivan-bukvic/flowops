@@ -12,7 +12,7 @@ const AuthenticatedLayout = ({ children }: { children: React.ReactNode }) => (
           <AppSidebar />
           <div className="flex-1 flex flex-col overflow-hidden">
             <TopNav />
-            <div className="flex-1 overflow-auto bg-background">{children}</div>
+            <div className="flex-1 overflow-auto bg-background pt-2">{children}</div>
           </div>
         </div>
       </SidebarProvider>

@@ -31,7 +31,7 @@ const TopNav = () => {
   };
 
   return (
-    <header className="h-14 flex items-center justify-between border-b border-border bg-background px-4 gap-4">
+    <header className="h-14 flex items-center justify-between border-b border-border bg-card px-4 gap-4 shadow-[0_1px_2px_0_rgba(0,0,0,0.03)]">
       <div className="flex items-center gap-3">
         <SidebarTrigger />
 
