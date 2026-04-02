@@ -71,7 +71,7 @@ export function AppSidebar() {
 
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader className="border-b border-sidebar-border px-4 py-3">
+      <SidebarHeader className="px-4 py-4">
         {!collapsed && (
           <span className="text-base font-bold text-sidebar-foreground tracking-tight">
             FlowOps
