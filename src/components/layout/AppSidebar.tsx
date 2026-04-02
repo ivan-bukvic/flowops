@@ -21,6 +21,7 @@ import {
   SidebarFooter,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { Separator } from "@/components/ui/separator";
 
 const mainItems = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
@@ -71,19 +72,21 @@ export function AppSidebar() {
 
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader className="px-4 py-4 border-b border-sidebar-border">
-        {!collapsed && (
-          <span className="text-base font-bold text-sidebar-foreground tracking-tight">
-            FlowOps
-          </span>
-        )}
-        {collapsed && (
-          <span className="text-base font-bold text-sidebar-foreground">F</span>
-        )}
+      <SidebarHeader className="gap-0 p-0">
+        <div className="flex h-14 items-center px-4">
+          {!collapsed && (
+            <span className="text-base font-bold text-sidebar-foreground tracking-tight">
+              FlowOps
+            </span>
+          )}
+          {collapsed && (
+            <span className="text-base font-bold text-sidebar-foreground">F</span>
+          )}
+        </div>
+        <Separator className="bg-border" />
       </SidebarHeader>
 
       <SidebarContent className="px-2 pt-4 pb-3">
-
         <SidebarGroup>
           <SidebarGroupLabel className="text-[11px] uppercase tracking-[0.1em] text-muted-foreground/70 font-semibold px-3 mb-2">
             Main
