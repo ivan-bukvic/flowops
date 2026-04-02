@@ -171,7 +171,7 @@ const Dashboard = () => {
   }
 
   return (
-    <main className="p-6">
+    <main className="p-6 pt-4">
       {/* Hero Banner */}
       <div className="rounded-lg border border-primary/10 bg-primary/[0.03] px-7 py-6 mb-8 flex items-center gap-5">
         <div className="h-11 w-11 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
