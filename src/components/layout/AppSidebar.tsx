@@ -1,3 +1,4 @@
+import logo from "@/assets/logo.svg";
 import {
   LayoutDashboard,
   FolderKanban,
@@ -75,12 +76,10 @@ export function AppSidebar() {
       <SidebarHeader className="gap-0 p-0">
         <div className="flex h-14 items-center px-4">
           {!collapsed && (
-            <span className="text-base font-bold text-sidebar-foreground tracking-tight">
-              FlowOps
-            </span>
+            <img src={logo} alt="FlowOps" className="h-7" />
           )}
           {collapsed && (
-            <span className="text-base font-bold text-sidebar-foreground">F</span>
+            <img src={logo} alt="FlowOps" className="h-6 w-6 object-contain object-left" />
           )}
         </div>
         <Separator className="bg-border" />
