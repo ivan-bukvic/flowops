@@ -1,3 +1,4 @@
+import logo from "@/assets/logo.svg";
 import {
   LayoutDashboard,
   FolderKanban,
