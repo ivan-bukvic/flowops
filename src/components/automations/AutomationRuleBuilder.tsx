@@ -15,15 +15,14 @@ import {
 import { ArrowDown, Zap, Settings, Mail, Calendar, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 
-const TRIGGER_MAP: Record<string, string> = {
-  "Project Created": "PROJECT_CREATED",
-  "Project Updated": "PROJECT_UPDATED",
-  "Member Added": "MEMBER_ADDED",
-  "Project Member Added": "PROJECT_MEMBER_ADDED",
-  "Project Member Removed": "PROJECT_MEMBER_REMOVED",
-};
-
-const TRIGGER_LABELS = Object.keys(TRIGGER_MAP);
+const TRIGGER_OPTIONS = [
+  { label: "Project Created", value: "PROJECT_CREATED" },
+  { label: "Project Updated", value: "PROJECT_UPDATED" },
+  { label: "Project Deleted", value: "PROJECT_DELETED" },
+  { label: "Project Member Added", value: "PROJECT_MEMBER_ADDED" },
+  { label: "Project Member Removed", value: "PROJECT_MEMBER_REMOVED" },
+  { label: "Workspace Created", value: "WORKSPACE_CREATED" },
+];
 
 const ACTIONS = ["EMAIL", "SLACK_MESSAGE", "GOOGLE_CALENDAR_EVENT", "WEBHOOK", "LOG"];
 
@@ -109,7 +108,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
 
     const { error } = await supabase.from("automation_rules").insert({
       org_id: selectedOrgId,
-      trigger_type: TRIGGER_MAP[trigger] || trigger,
+      trigger_type: trigger,
       action_type: action,
       config_json: config,
     });
@@ -174,9 +173,9 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
               <SelectValue placeholder="Select an event" />
             </SelectTrigger>
             <SelectContent>
-              {TRIGGER_LABELS.map((label) => (
-                <SelectItem key={label} value={label}>
-                  {label}
+              {TRIGGER_OPTIONS.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>
+                  {opt.label}
                 </SelectItem>
               ))}
             </SelectContent>
