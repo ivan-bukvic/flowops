@@ -117,11 +117,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
 
     if (error) {
       console.error("Automation rule insert error:", error);
-      if (error.code === "23505") {
-        toast.error("A rule with this trigger and action already exists.");
-      } else {
-        toast.error(`Failed to create automation rule: ${error.message}`);
-      }
+      toast.error(`Failed to create automation rule: ${error.message}`);
       return;
     }
 
