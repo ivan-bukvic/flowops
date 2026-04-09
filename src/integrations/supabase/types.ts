@@ -149,15 +149,7 @@ export type Database = {
           org_id?: string | null
           trigger_type?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "automation_rules_org_id_fkey"
-            columns: ["org_id"]
-            isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       documents: {
         Row: {
