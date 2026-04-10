@@ -1,31 +1,17 @@
 
 
-## Fix Trigger Dropdown in Automation Builder
+## Adjust Horizontal Separators
 
-### Problem
-The current `TRIGGER_MAP` contains "Member Added" which is ambiguous/duplicate alongside "Project Member Added". The mapping also lacks some valid trigger types.
+### What's happening now
+There are no explicit `<Separator>` elements — the visible lines come from the color boundary between `bg-card` (header) and `bg-background` (content), and the sidebar's default right border. These extend edge-to-edge.
 
 ### Changes
 
-**File: `src/components/automations/AutomationRuleBuilder.tsx`**
+**1. `src/components/layout/AppSidebar.tsx`** — Add a subtle separator after the logo area (line 85):
+- Add a `<Separator>` with `mx-5 opacity-30` (horizontal margin ~20px, very faint)
 
-Replace the current `TRIGGER_MAP` and `TRIGGER_LABELS` with a clean, direct mapping:
+**2. `src/components/layout/TopNav.tsx`** — Add a subtle separator at the bottom of the header (line 99):
+- Add a `<Separator>` with `mx-6 opacity-30` (horizontal margin ~24px, very faint)
 
-```ts
-const TRIGGER_OPTIONS = [
-  { label: "Project Created", value: "PROJECT_CREATED" },
-  { label: "Project Updated", value: "PROJECT_UPDATED" },
-  { label: "Project Deleted", value: "PROJECT_DELETED" },
-  { label: "Project Member Added", value: "PROJECT_MEMBER_ADDED" },
-  { label: "Project Member Removed", value: "PROJECT_MEMBER_REMOVED" },
-  { label: "Workspace Created", value: "WORKSPACE_CREATED" },
-];
-```
-
-- Remove `TRIGGER_MAP` and `TRIGGER_LABELS` constants entirely
-- Update the trigger `<Select>` to use `value` directly (no label-to-value lookup needed)
-- Update `handleCreate` to send `trigger` directly as `trigger_type` (since the state now stores the exact database value)
-- Update the dropdown to render `TRIGGER_OPTIONS` with `option.value` as the select value and `option.label` as display text
-
-This eliminates the indirect label→value mapping pattern and ensures exact database values are used with zero transformation.
+Both separators will use the existing `bg-border` color but at reduced opacity, with `mx-5`/`mx-6` margins so they don't touch the sides. The `Separator` import already exists in both files.
 
