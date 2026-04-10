@@ -96,7 +96,7 @@ const TopNav = () => {
           </DropdownMenu>
         </div>
       </div>
-      
+      <Separator className="mx-6 opacity-30" />
     </header>
   );
 };
