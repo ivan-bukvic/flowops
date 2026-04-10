@@ -76,7 +76,7 @@ export function AppSidebar() {
       <SidebarHeader className="gap-0 p-0">
         <div className="flex h-14 items-center px-4">
           {!collapsed && (
-            <img src={logo} alt="FlowOps" className="h-[2.1rem]" />
+            <img src={logo} alt="FlowOps" className="h-[2.1rem] text-ring" />
           )}
           {collapsed && (
             <img src={logo} alt="FlowOps" className="h-6 w-6 object-contain object-left" />
