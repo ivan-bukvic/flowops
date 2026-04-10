@@ -91,7 +91,7 @@ export function AppSidebar() {
             Main
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu className="space-y-0.5">
+            <SidebarMenu className="space-y-[15px]">
               {mainItems.map(renderItem)}
             </SidebarMenu>
           </SidebarGroupContent>
@@ -104,7 +104,7 @@ export function AppSidebar() {
             Workspace
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu className="space-y-0.5">
+            <SidebarMenu className="space-y-[15px]">
               {secondaryItems.map(renderItem)}
             </SidebarMenu>
           </SidebarGroupContent>
