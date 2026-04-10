@@ -87,7 +87,7 @@ export function AppSidebar() {
 
       <SidebarContent className="px-2 pt-4 pb-3">
         <SidebarGroup>
-          <SidebarGroupLabel className="text-[11px] uppercase tracking-[0.1em] text-muted-foreground/70 font-semibold px-3 mb-2">
+          <SidebarGroupLabel className="text-[11px] uppercase tracking-[0.1em] text-primary/50 font-semibold px-3 mb-2">
             Main
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -100,7 +100,7 @@ export function AppSidebar() {
         <div className="my-5" />
 
         <SidebarGroup>
-          <SidebarGroupLabel className="text-[11px] uppercase tracking-[0.1em] text-muted-foreground/70 font-semibold px-3 mb-2">
+          <SidebarGroupLabel className="text-[11px] uppercase tracking-[0.1em] text-primary/50 font-semibold px-3 mb-2">
             Workspace
           </SidebarGroupLabel>
           <SidebarGroupContent>
