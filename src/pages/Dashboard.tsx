@@ -209,7 +209,7 @@ const Dashboard = () => {
             <div className="h-11 w-11 rounded-full bg-muted/70 group-hover:bg-primary/10 flex items-center justify-center transition-colors duration-150">
               <action.icon className="h-5 w-5 text-muted-foreground/80 group-hover:text-primary transition-colors duration-150" />
             </div>
-            <span className="text-[13px] font-semibold text-foreground/90 group-hover:text-foreground transition-colors">{action.label}</span>
+            <span className="text-[16px] font-semibold text-foreground/90 group-hover:text-foreground transition-colors">{action.label}</span>
           </button>
         ))}
       </div>
