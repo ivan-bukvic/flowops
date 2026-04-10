@@ -54,7 +54,7 @@ export function AppSidebar() {
         <Link
           to={item.url}
           className={`
-            relative flex items-center gap-3 rounded-md px-3 py-2 text-[13px] transition-all duration-150
+            relative flex items-center gap-3 rounded-md px-3 py-2 text-[15px] transition-all duration-150
             ${active
               ? "bg-primary/[0.08] text-foreground font-semibold"
               : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
