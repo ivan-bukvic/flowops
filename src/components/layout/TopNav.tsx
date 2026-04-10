@@ -96,7 +96,7 @@ const TopNav = () => {
           </DropdownMenu>
         </div>
       </div>
-      <Separator className="bg-border" />
+      
     </header>
   );
 };

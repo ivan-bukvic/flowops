@@ -82,7 +82,7 @@ export function AppSidebar() {
             <img src={logo} alt="FlowOps" className="h-6 w-6 object-contain object-left" />
           )}
         </div>
-        <Separator className="bg-border" />
+        
       </SidebarHeader>
 
       <SidebarContent className="px-2 pt-4 pb-3">
