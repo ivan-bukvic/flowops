@@ -185,8 +185,8 @@ const Projects = () => {
       header: "Project Name",
       render: (row) => (
         <div className="flex items-center gap-3">
-          <div className="h-8 w-8 rounded-md bg-primary/[0.08] flex items-center justify-center shrink-0">
-            <FolderKanban className="h-4 w-4 text-primary" />
+          <div className="h-8 w-8 rounded-xl bg-indigo-50 flex items-center justify-center shrink-0">
+            <FolderKanban className="h-4 w-4 text-indigo-600" />
           </div>
           <div>
             <span className="font-semibold text-foreground text-[14px]">{row.name}</span>
