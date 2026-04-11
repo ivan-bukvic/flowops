@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Send, Sparkles, MessageSquare } from "lucide-react";
+import ColoredIcon from "@/components/shared/ColoredIcon";
 
 interface AiQueryRow {
   id: string;
@@ -78,9 +79,7 @@ const AI = () => {
       <div className="rounded-lg border border-border bg-card shadow-[0_1px_3px_0_rgba(0,0,0,0.04)] mb-10">
         <div className="p-6 space-y-5">
           <div className="flex items-center gap-2.5 mb-1">
-            <div className="h-9 w-9 rounded-lg bg-primary/[0.08] flex items-center justify-center">
-              <Sparkles className="h-4 w-4 text-primary" />
-            </div>
+            <ColoredIcon icon={Sparkles} bgClass="bg-violet-50" iconClass="text-violet-600" size="sm" />
             <div>
               <h2 className="text-[15px] font-bold text-foreground">Ask AI</h2>
               <p className="text-[12px] text-muted-foreground/70">Get intelligent answers from your workspace data</p>

@@ -3,6 +3,7 @@ import { useOrg } from "@/contexts/OrgContext";
 import { supabase } from "@/integrations/supabase/client";
 import PageHeader from "@/components/shared/PageHeader";
 import StatCard from "@/components/shared/StatCard";
+import ColoredIcon from "@/components/shared/ColoredIcon";
 import {
   FolderKanban, FileText, Zap, Bot, Plus, Upload, Sparkles, LayoutDashboard,
   UserPlus, UserMinus, FolderPlus, FolderEdit, Trash2, ArrowRightLeft, Building2,
@@ -174,9 +175,7 @@ const Dashboard = () => {
     <main className="p-6 pt-4">
       {/* Hero Banner */}
       <div className="rounded-lg border border-primary/10 bg-primary/[0.03] px-7 py-6 mb-8 flex items-center gap-5">
-        <div className="h-11 w-11 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-          <LayoutDashboard className="h-5 w-5 text-primary" />
-        </div>
+        <ColoredIcon icon={LayoutDashboard} bgClass="bg-blue-100" iconClass="text-blue-600" />
         <div>
           <h1 className="text-lg font-bold text-foreground">Welcome back</h1>
           <p className="text-[13px] text-muted-foreground mt-0.5">
@@ -191,10 +190,10 @@ const Dashboard = () => {
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-14">
-        <StatCard title="Projects" value={loading ? "—" : projectCount} icon={FolderKanban} />
-        <StatCard title="Documents" value={loading ? "—" : docCount} icon={FileText} />
-        <StatCard title="Automations" value={loading ? "—" : automationCount} icon={Zap} />
-        <StatCard title="AI Queries" value={loading ? "—" : aiCount} icon={Bot} />
+        <StatCard title="Projects" value={loading ? "—" : projectCount} icon={FolderKanban} iconBgClass="bg-indigo-50" iconColorClass="text-indigo-600" />
+        <StatCard title="Documents" value={loading ? "—" : docCount} icon={FileText} iconBgClass="bg-sky-50" iconColorClass="text-sky-500" />
+        <StatCard title="Automations" value={loading ? "—" : automationCount} icon={Zap} iconBgClass="bg-amber-50" iconColorClass="text-amber-500" />
+        <StatCard title="AI Queries" value={loading ? "—" : aiCount} icon={Bot} iconBgClass="bg-violet-50" iconColorClass="text-violet-600" />
       </div>
 
       {/* Quick Actions */}
