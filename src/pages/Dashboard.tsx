@@ -158,10 +158,10 @@ const Dashboard = () => {
   }, [selectedOrgId]);
 
   const quickActions = [
-    { label: "Create Project", icon: Plus, onClick: () => navigate("/projects") },
-    { label: "Upload Document", icon: Upload, onClick: () => navigate("/documents") },
-    { label: "Create Automation", icon: Zap, onClick: () => navigate("/automations") },
-    { label: "Ask AI", icon: Sparkles, onClick: () => navigate("/ai") },
+    { label: "Create Project", icon: Plus, onClick: () => navigate("/projects"), bgClass: "bg-indigo-50", iconClass: "text-indigo-600" },
+    { label: "Upload Document", icon: Upload, onClick: () => navigate("/documents"), bgClass: "bg-sky-50", iconClass: "text-sky-500" },
+    { label: "Create Automation", icon: Zap, onClick: () => navigate("/automations"), bgClass: "bg-amber-50", iconClass: "text-amber-500" },
+    { label: "Ask AI", icon: Sparkles, onClick: () => navigate("/ai"), bgClass: "bg-violet-50", iconClass: "text-violet-600" },
   ];
 
   const statusParts: string[] = [];
@@ -203,15 +203,12 @@ const Dashboard = () => {
           <button
             key={action.label}
             onClick={action.onClick}
-            className="flex flex-col items-center justify-center gap-4 p-8 rounded-lg border border-border bg-muted/30 text-foreground shadow-[0_1px_3px_0_rgba(0,0,0,0.04)] hover:shadow-[0_4px_12px_0_rgba(0,0,0,0.08)] hover:border-primary/40 hover:bg-primary/[0.04] transition-all duration-150 cursor-pointer group"
+            className="flex items-center gap-3.5 px-5 py-4 rounded-lg border border-border/80 bg-card text-foreground shadow-[0_1px_3px_0_rgba(0,0,0,0.04)] hover:shadow-[0_4px_12px_0_rgba(0,0,0,0.08)] hover:border-primary/40 hover:bg-accent/30 transition-all duration-150 cursor-pointer group"
           >
-            <div className="h-11 w-11 rounded-full bg-muted/70 group-hover:bg-primary/10 flex items-center justify-center transition-colors duration-150">
-              <action.icon className="h-5 w-5 text-muted-foreground/80 group-hover:text-primary transition-colors duration-150" />
-            </div>
-            <span className="text-[16px] font-semibold text-foreground/90 group-hover:text-foreground transition-colors">{action.label}</span>
+            <ColoredIcon icon={action.icon} bgClass={`${action.bgClass} group-hover:bg-primary/10`} iconClass={`${action.iconClass} group-hover:text-primary`} size="sm" />
+            <span className="text-sm font-semibold text-foreground/90 group-hover:text-foreground transition-colors">{action.label}</span>
           </button>
         ))}
-      </div>
 
       {/* Recent Activity */}
       <h2 className="text-sm font-bold uppercase tracking-wide text-foreground/80 mb-5">Recent Activity</h2>
