@@ -41,6 +41,12 @@ function formatTimeAgo(date: Date): string {
 const Automations = () => {
   const { selectedOrgId } = useOrg();
   const [runningEdge, setRunningEdge] = useState(false);
+  const [activeTab, setActiveTab] = useState("rules");
+
+  const handleRuleCreated = () => {
+    fetchRules();
+    setActiveTab("existing");
+  };
 
   const handleExecuteAutomations = async () => {
     setRunningEdge(true);
