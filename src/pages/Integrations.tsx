@@ -8,12 +8,12 @@ import { toast } from "sonner";
 import { useIntegrations, IntegrationKey } from "@/hooks/useIntegrations";
 import IntegrationModal from "@/components/integrations/IntegrationModal";
 
-const iconTints = [
-  "bg-primary/[0.07]",
-  "bg-emerald-500/[0.07]",
-  "bg-amber-500/[0.07]",
-  "bg-violet-500/[0.07]",
-];
+const iconStyles: Record<IntegrationKey, { bg: string; text: string }> = {
+  email: { bg: "bg-orange-50", text: "text-orange-500" },
+  slack: { bg: "bg-purple-50", text: "text-purple-700" },
+  google_calendar: { bg: "bg-blue-50", text: "text-blue-600" },
+  webhooks: { bg: "bg-violet-50", text: "text-violet-600" },
+};
 
 interface IntegrationDef {
   key: IntegrationKey;
@@ -81,9 +81,9 @@ const Integrations = () => {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3.5">
                     <div
-                      className={`h-11 w-11 rounded-lg ${iconTints[idx % iconTints.length]} flex items-center justify-center`}
+                      className={`h-12 w-12 rounded-xl ${iconStyles[integration.key].bg} flex items-center justify-center`}
                     >
-                      <integration.icon className="h-5 w-5 text-muted-foreground/80" />
+                      <integration.icon className={`h-5 w-5 ${iconStyles[integration.key].text}`} />
                     </div>
                     <CardTitle className="text-[15px] font-bold">{integration.name}</CardTitle>
                   </div>
