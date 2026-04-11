@@ -1,4 +1,5 @@
 import { useState } from "react";
+import AutomationTemplatesModal from "./AutomationTemplatesModal";
 import { useOrg } from "@/contexts/OrgContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -12,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowDown, Zap, Settings, Mail, Calendar, MessageSquare } from "lucide-react";
+import { ArrowDown, Zap, Settings, Mail, Calendar, MessageSquare, LayoutTemplate } from "lucide-react";
 import { toast } from "sonner";
 
 const TRIGGER_OPTIONS = [
@@ -82,6 +83,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
   const [webhookUrl, setWebhookUrl] = useState("");
   const [calendarTitle, setCalendarTitle] = useState("");
   const [creating, setCreating] = useState(false);
+  const [templatesOpen, setTemplatesOpen] = useState(false);
 
   const isValid = () => {
     if (!trigger || !action) return false;
@@ -154,6 +156,14 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
 
   return (
     <div className="max-w-[720px] mx-auto py-8 px-6">
+      <div className="flex justify-end mb-6">
+        <Button variant="outline" size="sm" onClick={() => setTemplatesOpen(true)} className="text-xs h-9 gap-1.5">
+          <LayoutTemplate className="h-4 w-4" />
+          Use Template
+        </Button>
+      </div>
+
+      <AutomationTemplatesModal open={templatesOpen} onOpenChange={setTemplatesOpen} onApplied={onCreated} />
       {/* Trigger */}
       <div className="rounded-lg border border-border/80 bg-card p-7 shadow-[0_2px_8px_0_rgba(0,0,0,0.05)]">
         <SectionHeader

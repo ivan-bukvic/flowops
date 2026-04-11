@@ -41,6 +41,12 @@ function formatTimeAgo(date: Date): string {
 const Automations = () => {
   const { selectedOrgId } = useOrg();
   const [runningEdge, setRunningEdge] = useState(false);
+  const [activeTab, setActiveTab] = useState("rules");
+
+  const handleRuleCreated = () => {
+    fetchRules();
+    setActiveTab("existing");
+  };
 
   const handleExecuteAutomations = async () => {
     setRunningEdge(true);
@@ -137,14 +143,14 @@ const Automations = () => {
         </Button>
       </div>
 
-      <Tabs defaultValue="rules" className="mt-6">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-6">
         <TabsList className="bg-transparent border-b border-border rounded-none p-0 h-auto gap-6">
           <TabsTrigger value="rules" className="rounded-none border-b-2 border-transparent px-1 pb-3 pt-1 text-[13px] font-semibold data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none text-muted-foreground hover:text-foreground transition-colors">Builder</TabsTrigger>
           <TabsTrigger value="existing" className="rounded-none border-b-2 border-transparent px-1 pb-3 pt-1 text-[13px] font-semibold data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none text-muted-foreground hover:text-foreground transition-colors">Rules</TabsTrigger>
           <TabsTrigger value="activity" className="rounded-none border-b-2 border-transparent px-1 pb-3 pt-1 text-[13px] font-semibold data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none text-muted-foreground hover:text-foreground transition-colors">Activity</TabsTrigger>
         </TabsList>
         <TabsContent value="rules">
-          <AutomationRuleBuilder onCreated={fetchRules} />
+          <AutomationRuleBuilder onCreated={handleRuleCreated} />
         </TabsContent>
         <TabsContent value="existing">
           <DataTable columns={columns} data={rules} loading={loading} emptyMessage="No automation rules yet." />
