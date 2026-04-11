@@ -81,9 +81,9 @@ const Integrations = () => {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3.5">
                     <div
-                      className={`h-11 w-11 rounded-lg ${iconTints[idx % iconTints.length]} flex items-center justify-center`}
+                      className={`h-12 w-12 rounded-xl ${iconStyles[integration.key].bg} flex items-center justify-center`}
                     >
-                      <integration.icon className="h-5 w-5 text-muted-foreground/80" />
+                      <integration.icon className={`h-5 w-5 ${iconStyles[integration.key].text}`} />
                     </div>
                     <CardTitle className="text-[15px] font-bold">{integration.name}</CardTitle>
                   </div>
