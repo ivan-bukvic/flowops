@@ -209,6 +209,7 @@ const Dashboard = () => {
             <span className="text-sm font-semibold text-foreground/90 group-hover:text-foreground transition-colors">{action.label}</span>
           </button>
         ))}
+      </div>
 
       {/* Recent Activity */}
       <h2 className="text-sm font-bold uppercase tracking-wide text-foreground/80 mb-5">Recent Activity</h2>
