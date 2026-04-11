@@ -197,7 +197,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
           icon={Settings}
           title="Do this"
           description="Choose what happens next"
-          variant="action"
+          variant="trigger"
         />
         <div className="space-y-1.5 pl-11">
           <Label className="text-[13px] text-foreground/80">Action</Label>
