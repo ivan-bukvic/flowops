@@ -190,11 +190,28 @@ const RecentActivity = ({ orgId }: RecentActivityProps) => {
         const actorName = evt.actor_user_id ? actorMap[evt.actor_user_id] ?? "Someone" : "System";
         const entityName = getEntityName(evt.type, evt.metadata);
         const detail = getSecondaryDetail(evt.type, evt.metadata);
+        const navPath = getNavPath(evt.type, evt.metadata);
+        const isClickable = !!navPath;
+
+        const handleClick = () => {
+          if (navPath) navigate(navPath);
+        };
+
+        const handleKeyDown = (e: React.KeyboardEvent) => {
+          if (navPath && (e.key === "Enter" || e.key === " ")) {
+            e.preventDefault();
+            navigate(navPath);
+          }
+        };
 
         return (
           <div
             key={evt.id}
-            className="flex items-start gap-3.5 px-5 py-4 rounded-lg border border-border/80 bg-card shadow-[0_1px_2px_0_rgba(0,0,0,0.03)] hover:shadow-[0_3px_10px_0_rgba(0,0,0,0.06)] hover:border-primary/20 transition-all duration-150"
+            role={isClickable ? "button" : undefined}
+            tabIndex={isClickable ? 0 : undefined}
+            onClick={isClickable ? handleClick : undefined}
+            onKeyDown={isClickable ? handleKeyDown : undefined}
+            className={`flex items-start gap-3.5 px-5 py-4 rounded-lg border border-border/80 bg-card shadow-[0_1px_2px_0_rgba(0,0,0,0.03)] hover:shadow-[0_3px_10px_0_rgba(0,0,0,0.06)] hover:border-primary/20 transition-all duration-150 ${isClickable ? "cursor-pointer hover:bg-accent/30" : ""}`}
           >
             <ColoredIcon icon={Icon} bgClass={style.bg} iconClass={style.text} size="sm" />
 
