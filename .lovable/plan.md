@@ -1,33 +1,48 @@
 
 
-## Analysis
+## Problem
 
-The Dashboard code (`src/pages/Dashboard.tsx`) already correctly imports and renders the `RecentActivity` component:
-- Line 6: `import RecentActivity from "@/components/dashboard/RecentActivity";`
-- Line 114: `{selectedOrgId && <RecentActivity orgId={selectedOrgId} loading={loading} />}`
-
-The network confirms a successful 200 response with 10 events. No console errors exist. The component and integration appear correct in code.
-
-**Likely root cause**: The `loading` prop passed from Dashboard stays `true` during the stats fetch, and the `RecentActivity` component has its own internal `loading` state. Both must be `false` for events to display. If `selectedOrgId` is briefly `undefined` or there's a timing issue, the component may not render. Additionally, the `mb-14` spacing on Quick Actions and Stats sections pushes Recent Activity well below the fold.
+The "Upload Document" button (line 108-112) creates a file input and triggers the file picker, but never attaches an `onchange` event listener. After the user selects a file, nothing happens because there's no upload logic.
 
 ## Plan
 
-### 1. Ensure RecentActivity always renders when orgId exists
-No code changes needed for the import/render — it's already correct. However, decouple the external loading state so the activity feed can show independently:
-- Remove the `loading` prop dependency from Dashboard to `RecentActivity` — let the component manage its own loading state entirely
-- This prevents the stats fetch from blocking activity display
+### 1. Add storage RLS policy (migration)
 
-### 2. Minor fix in RecentActivity
-- Remove the `externalLoading` dependency from the render condition so the component fetches and displays independently
-- Keep the internal `loading` state for its own skeleton UI
+The `documents` storage bucket already exists but may lack upload policies. Create a migration that adds an INSERT policy on `storage.objects` allowing authenticated users to upload to the `documents` bucket.
 
-### 3. Verify rendering
-- The component already fetches from `events` table, joins `profiles` for actor names, sorts by `created_at` desc, limits to 5, and formats relative timestamps — all requirements are met
-- RLS policies are already in place (`Members can view org events`)
+```sql
+CREATE POLICY "Authenticated users can upload documents"
+ON storage.objects FOR INSERT TO authenticated
+WITH CHECK (bucket_id = 'documents');
 
-**Files to modify:**
-- `src/pages/Dashboard.tsx` — remove the `loading` prop from `<RecentActivity>`
-- `src/components/dashboard/RecentActivity.tsx` — simplify props to remove `externalLoading` dependency
+CREATE POLICY "Authenticated users can read documents"
+ON storage.objects FOR SELECT TO authenticated
+USING (bucket_id = 'documents');
+```
 
-This is a minimal, targeted fix. No new components or backend changes needed.
+### 2. Fix the upload handler in `src/pages/Documents.tsx`
+
+Replace the empty `onAction` callback with a complete upload flow:
+
+- Add `uploading` state
+- Add `onchange` handler to the dynamically created file input
+- Accept `.pdf`, `.docx`, `.txt` files only via `input.accept`
+- On file selection:
+  1. Set `uploading = true`
+  2. Upload file to Supabase Storage (`documents` bucket) with a unique path: `{orgId}/{uuid}_{filename}`
+  3. Get the public/signed URL
+  4. Insert a row into the `documents` table with `org_id`, `file_url`, `uploaded_by` (from auth), `processing_status: 'uploaded'`
+  5. Show success toast via `sonner`
+  6. Re-fetch the documents list
+  7. On error, show error toast
+  8. Set `uploading = false`
+- Import `useAuth` to get the current user ID
+- Import `toast` from `sonner`
+- Pass `uploading` state to show a loading indicator (disable the upload button or show spinner text)
+
+### Files to modify
+- `src/pages/Documents.tsx` — add upload logic
+- New migration — storage RLS policies
+
+No new components needed. Purely fixes the existing broken flow.
 
