@@ -111,7 +111,7 @@ const Dashboard = () => {
 
       {/* Recent Activity */}
       <h2 className="text-sm font-bold uppercase tracking-wide text-foreground/80 mb-5">Recent Activity</h2>
-      {selectedOrgId && <RecentActivity orgId={selectedOrgId} loading={loading} />}
+      {selectedOrgId && <RecentActivity orgId={selectedOrgId} />}
     </main>
   );
 };

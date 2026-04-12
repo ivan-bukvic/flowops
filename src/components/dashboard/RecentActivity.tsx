@@ -88,11 +88,9 @@ function getSecondaryDetail(type: string, metadata: Record<string, unknown>): st
 
 interface RecentActivityProps {
   orgId: string;
-  loading: boolean;
-  setLoading?: (v: boolean) => void;
 }
 
-const RecentActivity = ({ orgId, loading: externalLoading }: RecentActivityProps) => {
+const RecentActivity = ({ orgId }: RecentActivityProps) => {
   const [events, setEvents] = useState<EventRow[]>([]);
   const [actorMap, setActorMap] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
