@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
 import { useOrg } from "@/contexts/OrgContext";
 import { supabase } from "@/integrations/supabase/client";
-import PageHeader from "@/components/shared/PageHeader";
 import StatCard from "@/components/shared/StatCard";
 import ColoredIcon from "@/components/shared/ColoredIcon";
+import RecentActivity from "@/components/dashboard/RecentActivity";
 import {
   FolderKanban, FileText, Zap, Bot, Plus, Upload, Sparkles, LayoutDashboard,
-  UserPlus, UserMinus, FolderPlus, FolderEdit, Trash2, ArrowRightLeft, Building2,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
