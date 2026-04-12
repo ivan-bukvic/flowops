@@ -87,11 +87,31 @@ function getSecondaryDetail(type: string, metadata: Record<string, unknown>): st
   }
 }
 
+function getNavPath(type: string, metadata: Record<string, unknown>): string | null {
+  const projectId = metadata?.project_id as string | null;
+  const documentId = metadata?.document_id as string | null;
+  switch (type) {
+    case "PROJECT_CREATED":
+    case "PROJECT_UPDATED":
+    case "PROJECT_MEMBER_ADDED":
+    case "PROJECT_MEMBER_REMOVED":
+      return projectId ? `/projects/${projectId}` : "/projects";
+    case "PROJECT_DELETED":
+      return "/projects";
+    case "WORKSPACE_CREATED":
+    case "OWNERSHIP_TRANSFERRED":
+      return "/settings";
+    default:
+      return null;
+  }
+}
+
 interface RecentActivityProps {
   orgId: string;
 }
 
 const RecentActivity = ({ orgId }: RecentActivityProps) => {
+  const navigate = useNavigate();
   const [events, setEvents] = useState<EventRow[]>([]);
   const [actorMap, setActorMap] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
