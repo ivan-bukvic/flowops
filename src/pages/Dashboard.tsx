@@ -9,98 +9,14 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-interface EventRow {
-  id: string;
-  type: string;
-  metadata: Record<string, unknown>;
-  created_at: string;
-  actor_user_id: string | null;
-}
-
-type EventCategory = "member" | "project" | "workspace" | "automation";
-
-const categoryStyles: Record<EventCategory, { bg: string; text: string }> = {
-  member: { bg: "bg-blue-500/10", text: "text-blue-600" },
-  project: { bg: "bg-emerald-500/10", text: "text-emerald-600" },
-  workspace: { bg: "bg-amber-500/10", text: "text-amber-600" },
-  automation: { bg: "bg-violet-500/10", text: "text-violet-600" },
-};
-
-const eventConfig: Record<string, { icon: React.ElementType; label: string; category: EventCategory }> = {
-  PROJECT_CREATED: { icon: FolderPlus, label: "Project created", category: "project" },
-  PROJECT_UPDATED: { icon: FolderEdit, label: "Project updated", category: "project" },
-  PROJECT_DELETED: { icon: Trash2, label: "Project deleted", category: "project" },
-  MEMBER_ADDED: { icon: UserPlus, label: "Member added", category: "member" },
-  MEMBER_REMOVED: { icon: UserMinus, label: "Member removed", category: "member" },
-  PROJECT_MEMBER_ADDED: { icon: UserPlus, label: "Member added to project", category: "member" },
-  PROJECT_MEMBER_REMOVED: { icon: UserMinus, label: "Member removed from project", category: "member" },
-  WORKSPACE_CREATED: { icon: Building2, label: "Workspace created", category: "workspace" },
-  OWNERSHIP_TRANSFERRED: { icon: ArrowRightLeft, label: "Ownership transferred", category: "workspace" },
-};
-
-function getEmail(m: Record<string, unknown>): string | null {
-  return (m.email ?? m.user_email ?? m.member_email ?? null) as string | null;
-}
-
-function getRole(m: Record<string, unknown>): string | null {
-  const r = (m.role ?? m.member_role ?? null) as string | null;
-  return r ? r.charAt(0).toUpperCase() + r.slice(1) : null;
-}
-
-function describeEvent(type: string, metadata: Record<string, unknown>): { prefix: string; highlight: string | null; detail: string | null } {
-  const m = metadata ?? {};
-  const email = getEmail(m);
-  const role = getRole(m);
-  const projectName = (m.project_name as string) ?? null;
-
-  const detailParts: string[] = [];
-  if (email) detailParts.push(`User: ${email}`);
-  if (role) detailParts.push(`Role: ${role}`);
-  const detail = detailParts.length > 0 ? detailParts.join(" · ") : null;
-
-  switch (type) {
-    case "PROJECT_CREATED":
-      return { prefix: "Project created:", highlight: projectName ?? "Untitled", detail };
-    case "PROJECT_UPDATED":
-      return { prefix: "Project updated:", highlight: projectName ?? "Untitled", detail };
-    case "PROJECT_DELETED":
-      return { prefix: "Project deleted:", highlight: projectName ?? "Untitled", detail };
-    case "MEMBER_ADDED":
-      return { prefix: "Member added to workspace", highlight: null, detail };
-    case "MEMBER_REMOVED":
-      return { prefix: "Member removed from workspace", highlight: null, detail };
-    case "PROJECT_MEMBER_ADDED":
-      return { prefix: "Member added to", highlight: projectName ?? "project", detail };
-    case "PROJECT_MEMBER_REMOVED":
-      return { prefix: "Member removed from", highlight: projectName ?? "project", detail };
-    case "WORKSPACE_CREATED":
-      return { prefix: "Workspace created:", highlight: (m.org_name as string) ?? "Untitled", detail };
-    case "OWNERSHIP_TRANSFERRED":
-      return {
-        prefix: "Ownership transferred",
-        highlight: null,
-        detail: m.new_owner_email ? `New owner: ${m.new_owner_email}` : detail,
-      };
-    default:
-      return {
-        prefix: type.replace(/_/g, " ").toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase()),
-        highlight: null,
-        detail,
-      };
-  }
-}
-
-function timeAgo(dateStr: string): string {
-  const seconds = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000);
-  if (seconds < 60) return "Just now";
-  const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes}m ago`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  if (days < 7) return `${days}d ago`;
-  return new Date(dateStr).toLocaleDateString("en-US", { month: "short", day: "numeric" });
-}
+const Dashboard = () => {
+  const { selectedOrgId } = useOrg();
+  const navigate = useNavigate();
+  const [projectCount, setProjectCount] = useState(0);
+  const [docCount, setDocCount] = useState(0);
+  const [automationCount, setAutomationCount] = useState(0);
+  const [aiCount, setAiCount] = useState(0);
+  const [loading, setLoading] = useState(true);
 
 const Dashboard = () => {
   const { selectedOrgId } = useOrg();
