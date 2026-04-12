@@ -130,7 +130,7 @@ const RecentActivity = ({ orgId }: RecentActivityProps) => {
     fetch();
   }, [orgId]);
 
-  const isLoading = externalLoading || loading;
+  const isLoading = loading;
 
   if (isLoading) {
     return (
