@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import ColoredIcon from "@/components/shared/ColoredIcon";
 import {
-  FolderPlus, Pencil, Trash2, UserPlus, UserMinus, Building2, Crown, Zap,
+  FolderPlus, Pencil, Trash2, UserPlus, UserMinus, Building2, Crown, Zap, FileText,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -15,13 +15,14 @@ interface EventRow {
   actor_user_id: string | null;
 }
 
-type EventCategory = "member" | "project" | "workspace" | "automation";
+type EventCategory = "member" | "project" | "workspace" | "automation" | "document";
 
 const categoryStyles: Record<EventCategory, { bg: string; text: string }> = {
   member: { bg: "bg-blue-500/10", text: "text-blue-600" },
   project: { bg: "bg-emerald-500/10", text: "text-emerald-600" },
   workspace: { bg: "bg-amber-500/10", text: "text-amber-600" },
   automation: { bg: "bg-violet-500/10", text: "text-violet-600" },
+  document: { bg: "bg-rose-500/10", text: "text-rose-600" },
 };
 
 const categoryLabels: Record<EventCategory, string> = {
@@ -29,6 +30,7 @@ const categoryLabels: Record<EventCategory, string> = {
   project: "Project",
   workspace: "Workspace",
   automation: "Automation",
+  document: "Document",
 };
 
 const eventConfig: Record<string, { icon: LucideIcon; verb: string; category: EventCategory }> = {
@@ -41,6 +43,7 @@ const eventConfig: Record<string, { icon: LucideIcon; verb: string; category: Ev
   PROJECT_MEMBER_REMOVED: { icon: UserMinus, verb: "removed a member from", category: "member" },
   WORKSPACE_CREATED: { icon: Building2, verb: "created the workspace", category: "workspace" },
   OWNERSHIP_TRANSFERRED: { icon: Crown, verb: "transferred workspace ownership", category: "workspace" },
+  DOCUMENT_UPLOADED: { icon: FileText, verb: "uploaded the document", category: "document" },
 };
 
 function timeAgo(dateStr: string): string {
@@ -66,6 +69,8 @@ function getEntityName(type: string, metadata: Record<string, unknown>): string 
       return (m.project_name as string) ?? null;
     case "WORKSPACE_CREATED":
       return (m.org_name as string) ?? null;
+    case "DOCUMENT_UPLOADED":
+      return (m.document_name as string) ?? null;
     default:
       return null;
   }
@@ -101,6 +106,8 @@ function getNavPath(type: string, metadata: Record<string, unknown>): string | n
     case "WORKSPACE_CREATED":
     case "OWNERSHIP_TRANSFERRED":
       return "/settings";
+    case "DOCUMENT_UPLOADED":
+      return documentId ? `/documents/${documentId}` : "/documents";
     default:
       return null;
   }

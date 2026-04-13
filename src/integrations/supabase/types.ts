@@ -517,6 +517,7 @@ export type Database = {
         | "PROJECT_UPDATED"
         | "PROJECT_MEMBER_ADDED"
         | "PROJECT_MEMBER_REMOVED"
+        | "DOCUMENT_UPLOADED"
       org_role: "owner" | "admin" | "member"
       project_role: "editor" | "viewer" | "owner"
     }
@@ -663,6 +664,7 @@ export const Constants = {
         "PROJECT_UPDATED",
         "PROJECT_MEMBER_ADDED",
         "PROJECT_MEMBER_REMOVED",
+        "DOCUMENT_UPLOADED",
       ],
       org_role: ["owner", "admin", "member"],
       project_role: ["editor", "viewer", "owner"],
