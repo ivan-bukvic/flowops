@@ -5,18 +5,26 @@ import { supabase } from "@/integrations/supabase/client";
 import PageHeader from "@/components/shared/PageHeader";
 import DataTable, { Column } from "@/components/shared/DataTable";
 import StatusBadge from "@/components/shared/StatusBadge";
-import { Upload, Loader2 } from "lucide-react";
+import { Upload, Loader2, FileText } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 interface DocumentRow {
   id: string;
+  original_name: string;
   file_url: string;
   processing_status: string;
   summary: string | null;
   created_at: string;
   project_id: string | null;
   project_name: string | null;
+}
+
+function extractFileName(fileUrl: string): string {
+  const last = fileUrl.split("/").pop() || fileUrl;
+  // Strip UUID prefix if present (e.g. "abc123_Proposal.pdf" → "Proposal.pdf")
+  const match = last.match(/^[0-9a-f-]{36}_(.+)$/i);
+  return match ? match[1] : last;
 }
 
 const Documents = () => {
@@ -32,13 +40,14 @@ const Documents = () => {
     setLoading(true);
     const { data } = await (supabase as any)
       .from("documents")
-      .select("id, file_url, processing_status, summary, created_at, project_id, projects(name)")
+      .select("id, file_url, original_name, processing_status, summary, created_at, project_id, projects(name)")
       .eq("org_id", selectedOrgId)
       .is("deleted_at", null)
       .order("created_at", { ascending: false });
     const rows: DocumentRow[] = (data ?? []).map((d: any) => ({
       id: d.id,
       file_url: d.file_url,
+      original_name: d.original_name || extractFileName(d.file_url),
       processing_status: d.processing_status,
       summary: d.summary,
       created_at: d.created_at,
@@ -69,7 +78,6 @@ const Documents = () => {
 
       setUploading(true);
       try {
-        const fileExt = file.name.split(".").pop();
         const uniqueName = `${crypto.randomUUID()}_${file.name}`;
         const filePath = `${selectedOrgId}/${uniqueName}`;
 
@@ -90,6 +98,7 @@ const Documents = () => {
           .insert({
             org_id: selectedOrgId,
             file_url: fileUrl,
+            original_name: file.name,
             uploaded_by: user.id,
             processing_status: "uploaded",
           })
@@ -127,23 +136,26 @@ const Documents = () => {
 
   const columns: Column<DocumentRow>[] = [
     {
-      key: "file_url",
+      key: "original_name",
       header: "Document Name",
+      className: "text-left align-middle whitespace-nowrap",
       render: (row) => (
         <button
-          className="font-medium text-primary hover:underline text-sm truncate max-w-[250px] block text-left"
+          className="inline-flex items-center gap-2 font-medium text-primary hover:underline text-sm text-left"
           onClick={(e) => {
             e.stopPropagation();
             navigate(`/documents/${row.id}`);
           }}
         >
-          {row.file_url.split("/").pop() || row.file_url}
+          <FileText className="h-4 w-4 text-muted-foreground shrink-0" />
+          <span className="truncate max-w-[250px]">{row.original_name}</span>
         </button>
       ),
     },
     {
       key: "project_name",
       header: "Project",
+      className: "text-left align-middle whitespace-nowrap",
       render: (row) => (
         <span className="text-sm text-muted-foreground">
           {row.project_name || "—"}
@@ -153,11 +165,13 @@ const Documents = () => {
     {
       key: "processing_status",
       header: "Status",
+      className: "text-left align-middle whitespace-nowrap",
       render: (row) => <StatusBadge status={row.processing_status} />,
     },
     {
       key: "summary",
       header: "Summary",
+      className: "text-left align-middle",
       render: (row) => (
         <span className="text-sm text-muted-foreground truncate max-w-[300px] block">
           {row.summary || "—"}
@@ -167,9 +181,14 @@ const Documents = () => {
     {
       key: "created_at",
       header: "Created",
+      className: "text-left align-middle whitespace-nowrap",
       render: (row) => (
         <span className="text-sm text-muted-foreground">
-          {new Date(row.created_at).toLocaleDateString()}
+          {new Date(row.created_at).toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+          })}
         </span>
       ),
     },
