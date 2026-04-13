@@ -5,6 +5,7 @@ import { useOrg } from "@/contexts/OrgContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase as rawSupabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { extractFileName } from "@/lib/utils";
 import PageHeader from "@/components/shared/PageHeader";
 import DataTable, { Column } from "@/components/shared/DataTable";
 import MembersList from "@/components/projects/MembersList";
@@ -44,6 +45,7 @@ interface MemberRow {
 interface DocumentRow {
   id: string;
   file_url: string;
+  original_name: string | null;
   processing_status: string;
   summary: string | null;
   extracted_deadlines: any;
@@ -179,7 +181,7 @@ const ProjectDetail = () => {
       setDocumentsLoading(true);
       const { data } = await supabase
         .from("documents")
-        .select("id, file_url, processing_status, summary, extracted_deadlines, created_at")
+        .select("id, file_url, original_name, processing_status, summary, extracted_deadlines, created_at")
         .eq("project_id", projectId)
         .is("deleted_at", null)
         .order("created_at", { ascending: false });
@@ -203,6 +205,7 @@ const ProjectDetail = () => {
       project_id: projectId,
       uploaded_by: user.id,
       file_url: filePath,
+      original_name: file.name,
       processing_status: "uploaded",
     });
     if (insertError) {
@@ -215,6 +218,7 @@ const ProjectDetail = () => {
       {
         id: crypto.randomUUID(),
         file_url: filePath,
+        original_name: file.name,
         processing_status: "uploaded",
         summary: null,
         extracted_deadlines: null,
@@ -284,7 +288,7 @@ const ProjectDetail = () => {
       key: "file_url",
       header: "Document",
       render: (row) => (
-        <span className="text-sm font-medium truncate max-w-[250px] block">{row.file_url.split("/").pop()}</span>
+        <span className="text-sm font-medium truncate max-w-[250px] block">{row.original_name || extractFileName(row.file_url)}</span>
       ),
     },
     {
