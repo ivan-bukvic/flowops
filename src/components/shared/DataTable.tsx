@@ -10,6 +10,7 @@ import {
 export interface Column<T> {
   key: string;
   header: string;
+  width?: string;
   render?: (row: T) => React.ReactNode;
   className?: string;
 }
@@ -40,10 +41,17 @@ function DataTable<T extends Record<string, any>>({
   return (
     <div className="border border-border/80 rounded-lg overflow-hidden overflow-x-auto bg-card shadow-[0_1px_3px_0_rgba(0,0,0,0.04)]">
       <Table className="w-full table-fixed">
+        {columns.some((col) => col.width) && (
+          <colgroup>
+            {columns.map((col) => (
+              <col key={col.key} style={col.width ? { width: col.width } : undefined} />
+            ))}
+          </colgroup>
+        )}
         <TableHeader>
           <TableRow className="bg-muted/40 hover:bg-muted/40 border-b border-border/80">
             {columns.map((col) => (
-              <TableHead key={col.key} className={`text-[11px] font-semibold text-muted-foreground/70 uppercase tracking-wider h-10 px-4 text-left align-middle ${col.className ?? ""}`}>
+              <TableHead key={col.key} className={`text-[11px] font-semibold text-muted-foreground/70 uppercase tracking-wider h-10 px-4 text-left align-middle whitespace-nowrap ${col.className ?? ""}`}>
                 {col.header}
               </TableHead>
             ))}
