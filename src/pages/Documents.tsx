@@ -85,14 +85,15 @@ const Documents = () => {
 
         const fileUrl = urlData?.publicUrl ?? filePath;
 
-        const { error: insertError } = await (supabase as any)
+        const { data: insertData, error: insertError } = await (supabase as any)
           .from("documents")
           .insert({
             org_id: selectedOrgId,
             file_url: fileUrl,
             uploaded_by: user.id,
             processing_status: "uploaded",
-          });
+          })
+          .select("id");
 
         if (insertError) throw insertError;
 
