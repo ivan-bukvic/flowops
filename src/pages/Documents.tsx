@@ -138,26 +138,26 @@ const Documents = () => {
     {
       key: "original_name",
       header: "Document Name",
-      className: "w-[35%]",
+      width: "35%",
       render: (row) => (
         <button
-          className="inline-flex items-center gap-2 font-medium text-primary hover:underline text-sm text-left whitespace-nowrap"
+          className="inline-flex items-center gap-2 font-medium text-primary hover:underline text-sm text-left min-w-0"
           onClick={(e) => {
             e.stopPropagation();
             navigate(`/documents/${row.id}`);
           }}
         >
           <FileText className="h-4 w-4 text-muted-foreground shrink-0" />
-          <span className="truncate max-w-[250px]">{row.original_name}</span>
+          <span className="truncate">{row.original_name}</span>
         </button>
       ),
     },
     {
       key: "project_name",
       header: "Project",
-      className: "w-[20%]",
+      width: "20%",
       render: (row) => (
-        <span className="text-sm text-muted-foreground whitespace-nowrap">
+        <span className="text-sm text-muted-foreground">
           {row.project_name || <span className="text-muted-foreground/50">—</span>}
         </span>
       ),
@@ -165,13 +165,13 @@ const Documents = () => {
     {
       key: "processing_status",
       header: "Status",
-      className: "w-[15%]",
+      width: "15%",
       render: (row) => <StatusBadge status={row.processing_status} />,
     },
     {
       key: "summary",
       header: "Summary",
-      className: "w-[15%]",
+      width: "15%",
       render: (row) => (
         <span className="text-sm text-muted-foreground truncate block">
           {row.summary || <span className="text-muted-foreground/50">—</span>}
@@ -181,9 +181,9 @@ const Documents = () => {
     {
       key: "created_at",
       header: "Created",
-      className: "w-[15%]",
+      width: "15%",
       render: (row) => (
-        <span className="text-sm text-muted-foreground whitespace-nowrap">
+        <span className="text-sm text-muted-foreground">
           {new Date(row.created_at).toLocaleDateString("en-US", {
             month: "short",
             day: "numeric",

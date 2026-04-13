@@ -65,7 +65,7 @@ function DataTable<T extends Record<string, any>>({
               onClick={() => onRowClick?.(row)}
             >
               {columns.map((col) => (
-                <TableCell key={col.key} className={`px-4 py-3 text-left align-middle ${col.className ?? ""}`}>
+                <TableCell key={col.key} className={`px-4 py-3 text-left align-middle whitespace-nowrap ${col.className ?? ""}`}>
                   {col.render ? col.render(row) : row[col.key]}
                 </TableCell>
               ))}
