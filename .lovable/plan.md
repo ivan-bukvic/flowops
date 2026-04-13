@@ -1,53 +1,41 @@
 
 Problem
-
-The Documents table is still relying on width utility classes on individual header/body cells (`w-[35%]`, etc.) instead of defining the column structure at the table level. That means the browser can still let cell content influence sizing, especially with the current name/summary wrappers, so header and row columns can look slightly off even with `table-fixed`.
+- The remaining misalignment is coming from shared `DataTable` styling, not the `<colgroup>`. Right now the header and body still use different box-model rules: the header has custom uppercase/smaller text plus `h-10 px-4`, while cells use a separate `px-4 py-3` pattern. The Documents renderers also still have width-constraining wrappers (`max-w-xs`) that can fight the column widths visually.
 
 Plan
 
-1. Add true column-width support to the existing shared Documents table
-- Update `src/components/shared/DataTable.tsx` so columns can define an explicit width.
-- Render a `<colgroup>` directly inside `<Table>` before `<TableHeader>`.
-- Keep the table itself as `w-full table-fixed`.
-- Keep the table inside the existing responsive `overflow-x-auto` container.
+1. Normalize the shared table spacing/alignment
+- Update `src/components/shared/DataTable.tsx` so header and body use the same padding/alignment foundation.
+- Set `<TableHead>` to: `h-auto px-6 py-4 text-left align-middle text-sm font-medium text-muted-foreground`
+- Set `<TableCell>` to: `px-6 py-4 text-left align-middle`
+- Remove the current uppercase/tracking/smaller header styling and the old `px-4 py-3` values.
+- Keep the existing `<colgroup>` and `className="w-full table-fixed"` on the table.
 
-2. Move Documents widths into `<colgroup>`
-- Update `src/pages/Documents.tsx` so the five columns define widths as:
+2. Simplify Documents cell content so the table owns the widths
+- Update `src/pages/Documents.tsx` only.
+- Document Name: remove `max-w-xs` and any width caps; keep the click behavior, but let only the filename text truncate with `block truncate`.
+- Summary: remove `max-w-xs`; use `block truncate text-muted-foreground`.
+- Keep project/date cells as simple text spans.
+- Keep status badges as `inline-flex items-center` with no extra wrapper that could affect alignment.
+
+3. Keep the fix tightly scoped
+- Do not change the table structure, column percentages, or unrelated pages.
+- Do not add flex/grid/justify utilities to `TableHead` or `TableCell`.
+- Leave `src/components/ui/table.tsx` alone unless the primitive’s default header height still needs to be neutralized via `h-auto` from `DataTable`.
+
+Technical details
+- Files to update:
+  - `src/components/shared/DataTable.tsx`
+  - `src/pages/Documents.tsx`
+- Widths remain:
   - 35% Document Name
   - 20% Project
   - 15% Status
   - 15% Summary
   - 15% Created
-- Remove width classes from the Documents column `className` values so sizing comes only from `<colgroup>`.
-
-3. Standardize alignment and remove layout conflicts
-- Ensure DataTable header and body cells use the same base classes: `px-4 py-3 text-left align-middle whitespace-nowrap`.
-- Keep `<TableCell>` free of flex/grid/justify layout classes.
-- Simplify Documents cell renderers so inner content respects the column width:
-  - document name: width-aware clickable row content with clean truncation
-  - summary: truncate within the column instead of using fixed max widths
-  - status: preserve the inline-flex badge styling without extra layout wrappers that affect width
-
-4. Keep the change tightly scoped
-- Do not create new components.
-- Do not change unrelated pages or icons.
-- Make the new DataTable width support optional so Projects, Automations, and Project Detail continue working unchanged.
-
-Technical details
-
-- Most likely implementation: add an optional `width?: string` field to `Column<T>`, then render:
-  `colgroup > col style={{ width: "35%" }}`
-- The current `max-w-[250px]` style on the document name is a likely contributor to the visual drift; I would replace that with `w-full min-w-0 truncate` so the column width comes from the table, not the inner content.
-- No database or backend work is needed for this fix.
-
-Files to modify
-
-- `src/components/shared/DataTable.tsx`
-- `src/pages/Documents.tsx`
+- `StatusBadge` already uses `inline-flex items-center`, so it likely does not need changes.
 
 Verification
-
-- Header labels align exactly with row values on `/documents`
-- Long document names/summaries truncate without shifting the grid
-- Status badges remain vertically centered
-- Horizontal scrolling works on smaller screens without header/body drift
+- Check `/documents` at desktop and smaller widths to confirm each header sits directly over its values.
+- Verify long document names and summaries truncate inside their own columns without shifting the grid.
+- Spot-check other shared `DataTable` usages (Projects, Automations, Project Detail) to ensure the shared padding change still looks consistent.
