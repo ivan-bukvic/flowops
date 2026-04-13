@@ -96,6 +96,21 @@ const Documents = () => {
 
         if (insertError) throw insertError;
 
+        // Emit DOCUMENT_UPLOADED event
+        try {
+          await (supabase as any).rpc("emit_event", {
+            p_org_id: selectedOrgId,
+            p_type: "DOCUMENT_UPLOADED",
+            p_metadata: {
+              document_id: insertData?.[0]?.id ?? null,
+              document_name: file.name,
+              file_url: fileUrl,
+            },
+          });
+        } catch (_) {
+          // Event emission is non-blocking
+        }
+
         toast.success("Document uploaded successfully.");
         await fetchDocs();
       } catch (err: any) {
