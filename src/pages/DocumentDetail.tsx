@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useOrg } from "@/contexts/OrgContext";
 import { supabase } from "@/integrations/supabase/client";
+import { extractFileName } from "@/lib/utils";
 import PageHeader from "@/components/shared/PageHeader";
 import StatusBadge from "@/components/shared/StatusBadge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,6 +11,7 @@ import { ArrowLeft } from "lucide-react";
 interface DocumentDetail {
   id: string;
   file_url: string;
+  original_name: string | null;
   processing_status: string;
   summary: string | null;
   raw_text: string | null;
@@ -35,7 +37,7 @@ const DocumentDetailPage = () => {
       setLoading(true);
       const { data } = await (supabase as any)
         .from("documents")
-        .select("id, file_url, processing_status, summary, raw_text, extracted_deadlines, created_at, project_id")
+        .select("id, file_url, original_name, processing_status, summary, raw_text, extracted_deadlines, created_at, project_id")
         .eq("id", documentId)
         .eq("org_id", selectedOrgId)
         .is("deleted_at", null)
@@ -68,7 +70,7 @@ const DocumentDetailPage = () => {
     );
   }
 
-  const fileName = doc.file_url.split("/").pop() || doc.file_url;
+  const fileName = doc.original_name || extractFileName(doc.file_url);
   const deadlines = doc.extracted_deadlines
     ? Array.isArray(doc.extracted_deadlines) ? doc.extracted_deadlines : [doc.extracted_deadlines]
     : [];

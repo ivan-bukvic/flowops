@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useOrg } from "@/contexts/OrgContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { extractFileName } from "@/lib/utils";
 import PageHeader from "@/components/shared/PageHeader";
 import DataTable, { Column } from "@/components/shared/DataTable";
 import StatusBadge from "@/components/shared/StatusBadge";
@@ -18,13 +19,6 @@ interface DocumentRow {
   created_at: string;
   project_id: string | null;
   project_name: string | null;
-}
-
-function extractFileName(fileUrl: string): string {
-  const last = fileUrl.split("/").pop() || fileUrl;
-  // Strip UUID prefix if present (e.g. "abc123_Proposal.pdf" → "Proposal.pdf")
-  const match = last.match(/^[0-9a-f-]{36}_(.+)$/i);
-  return match ? match[1] : last;
 }
 
 const Documents = () => {
