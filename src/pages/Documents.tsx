@@ -141,7 +141,7 @@ const Documents = () => {
       width: "35%",
       render: (row) => (
         <button
-          className="inline-flex items-center gap-2 font-medium text-primary hover:underline text-sm text-left min-w-0 max-w-xs"
+          className="inline-flex items-center gap-2 font-medium text-primary hover:underline text-sm text-left min-w-0 w-full"
           onClick={(e) => {
             e.stopPropagation();
             navigate(`/documents/${row.id}`);
@@ -173,7 +173,7 @@ const Documents = () => {
       header: "Summary",
       width: "15%",
       render: (row) => (
-        <span className="block min-w-0 truncate max-w-xs text-sm text-muted-foreground">
+        <span className="block min-w-0 truncate text-sm text-muted-foreground">
           {row.summary || <span className="text-muted-foreground/50">—</span>}
         </span>
       ),
