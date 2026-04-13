@@ -1,11 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useOrg } from "@/contexts/OrgContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import PageHeader from "@/components/shared/PageHeader";
 import DataTable, { Column } from "@/components/shared/DataTable";
 import StatusBadge from "@/components/shared/StatusBadge";
-import { Upload } from "lucide-react";
+import { Upload, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 interface DocumentRow {
   id: string;
@@ -19,34 +21,93 @@ interface DocumentRow {
 
 const Documents = () => {
   const { selectedOrgId } = useOrg();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [documents, setDocuments] = useState<DocumentRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
+
+  const fetchDocs = useCallback(async () => {
+    if (!selectedOrgId) return;
+    setLoading(true);
+    const { data } = await (supabase as any)
+      .from("documents")
+      .select("id, file_url, processing_status, summary, created_at, project_id, projects(name)")
+      .eq("org_id", selectedOrgId)
+      .is("deleted_at", null)
+      .order("created_at", { ascending: false });
+    const rows: DocumentRow[] = (data ?? []).map((d: any) => ({
+      id: d.id,
+      file_url: d.file_url,
+      processing_status: d.processing_status,
+      summary: d.summary,
+      created_at: d.created_at,
+      project_id: d.project_id,
+      project_name: d.projects?.name ?? null,
+    }));
+    setDocuments(rows);
+    setLoading(false);
+  }, [selectedOrgId]);
 
   useEffect(() => {
-    if (!selectedOrgId) return;
-    const fetchDocs = async () => {
-      setLoading(true);
-      const { data } = await (supabase as any)
-        .from("documents")
-        .select("id, file_url, processing_status, summary, created_at, project_id, projects(name)")
-        .eq("org_id", selectedOrgId)
-        .is("deleted_at", null)
-        .order("created_at", { ascending: false });
-      const rows: DocumentRow[] = (data ?? []).map((d: any) => ({
-        id: d.id,
-        file_url: d.file_url,
-        processing_status: d.processing_status,
-        summary: d.summary,
-        created_at: d.created_at,
-        project_id: d.project_id,
-        project_name: d.projects?.name ?? null,
-      }));
-      setDocuments(rows);
-      setLoading(false);
-    };
     fetchDocs();
-  }, [selectedOrgId]);
+  }, [fetchDocs]);
+
+  const handleUpload = () => {
+    if (!selectedOrgId || !user) {
+      toast.error("You must be logged in to upload documents.");
+      return;
+    }
+
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".pdf,.docx,.txt";
+
+    input.onchange = async (e: Event) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+
+      setUploading(true);
+      try {
+        const fileExt = file.name.split(".").pop();
+        const uniqueName = `${crypto.randomUUID()}_${file.name}`;
+        const filePath = `${selectedOrgId}/${uniqueName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from("documents")
+          .upload(filePath, file);
+
+        if (uploadError) throw uploadError;
+
+        const { data: urlData } = supabase.storage
+          .from("documents")
+          .getPublicUrl(filePath);
+
+        const fileUrl = urlData?.publicUrl ?? filePath;
+
+        const { error: insertError } = await (supabase as any)
+          .from("documents")
+          .insert({
+            org_id: selectedOrgId,
+            file_url: fileUrl,
+            uploaded_by: user.id,
+            processing_status: "uploaded",
+          });
+
+        if (insertError) throw insertError;
+
+        toast.success("Document uploaded successfully.");
+        await fetchDocs();
+      } catch (err: any) {
+        console.error("Upload failed:", err);
+        toast.error(err.message || "Failed to upload document.");
+      } finally {
+        setUploading(false);
+      }
+    };
+
+    input.click();
+  };
 
   const columns: Column<DocumentRow>[] = [
     {
@@ -103,13 +164,9 @@ const Documents = () => {
       <PageHeader
         title="Documents"
         description="All documents across your workspace"
-        actionLabel="Upload Document"
-        actionIcon={Upload}
-        onAction={() => {
-          const input = document.createElement("input");
-          input.type = "file";
-          input.click();
-        }}
+        actionLabel={uploading ? "Uploading…" : "Upload Document"}
+        actionIcon={uploading ? Loader2 : Upload}
+        onAction={handleUpload}
       />
       <DataTable
         columns={columns}
