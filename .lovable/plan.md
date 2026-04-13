@@ -1,48 +1,53 @@
 
+Problem
 
-## Problem
+The Documents table is still relying on width utility classes on individual header/body cells (`w-[35%]`, etc.) instead of defining the column structure at the table level. That means the browser can still let cell content influence sizing, especially with the current name/summary wrappers, so header and row columns can look slightly off even with `table-fixed`.
 
-The "Upload Document" button (line 108-112) creates a file input and triggers the file picker, but never attaches an `onchange` event listener. After the user selects a file, nothing happens because there's no upload logic.
+Plan
 
-## Plan
+1. Add true column-width support to the existing shared Documents table
+- Update `src/components/shared/DataTable.tsx` so columns can define an explicit width.
+- Render a `<colgroup>` directly inside `<Table>` before `<TableHeader>`.
+- Keep the table itself as `w-full table-fixed`.
+- Keep the table inside the existing responsive `overflow-x-auto` container.
 
-### 1. Add storage RLS policy (migration)
+2. Move Documents widths into `<colgroup>`
+- Update `src/pages/Documents.tsx` so the five columns define widths as:
+  - 35% Document Name
+  - 20% Project
+  - 15% Status
+  - 15% Summary
+  - 15% Created
+- Remove width classes from the Documents column `className` values so sizing comes only from `<colgroup>`.
 
-The `documents` storage bucket already exists but may lack upload policies. Create a migration that adds an INSERT policy on `storage.objects` allowing authenticated users to upload to the `documents` bucket.
+3. Standardize alignment and remove layout conflicts
+- Ensure DataTable header and body cells use the same base classes: `px-4 py-3 text-left align-middle whitespace-nowrap`.
+- Keep `<TableCell>` free of flex/grid/justify layout classes.
+- Simplify Documents cell renderers so inner content respects the column width:
+  - document name: width-aware clickable row content with clean truncation
+  - summary: truncate within the column instead of using fixed max widths
+  - status: preserve the inline-flex badge styling without extra layout wrappers that affect width
 
-```sql
-CREATE POLICY "Authenticated users can upload documents"
-ON storage.objects FOR INSERT TO authenticated
-WITH CHECK (bucket_id = 'documents');
+4. Keep the change tightly scoped
+- Do not create new components.
+- Do not change unrelated pages or icons.
+- Make the new DataTable width support optional so Projects, Automations, and Project Detail continue working unchanged.
 
-CREATE POLICY "Authenticated users can read documents"
-ON storage.objects FOR SELECT TO authenticated
-USING (bucket_id = 'documents');
-```
+Technical details
 
-### 2. Fix the upload handler in `src/pages/Documents.tsx`
+- Most likely implementation: add an optional `width?: string` field to `Column<T>`, then render:
+  `colgroup > col style={{ width: "35%" }}`
+- The current `max-w-[250px]` style on the document name is a likely contributor to the visual drift; I would replace that with `w-full min-w-0 truncate` so the column width comes from the table, not the inner content.
+- No database or backend work is needed for this fix.
 
-Replace the empty `onAction` callback with a complete upload flow:
+Files to modify
 
-- Add `uploading` state
-- Add `onchange` handler to the dynamically created file input
-- Accept `.pdf`, `.docx`, `.txt` files only via `input.accept`
-- On file selection:
-  1. Set `uploading = true`
-  2. Upload file to Supabase Storage (`documents` bucket) with a unique path: `{orgId}/{uuid}_{filename}`
-  3. Get the public/signed URL
-  4. Insert a row into the `documents` table with `org_id`, `file_url`, `uploaded_by` (from auth), `processing_status: 'uploaded'`
-  5. Show success toast via `sonner`
-  6. Re-fetch the documents list
-  7. On error, show error toast
-  8. Set `uploading = false`
-- Import `useAuth` to get the current user ID
-- Import `toast` from `sonner`
-- Pass `uploading` state to show a loading indicator (disable the upload button or show spinner text)
+- `src/components/shared/DataTable.tsx`
+- `src/pages/Documents.tsx`
 
-### Files to modify
-- `src/pages/Documents.tsx` — add upload logic
-- New migration — storage RLS policies
+Verification
 
-No new components needed. Purely fixes the existing broken flow.
-
+- Header labels align exactly with row values on `/documents`
+- Long document names/summaries truncate without shifting the grid
+- Status badges remain vertically centered
+- Horizontal scrolling works on smaller screens without header/body drift
