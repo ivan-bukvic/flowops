@@ -141,14 +141,14 @@ const Documents = () => {
       width: "35%",
       render: (row) => (
         <button
-          className="inline-flex items-center gap-2 font-medium text-primary hover:underline text-sm text-left min-w-0"
+          className="inline-flex items-center gap-2 font-medium text-primary hover:underline text-sm text-left min-w-0 max-w-xs"
           onClick={(e) => {
             e.stopPropagation();
             navigate(`/documents/${row.id}`);
           }}
         >
           <FileText className="h-4 w-4 text-muted-foreground shrink-0" />
-          <span className="truncate">{row.original_name}</span>
+          <span className="block min-w-0 truncate">{row.original_name}</span>
         </button>
       ),
     },
@@ -173,7 +173,7 @@ const Documents = () => {
       header: "Summary",
       width: "15%",
       render: (row) => (
-        <span className="text-sm text-muted-foreground truncate block">
+        <span className="block min-w-0 truncate max-w-xs text-sm text-muted-foreground">
           {row.summary || <span className="text-muted-foreground/50">—</span>}
         </span>
       ),
