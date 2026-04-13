@@ -11,8 +11,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Send, Sparkles, MessageSquare } from "lucide-react";
+import { Send, Sparkles, MessageSquare, Loader2 } from "lucide-react";
 import ColoredIcon from "@/components/shared/ColoredIcon";
+import { toast } from "sonner";
+import ReactMarkdown from "react-markdown";
 
 interface AiQueryRow {
   id: string;
@@ -46,6 +48,8 @@ const AI = () => {
   const [projects, setProjects] = useState<ProjectOption[]>([]);
   const [question, setQuestion] = useState("");
   const [selectedProject, setSelectedProject] = useState("");
+  const [asking, setAsking] = useState(false);
+  const [latestAnswer, setLatestAnswer] = useState<string | null>(null);
 
   useEffect(() => {
     if (!selectedOrgId) return;
@@ -71,6 +75,72 @@ const AI = () => {
     fetchData();
   }, [selectedOrgId]);
 
+  const handleAskAI = async () => {
+    if (!question.trim()) {
+      toast.error("Please enter your question.");
+      return;
+    }
+    if (!selectedProject) {
+      toast.error("Please select a project.");
+      return;
+    }
+
+    setAsking(true);
+    setLatestAnswer(null);
+
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const accessToken = sessionData?.session?.access_token;
+
+      if (!accessToken) {
+        toast.error("Authentication required. Please sign in again.");
+        setAsking(false);
+        return;
+      }
+
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ask-ai`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+          },
+          body: JSON.stringify({
+            question: question.trim(),
+            project_id: selectedProject,
+          }),
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        toast.error(result.error || `Request failed (${response.status})`);
+        setAsking(false);
+        return;
+      }
+
+      setLatestAnswer(result.answer);
+      setQuestion("");
+      toast.success("AI response received!");
+
+      // Refresh query history
+      const { data: refreshed } = await supabase
+        .from("ai_queries")
+        .select("id, question, answer, project_id, created_at")
+        .order("created_at", { ascending: false })
+        .limit(50);
+      if (refreshed) setQueries(refreshed as AiQueryRow[]);
+    } catch (err) {
+      console.error("Ask AI error:", err);
+      toast.error("An unexpected error occurred.");
+    } finally {
+      setAsking(false);
+    }
+  };
+
   return (
     <main className="p-6">
       <PageHeader title="AI Workspace" description="Ask questions about your documents and projects" />
@@ -91,12 +161,13 @@ const AI = () => {
             onChange={(e) => setQuestion(e.target.value)}
             placeholder="Ask a question about your projects or documents..."
             className="min-h-[100px] text-[14px] resize-none border-border focus:border-primary focus:ring-1 focus:ring-primary/30 transition-all"
+            disabled={asking}
           />
 
           <div className="flex items-center justify-between gap-3">
             <Select value={selectedProject} onValueChange={setSelectedProject}>
               <SelectTrigger className="max-w-[220px] h-9 text-[13px] text-muted-foreground border-border/80">
-                <SelectValue placeholder="All projects" />
+                <SelectValue placeholder="Select a project" />
               </SelectTrigger>
               <SelectContent>
                 {projects.map((p) => (
@@ -107,16 +178,32 @@ const AI = () => {
 
             <Button
               className="h-10 px-5 font-semibold shadow-sm"
-              onClick={() => {
-                if (!question.trim()) return;
-              }}
+              onClick={handleAskAI}
+              disabled={asking}
             >
-              <Send className="h-4 w-4 mr-2" />
-              Ask AI
+              {asking ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <Send className="h-4 w-4 mr-2" />
+              )}
+              {asking ? "Thinking..." : "Ask AI"}
             </Button>
           </div>
         </div>
       </div>
+
+      {/* Latest AI Response */}
+      {latestAnswer && (
+        <div className="rounded-lg border border-primary/20 bg-primary/5 p-6 mb-10">
+          <div className="flex items-center gap-2 mb-3">
+            <Sparkles className="h-4 w-4 text-primary" />
+            <h3 className="text-sm font-semibold text-foreground">AI Response</h3>
+          </div>
+          <div className="prose prose-sm max-w-none text-foreground/90">
+            <ReactMarkdown>{latestAnswer}</ReactMarkdown>
+          </div>
+        </div>
+      )}
 
       {/* Query History */}
       <h2 className="text-sm font-bold uppercase tracking-wide text-foreground/80 mb-5">Query History</h2>
