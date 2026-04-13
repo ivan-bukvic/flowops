@@ -22,7 +22,7 @@ const categoryStyles: Record<EventCategory, { bg: string; text: string }> = {
   project: { bg: "bg-emerald-500/10", text: "text-emerald-600" },
   workspace: { bg: "bg-amber-500/10", text: "text-amber-600" },
   automation: { bg: "bg-violet-500/10", text: "text-violet-600" },
-  document: { bg: "bg-rose-500/10", text: "text-rose-600" },
+  document: { bg: "bg-blue-100", text: "text-blue-600" },
 };
 
 const categoryLabels: Record<EventCategory, string> = {
