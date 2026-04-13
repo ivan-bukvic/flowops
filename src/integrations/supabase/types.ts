@@ -160,6 +160,7 @@ export type Database = {
           file_url: string
           id: string
           org_id: string | null
+          original_name: string | null
           processed_at: string | null
           processing_status:
             | Database["public"]["Enums"]["document_status"]
@@ -178,6 +179,7 @@ export type Database = {
           file_url: string
           id?: string
           org_id?: string | null
+          original_name?: string | null
           processed_at?: string | null
           processing_status?:
             | Database["public"]["Enums"]["document_status"]
@@ -196,6 +198,7 @@ export type Database = {
           file_url?: string
           id?: string
           org_id?: string | null
+          original_name?: string | null
           processed_at?: string | null
           processing_status?:
             | Database["public"]["Enums"]["document_status"]
