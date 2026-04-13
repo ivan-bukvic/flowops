@@ -51,7 +51,7 @@ function DataTable<T extends Record<string, any>>({
         <TableHeader>
           <TableRow className="bg-muted/40 hover:bg-muted/40 border-b border-border/80">
             {columns.map((col) => (
-              <TableHead key={col.key} className={`text-[11px] font-semibold text-muted-foreground/70 uppercase tracking-wider h-10 px-4 text-left align-middle whitespace-nowrap ${col.className ?? ""}`}>
+              <TableHead key={col.key} className={`text-[11px] font-semibold text-muted-foreground/70 uppercase tracking-wider h-10 px-4 py-3 text-left align-middle ${col.className ?? ""}`}>
                 {col.header}
               </TableHead>
             ))}
@@ -65,7 +65,7 @@ function DataTable<T extends Record<string, any>>({
               onClick={() => onRowClick?.(row)}
             >
               {columns.map((col) => (
-                <TableCell key={col.key} className={`px-4 py-3 text-left align-middle whitespace-nowrap ${col.className ?? ""}`}>
+                <TableCell key={col.key} className={`px-4 py-3 text-left align-middle ${col.className ?? ""}`}>
                   {col.render ? col.render(row) : row[col.key]}
                 </TableCell>
               ))}
