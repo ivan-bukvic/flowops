@@ -38,8 +38,8 @@ function DataTable<T extends Record<string, any>>({
   }
 
   return (
-    <div className="border border-border/80 rounded-lg overflow-hidden bg-card shadow-[0_1px_3px_0_rgba(0,0,0,0.04)]">
-      <Table>
+    <div className="border border-border/80 rounded-lg overflow-hidden overflow-x-auto bg-card shadow-[0_1px_3px_0_rgba(0,0,0,0.04)]">
+      <Table className="w-full table-fixed">
         <TableHeader>
           <TableRow className="bg-muted/40 hover:bg-muted/40 border-b border-border/80">
             {columns.map((col) => (
