@@ -1,14 +1,14 @@
 import { Badge } from "@/components/ui/badge";
 
 const statusStyles: Record<string, string> = {
-  uploaded: "bg-muted text-muted-foreground",
-  processing: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
-  completed: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
-  failed: "bg-destructive/10 text-destructive",
-  retry: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400",
-  active: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
+  uploaded: "bg-blue-100 text-blue-700",
+  processing: "bg-amber-100 text-amber-700",
+  completed: "bg-emerald-100 text-emerald-700",
+  failed: "bg-red-100 text-red-700",
+  retry: "bg-yellow-100 text-yellow-800",
+  active: "bg-emerald-100 text-emerald-700",
   inactive: "bg-secondary text-secondary-foreground",
-  pending: "bg-secondary text-secondary-foreground",
+  pending: "bg-amber-100 text-amber-700",
 };
 
 interface StatusBadgeProps {
@@ -16,8 +16,11 @@ interface StatusBadgeProps {
 }
 
 const StatusBadge = ({ status }: StatusBadgeProps) => (
-  <Badge variant="outline" className={`text-xs font-medium border-0 px-2.5 py-0.5 rounded-md ${statusStyles[status] ?? "bg-secondary text-secondary-foreground"}`}>
-    {status}
+  <Badge
+    variant="outline"
+    className={`inline-flex items-center rounded-full border-0 px-2.5 py-0.5 text-xs font-medium ${statusStyles[status] ?? "bg-secondary text-secondary-foreground"}`}
+  >
+    {status.charAt(0).toUpperCase() + status.slice(1)}
   </Badge>
 );
 
