@@ -138,10 +138,10 @@ const Documents = () => {
     {
       key: "original_name",
       header: "Document Name",
-      className: "text-left align-middle whitespace-nowrap",
+      className: "w-[35%]",
       render: (row) => (
         <button
-          className="inline-flex items-center gap-2 font-medium text-primary hover:underline text-sm text-left"
+          className="inline-flex items-center gap-2 font-medium text-primary hover:underline text-sm text-left whitespace-nowrap"
           onClick={(e) => {
             e.stopPropagation();
             navigate(`/documents/${row.id}`);
@@ -155,35 +155,35 @@ const Documents = () => {
     {
       key: "project_name",
       header: "Project",
-      className: "text-left align-middle whitespace-nowrap",
+      className: "w-[20%]",
       render: (row) => (
-        <span className="text-sm text-muted-foreground">
-          {row.project_name || "—"}
+        <span className="text-sm text-muted-foreground whitespace-nowrap">
+          {row.project_name || <span className="text-muted-foreground/50">—</span>}
         </span>
       ),
     },
     {
       key: "processing_status",
       header: "Status",
-      className: "text-left align-middle whitespace-nowrap",
+      className: "w-[15%]",
       render: (row) => <StatusBadge status={row.processing_status} />,
     },
     {
       key: "summary",
       header: "Summary",
-      className: "text-left align-middle",
+      className: "w-[15%]",
       render: (row) => (
-        <span className="text-sm text-muted-foreground truncate max-w-[300px] block">
-          {row.summary || "—"}
+        <span className="text-sm text-muted-foreground truncate block">
+          {row.summary || <span className="text-muted-foreground/50">—</span>}
         </span>
       ),
     },
     {
       key: "created_at",
       header: "Created",
-      className: "text-left align-middle whitespace-nowrap",
+      className: "w-[15%]",
       render: (row) => (
-        <span className="text-sm text-muted-foreground">
+        <span className="text-sm text-muted-foreground whitespace-nowrap">
           {new Date(row.created_at).toLocaleDateString("en-US", {
             month: "short",
             day: "numeric",
