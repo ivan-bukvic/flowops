@@ -1,41 +1,39 @@
 
-Problem
-- The remaining misalignment is coming from shared `DataTable` styling, not the `<colgroup>`. Right now the header and body still use different box-model rules: the header has custom uppercase/smaller text plus `h-10 px-4`, while cells use a separate `px-4 py-3` pattern. The Documents renderers also still have width-constraining wrappers (`max-w-xs`) that can fight the column widths visually.
 
-Plan
+## Problem
 
-1. Normalize the shared table spacing/alignment
-- Update `src/components/shared/DataTable.tsx` so header and body use the same padding/alignment foundation.
-- Set `<TableHead>` to: `h-auto px-6 py-4 text-left align-middle text-sm font-medium text-muted-foreground`
-- Set `<TableCell>` to: `px-6 py-4 text-left align-middle`
-- Remove the current uppercase/tracking/smaller header styling and the old `px-4 py-3` values.
-- Keep the existing `<colgroup>` and `className="w-full table-fixed"` on the table.
+Three places display document names by parsing `file_url` instead of using the stored `original_name`:
 
-2. Simplify Documents cell content so the table owns the widths
-- Update `src/pages/Documents.tsx` only.
-- Document Name: remove `max-w-xs` and any width caps; keep the click behavior, but let only the filename text truncate with `block truncate`.
-- Summary: remove `max-w-xs`; use `block truncate text-muted-foreground`.
-- Keep project/date cells as simple text spans.
-- Keep status badges as `inline-flex items-center` with no extra wrapper that could affect alignment.
+1. **DocumentDetail.tsx** (line 71) -- does `file_url.split("/").pop()`, showing the UUID-prefixed storage name
+2. **ProjectDetail.tsx** (line 287) -- same `file_url.split("/").pop()` in the documents tab render
+3. **ProjectDetail.tsx** (line 201-207) -- upload insert doesn't save `original_name`, and the optimistic local row doesn't include it either
 
-3. Keep the fix tightly scoped
-- Do not change the table structure, column percentages, or unrelated pages.
-- Do not add flex/grid/justify utilities to `TableHead` or `TableCell`.
-- Leave `src/components/ui/table.tsx` alone unless the primitive’s default header height still needs to be neutralized via `h-auto` from `DataTable`.
+The global Documents page (`Documents.tsx`) already handles this correctly via `original_name || extractFileName(file_url)`.
 
-Technical details
-- Files to update:
-  - `src/components/shared/DataTable.tsx`
-  - `src/pages/Documents.tsx`
-- Widths remain:
-  - 35% Document Name
-  - 20% Project
-  - 15% Status
-  - 15% Summary
-  - 15% Created
-- `StatusBadge` already uses `inline-flex items-center`, so it likely does not need changes.
+## Plan
 
-Verification
-- Check `/documents` at desktop and smaller widths to confirm each header sits directly over its values.
-- Verify long document names and summaries truncate inside their own columns without shifting the grid.
-- Spot-check other shared `DataTable` usages (Projects, Automations, Project Detail) to ensure the shared padding change still looks consistent.
+### 1. Fix DocumentDetail.tsx
+- Add `original_name` to the select query (line 38)
+- Add `original_name` to the `DocumentDetail` interface
+- Replace line 71's `file_url.split("/").pop()` with `doc.original_name || extractFileName(doc.file_url)` using the same UUID-stripping helper from Documents.tsx
+
+### 2. Fix ProjectDetail.tsx — display
+- Add `original_name` to the `DocumentRow` interface
+- Add `original_name` to the select query (line 182)
+- Replace line 287's `file_url.split("/").pop()` with `row.original_name || extractFileName(row.file_url)`
+
+### 3. Fix ProjectDetail.tsx — upload
+- Add `original_name: file.name` to the insert call (line 201-207)
+- Add `original_name: file.name` to the optimistic local row (line 214-222)
+
+### 4. Extract shared helper
+- Move `extractFileName` to `src/lib/utils.ts` so all three files can import it without duplication
+
+### Files to modify
+- `src/lib/utils.ts` — add `extractFileName` helper
+- `src/pages/DocumentDetail.tsx` — fetch and display `original_name`
+- `src/pages/ProjectDetail.tsx` — fetch, display, and store `original_name`
+- `src/pages/Documents.tsx` — import shared helper instead of local function
+
+No database changes needed — `original_name` column already exists.
+
