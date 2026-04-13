@@ -504,12 +504,7 @@ export type Database = {
       }
     }
     Enums: {
-      document_status:
-        | "uploaded"
-        | "processing"
-        | "completed"
-        | "failed"
-        | "retry"
+      document_status: "uploaded" | "processing" | "failed"
       event_type:
         | "WORKSPACE_CREATED"
         | "OWNERSHIP_TRANSFERRED"
@@ -650,13 +645,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      document_status: [
-        "uploaded",
-        "processing",
-        "completed",
-        "failed",
-        "retry",
-      ],
+      document_status: ["uploaded", "processing", "failed"],
       event_type: [
         "WORKSPACE_CREATED",
         "OWNERSHIP_TRANSFERRED",
