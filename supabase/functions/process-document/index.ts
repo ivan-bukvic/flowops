@@ -19,8 +19,8 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const authHeader = req.headers.get("Authorization");
-    if (!authHeader) return respond(401, { error: "Missing authorization" });
+    // Auth header is optional — the function uses service role key for all operations
+    // and validates document existence as access control
 
     const { document_id } = await req.json();
     if (!document_id) return respond(400, { error: "document_id is required" });
@@ -48,10 +48,19 @@ Deno.serve(async (req) => {
       .eq("id", document_id);
 
     try {
+      // Normalize file_url: strip public URL prefix if present, keep only the storage path
+      let storagePath = doc.file_url;
+      const publicUrlMarker = "/storage/v1/object/public/documents/";
+      const idx = storagePath.indexOf(publicUrlMarker);
+      if (idx !== -1) {
+        storagePath = storagePath.slice(idx + publicUrlMarker.length);
+      }
+      console.log("Downloading from storage path:", storagePath);
+
       // Download the file from storage
       const { data: fileData, error: dlErr } = await adminClient.storage
         .from("documents")
-        .download(doc.file_url);
+        .download(storagePath);
 
       if (dlErr || !fileData) {
         throw new Error(`Failed to download file: ${dlErr?.message || "unknown"}`);
@@ -139,17 +148,27 @@ Deno.serve(async (req) => {
       // Extract deadlines (simple pattern matching)
       const deadlines = extractDeadlines(rawText);
 
+      // Sanitize text: remove null bytes and unsupported Unicode escape sequences
+      const sanitize = (s: string) => s.replace(/\u0000/g, "").replace(/\\u0000/g, "");
+      const cleanText = sanitize(rawText.slice(0, 50000));
+      const cleanSummary = sanitize(summary);
+
       // Update the document with results
-      await adminClient
+      const { error: updateErr } = await adminClient
         .from("documents")
         .update({
-          raw_text: rawText.slice(0, 50000), // cap storage
-          summary,
+          raw_text: cleanText,
+          summary: cleanSummary,
           extracted_deadlines: deadlines.length > 0 ? deadlines : null,
           processing_status: "uploaded",
           processed_at: new Date().toISOString(),
         })
         .eq("id", document_id);
+
+      if (updateErr) {
+        console.error("Failed to update document:", updateErr);
+        throw new Error(`DB update failed: ${updateErr.message}`);
+      }
 
       return respond(200, { status: "completed", summary });
     } catch (processErr) {

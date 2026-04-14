@@ -6,7 +6,9 @@ import { extractFileName } from "@/lib/utils";
 import PageHeader from "@/components/shared/PageHeader";
 import StatusBadge from "@/components/shared/StatusBadge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft, RefreshCw, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 interface DocumentDetail {
   id: string;
@@ -30,32 +32,68 @@ const DocumentDetailPage = () => {
   const [doc, setDoc] = useState<DocumentDetail | null>(null);
   const [projectName, setProjectName] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [reprocessing, setReprocessing] = useState(false);
+
+  const fetchDoc = async () => {
+    if (!documentId || !selectedOrgId) return;
+    setLoading(true);
+    const { data } = await (supabase as any)
+      .from("documents")
+      .select("id, file_url, original_name, processing_status, summary, raw_text, extracted_deadlines, created_at, project_id")
+      .eq("id", documentId)
+      .eq("org_id", selectedOrgId)
+      .is("deleted_at", null)
+      .maybeSingle();
+    setDoc(data as DocumentDetail | null);
+
+    if (data?.project_id) {
+      const { data: proj } = await (supabase as any)
+        .from("projects")
+        .select("name")
+        .eq("id", data.project_id)
+        .maybeSingle();
+      setProjectName((proj as ProjectName | null)?.name ?? null);
+    }
+    setLoading(false);
+  };
 
   useEffect(() => {
-    if (!documentId || !selectedOrgId) return;
-    const fetch = async () => {
-      setLoading(true);
-      const { data } = await (supabase as any)
-        .from("documents")
-        .select("id, file_url, original_name, processing_status, summary, raw_text, extracted_deadlines, created_at, project_id")
-        .eq("id", documentId)
-        .eq("org_id", selectedOrgId)
-        .is("deleted_at", null)
-        .maybeSingle();
-      setDoc(data as DocumentDetail | null);
-
-      if (data?.project_id) {
-        const { data: proj } = await (supabase as any)
-          .from("projects")
-          .select("name")
-          .eq("id", data.project_id)
-          .maybeSingle();
-        setProjectName((proj as ProjectName | null)?.name ?? null);
-      }
-      setLoading(false);
-    };
-    fetch();
+    fetchDoc();
   }, [documentId, selectedOrgId]);
+
+  const handleReprocess = async () => {
+    if (!doc) return;
+    setReprocessing(true);
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const accessToken = sessionData?.session?.access_token;
+      if (!accessToken) {
+        toast.error("Authentication required.");
+        return;
+      }
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/process-document`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        },
+        body: JSON.stringify({ document_id: doc.id }),
+      });
+      if (res.ok) {
+        toast.success("Document reprocessed successfully.");
+        await fetchDoc();
+      } else {
+        const err = await res.json();
+        toast.error(err.error || "Reprocessing failed.");
+      }
+    } catch (e) {
+      console.error("Reprocess error:", e);
+      toast.error("Reprocessing failed.");
+    } finally {
+      setReprocessing(false);
+    }
+  };
 
   if (loading) {
     return <main className="p-6"><p className="text-sm text-muted-foreground">Loading...</p></main>;
@@ -84,6 +122,16 @@ const DocumentDetailPage = () => {
       <div className="flex items-center gap-3 mb-1">
         <PageHeader title={fileName} />
         <StatusBadge status={doc.processing_status} />
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleReprocess}
+          disabled={reprocessing}
+          className="ml-auto"
+        >
+          {reprocessing ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <RefreshCw className="h-4 w-4 mr-1" />}
+          {reprocessing ? "Processing..." : "Reprocess"}
+        </Button>
       </div>
       <div className="flex items-center gap-4 text-sm text-muted-foreground mb-6">
         {projectName && <span>Project: {projectName}</span>}

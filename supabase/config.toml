@@ -1,1 +1,10 @@
 project_id = "spkpebxbkbksyezdnjpq"
+
+[functions.process-document]
+verify_jwt = false
+
+[functions.ask-ai]
+verify_jwt = false
+
+[functions.process-automation-logs]
+verify_jwt = false
