@@ -22,7 +22,7 @@ Deno.serve(async (req) => {
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) return respond(401, { error: "Missing authorization" });
 
-    const { question, project_id } = await req.json();
+    const { question, project_id, document_id } = await req.json();
     if (!question?.trim()) return respond(400, { error: "Question is required" });
     if (!project_id) return respond(400, { error: "Project ID is required" });
 
