@@ -9,6 +9,7 @@ import { extractFileName } from "@/lib/utils";
 import PageHeader from "@/components/shared/PageHeader";
 import DataTable, { Column } from "@/components/shared/DataTable";
 import MembersList from "@/components/projects/MembersList";
+import ProjectAiQueries from "@/components/projects/ProjectAiQueries";
 import StatusBadge from "@/components/shared/StatusBadge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -214,18 +215,57 @@ const ProjectDetail = () => {
     }
 
     toast.success("Document uploaded successfully");
+
+    // Get the inserted document id
+    const { data: insertedDoc } = await supabase
+      .from("documents")
+      .select("id")
+      .eq("file_url", filePath)
+      .maybeSingle();
+
     setDocuments((prev) => [
       {
-        id: crypto.randomUUID(),
+        id: insertedDoc?.id || crypto.randomUUID(),
         file_url: filePath,
         original_name: file.name,
-        processing_status: "uploaded",
+        processing_status: "processing",
         summary: null,
         extracted_deadlines: null,
         created_at: new Date().toISOString(),
       },
       ...prev,
     ]);
+
+    // Trigger document processing in the background
+    if (insertedDoc?.id) {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const accessToken = sessionData?.session?.access_token;
+      if (accessToken) {
+        fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/process-document`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+          },
+          body: JSON.stringify({ document_id: insertedDoc.id }),
+        })
+          .then(async (res) => {
+            if (res.ok) {
+              // Refresh documents to show summary
+              const { data } = await supabase
+                .from("documents")
+                .select("id, file_url, original_name, processing_status, summary, extracted_deadlines, created_at")
+                .eq("project_id", projectId)
+                .is("deleted_at", null)
+                .order("created_at", { ascending: false });
+              if (data) setDocuments(data as DocumentRow[]);
+              toast.success("Document processed successfully");
+            }
+          })
+          .catch(() => {});
+      }
+    }
   };
 
   const handleAddMember = async () => {
@@ -393,9 +433,7 @@ const ProjectDetail = () => {
         </TabsContent>
 
         <TabsContent value="ai">
-          <div className="mt-4">
-            <p className="text-sm text-muted-foreground">AI queries for this project will appear here.</p>
-          </div>
+          <ProjectAiQueries projectId={projectId!} />
         </TabsContent>
 
         <TabsContent value="members">

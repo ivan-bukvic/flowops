@@ -50,23 +50,29 @@ export type Database = {
         Row: {
           answer: string | null
           created_at: string | null
+          document_id: string | null
           id: string
           project_id: string | null
           question: string | null
+          user_id: string | null
         }
         Insert: {
           answer?: string | null
           created_at?: string | null
+          document_id?: string | null
           id?: string
           project_id?: string | null
           question?: string | null
+          user_id?: string | null
         }
         Update: {
           answer?: string | null
           created_at?: string | null
+          document_id?: string | null
           id?: string
           project_id?: string | null
           question?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
