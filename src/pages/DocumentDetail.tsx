@@ -32,6 +32,30 @@ const DocumentDetailPage = () => {
   const [doc, setDoc] = useState<DocumentDetail | null>(null);
   const [projectName, setProjectName] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [reprocessing, setReprocessing] = useState(false);
+
+  const fetchDoc = async () => {
+    if (!documentId || !selectedOrgId) return;
+    setLoading(true);
+    const { data } = await (supabase as any)
+      .from("documents")
+      .select("id, file_url, original_name, processing_status, summary, raw_text, extracted_deadlines, created_at, project_id")
+      .eq("id", documentId)
+      .eq("org_id", selectedOrgId)
+      .is("deleted_at", null)
+      .maybeSingle();
+    setDoc(data as DocumentDetail | null);
+
+    if (data?.project_id) {
+      const { data: proj } = await (supabase as any)
+        .from("projects")
+        .select("name")
+        .eq("id", data.project_id)
+        .maybeSingle();
+      setProjectName((proj as ProjectName | null)?.name ?? null);
+    }
+    setLoading(false);
+  };
 
   useEffect(() => {
     if (!documentId || !selectedOrgId) return;
