@@ -9,6 +9,7 @@ import { extractFileName } from "@/lib/utils";
 import PageHeader from "@/components/shared/PageHeader";
 import DataTable, { Column } from "@/components/shared/DataTable";
 import MembersList from "@/components/projects/MembersList";
+import ProjectAiQueries from "@/components/projects/ProjectAiQueries";
 import StatusBadge from "@/components/shared/StatusBadge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
