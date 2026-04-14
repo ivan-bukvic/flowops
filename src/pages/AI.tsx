@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Send, Sparkles, MessageSquare, Loader2 } from "lucide-react";
+import { Send, Sparkles, MessageSquare, Loader2, FileText } from "lucide-react";
 import ColoredIcon from "@/components/shared/ColoredIcon";
 import { toast } from "sonner";
 import ReactMarkdown from "react-markdown";
@@ -27,6 +27,12 @@ interface AiQueryRow {
 interface ProjectOption {
   id: string;
   name: string;
+}
+
+interface DocumentOption {
+  id: string;
+  original_name: string | null;
+  file_url: string;
 }
 
 function timeAgo(dateStr: string): string {
@@ -46,8 +52,10 @@ const AI = () => {
   const [queries, setQueries] = useState<AiQueryRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [projects, setProjects] = useState<ProjectOption[]>([]);
+  const [documents, setDocuments] = useState<DocumentOption[]>([]);
   const [question, setQuestion] = useState("");
   const [selectedProject, setSelectedProject] = useState("");
+  const [selectedDocument, setSelectedDocument] = useState("all");
   const [asking, setAsking] = useState(false);
   const [latestAnswer, setLatestAnswer] = useState<string | null>(null);
 
@@ -75,6 +83,26 @@ const AI = () => {
     fetchData();
   }, [selectedOrgId]);
 
+  // Fetch documents when project changes
+  useEffect(() => {
+    if (!selectedProject) {
+      setDocuments([]);
+      setSelectedDocument("all");
+      return;
+    }
+    const fetchDocs = async () => {
+      const { data } = await supabase
+        .from("documents")
+        .select("id, original_name, file_url")
+        .eq("project_id", selectedProject)
+        .is("deleted_at", null)
+        .order("created_at", { ascending: false });
+      setDocuments((data as DocumentOption[]) ?? []);
+      setSelectedDocument("all");
+    };
+    fetchDocs();
+  }, [selectedProject]);
+
   const handleAskAI = async () => {
     if (!question.trim()) {
       toast.error("Please enter your question.");
@@ -98,6 +126,14 @@ const AI = () => {
         return;
       }
 
+      const body: Record<string, string> = {
+        question: question.trim(),
+        project_id: selectedProject,
+      };
+      if (selectedDocument !== "all") {
+        body.document_id = selectedDocument;
+      }
+
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ask-ai`,
         {
@@ -107,10 +143,7 @@ const AI = () => {
             Authorization: `Bearer ${accessToken}`,
             apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
           },
-          body: JSON.stringify({
-            question: question.trim(),
-            project_id: selectedProject,
-          }),
+          body: JSON.stringify(body),
         }
       );
 
@@ -164,7 +197,7 @@ const AI = () => {
             disabled={asking}
           />
 
-          <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 flex-wrap">
             <Select value={selectedProject} onValueChange={setSelectedProject}>
               <SelectTrigger className="max-w-[220px] h-9 text-[13px] text-muted-foreground border-border/80">
                 <SelectValue placeholder="Select a project" />
@@ -176,18 +209,39 @@ const AI = () => {
               </SelectContent>
             </Select>
 
-            <Button
-              className="h-10 px-5 font-semibold shadow-sm"
-              onClick={handleAskAI}
-              disabled={asking}
+            <Select
+              value={selectedDocument}
+              onValueChange={setSelectedDocument}
+              disabled={!selectedProject}
             >
-              {asking ? (
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              ) : (
-                <Send className="h-4 w-4 mr-2" />
-              )}
-              {asking ? "Thinking..." : "Ask AI"}
-            </Button>
+              <SelectTrigger className="max-w-[240px] h-9 text-[13px] text-muted-foreground border-border/80">
+                <FileText className="h-3.5 w-3.5 mr-1.5 shrink-0" />
+                <SelectValue placeholder="Select a document (optional)" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Documents</SelectItem>
+                {documents.map((d) => (
+                  <SelectItem key={d.id} value={d.id}>
+                    {d.original_name || d.file_url.split("/").pop() || "Untitled"}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <div className="ml-auto">
+              <Button
+                className="h-10 px-5 font-semibold shadow-sm"
+                onClick={handleAskAI}
+                disabled={asking}
+              >
+                {asking ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <Send className="h-4 w-4 mr-2" />
+                )}
+                {asking ? "Thinking..." : "Ask AI"}
+              </Button>
+            </div>
           </div>
         </div>
       </div>
