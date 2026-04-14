@@ -48,10 +48,19 @@ Deno.serve(async (req) => {
       .eq("id", document_id);
 
     try {
+      // Normalize file_url: strip public URL prefix if present, keep only the storage path
+      let storagePath = doc.file_url;
+      const publicUrlMarker = "/storage/v1/object/public/documents/";
+      const idx = storagePath.indexOf(publicUrlMarker);
+      if (idx !== -1) {
+        storagePath = storagePath.slice(idx + publicUrlMarker.length);
+      }
+      console.log("Downloading from storage path:", storagePath);
+
       // Download the file from storage
       const { data: fileData, error: dlErr } = await adminClient.storage
         .from("documents")
-        .download(doc.file_url);
+        .download(storagePath);
 
       if (dlErr || !fileData) {
         throw new Error(`Failed to download file: ${dlErr?.message || "unknown"}`);
