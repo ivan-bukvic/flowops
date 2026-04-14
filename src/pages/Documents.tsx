@@ -81,17 +81,11 @@ const Documents = () => {
 
         if (uploadError) throw uploadError;
 
-        const { data: urlData } = supabase.storage
-          .from("documents")
-          .getPublicUrl(filePath);
-
-        const fileUrl = urlData?.publicUrl ?? filePath;
-
         const { data: insertData, error: insertError } = await (supabase as any)
           .from("documents")
           .insert({
             org_id: selectedOrgId,
-            file_url: fileUrl,
+            file_url: filePath,
             original_name: file.name,
             uploaded_by: user.id,
             processing_status: "uploaded",
@@ -100,15 +94,17 @@ const Documents = () => {
 
         if (insertError) throw insertError;
 
+        const docId = insertData?.[0]?.id;
+
         // Emit DOCUMENT_UPLOADED event
         try {
           await (supabase as any).rpc("emit_event", {
             p_org_id: selectedOrgId,
             p_type: "DOCUMENT_UPLOADED",
             p_metadata: {
-              document_id: insertData?.[0]?.id ?? null,
+              document_id: docId ?? null,
               document_name: file.name,
-              file_url: fileUrl,
+              file_url: filePath,
             },
           });
         } catch (_) {
@@ -117,6 +113,27 @@ const Documents = () => {
 
         toast.success("Document uploaded successfully.");
         await fetchDocs();
+
+        // Trigger document processing
+        if (docId) {
+          const { data: sessionData } = await supabase.auth.getSession();
+          const accessToken = sessionData?.session?.access_token;
+          if (accessToken) {
+            fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/process-document`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${accessToken}`,
+                apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+              },
+              body: JSON.stringify({ document_id: docId }),
+            })
+              .then(async () => {
+                await fetchDocs();
+              })
+              .catch((err) => console.error("Processing trigger failed:", err));
+          }
+        }
       } catch (err: any) {
         console.error("Upload failed:", err);
         toast.error(err.message || "Failed to upload document.");

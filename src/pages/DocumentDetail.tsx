@@ -6,7 +6,9 @@ import { extractFileName } from "@/lib/utils";
 import PageHeader from "@/components/shared/PageHeader";
 import StatusBadge from "@/components/shared/StatusBadge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft, RefreshCw, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 interface DocumentDetail {
   id: string;
