@@ -64,6 +64,7 @@ const ProjectDetail = () => {
   const { selectedOrgId } = useOrg();
   const { user } = useAuth();
   const [project, setProject] = useState<ProjectRow | null>(null);
+  const [creatorDisplay, setCreatorDisplay] = useState("Unknown User");
   const [loading, setLoading] = useState(true);
   const [projectEvents, setProjectEvents] = useState<EventRow[]>([]);
   const [eventsLoading, setEventsLoading] = useState(true);
@@ -90,6 +91,14 @@ const ProjectDetail = () => {
         .is("deleted_at", null)
         .maybeSingle();
       setProject(data as ProjectRow | null);
+      if (data?.created_by) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("email")
+          .eq("id", data.created_by)
+          .maybeSingle();
+        setCreatorDisplay(profile?.email || "Unknown User");
+      }
       setLoading(false);
     };
     fetchProject();
