@@ -17,6 +17,7 @@ import { Badge } from "@/components/ui/badge";
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Upload, ArrowLeft } from "lucide-react";
+import ProjectSettings from "@/components/projects/ProjectSettings";
 
 const supabase: any = rawSupabase;
 
