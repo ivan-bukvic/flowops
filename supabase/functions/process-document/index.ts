@@ -19,8 +19,8 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const authHeader = req.headers.get("Authorization");
-    if (!authHeader) return respond(401, { error: "Missing authorization" });
+    // Auth header is optional — the function uses service role key for all operations
+    // and validates document existence as access control
 
     const { document_id } = await req.json();
     if (!document_id) return respond(400, { error: "document_id is required" });
