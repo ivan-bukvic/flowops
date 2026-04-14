@@ -148,12 +148,17 @@ Deno.serve(async (req) => {
       // Extract deadlines (simple pattern matching)
       const deadlines = extractDeadlines(rawText);
 
+      // Sanitize text: remove null bytes and unsupported Unicode escape sequences
+      const sanitize = (s: string) => s.replace(/\u0000/g, "").replace(/\\u0000/g, "");
+      const cleanText = sanitize(rawText.slice(0, 50000));
+      const cleanSummary = sanitize(summary);
+
       // Update the document with results
       const { error: updateErr } = await adminClient
         .from("documents")
         .update({
-          raw_text: rawText.slice(0, 50000), // cap storage
-          summary,
+          raw_text: cleanText,
+          summary: cleanSummary,
           extracted_deadlines: deadlines.length > 0 ? deadlines : null,
           processing_status: "uploaded",
           processed_at: new Date().toISOString(),
