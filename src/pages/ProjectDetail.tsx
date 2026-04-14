@@ -392,7 +392,7 @@ const ProjectDetail = () => {
               </div>
               <div>
                 <p className="text-xs text-muted-foreground">Created By</p>
-                <p className="text-sm font-mono">{project.created_by}</p>
+                <p className="text-sm">{creatorDisplay}</p>
               </div>
           </div>
 
@@ -480,13 +480,12 @@ const ProjectDetail = () => {
         </TabsContent>
 
         <TabsContent value="settings">
-          <div className="rounded-lg border border-border bg-card p-5 space-y-3 mt-4">
-              <div>
-                <p className="text-xs text-muted-foreground">Project ID</p>
-                <p className="text-sm font-mono">{project.id}</p>
-              </div>
-              <p className="text-sm text-muted-foreground">Project settings coming soon.</p>
-          </div>
+          <ProjectSettings
+            project={project}
+            creatorDisplay={creatorDisplay}
+            isAdmin={isAdmin}
+            onProjectUpdate={(updates) => setProject((prev) => prev ? { ...prev, ...updates } : prev)}
+          />
         </TabsContent>
       </Tabs>
     </main>
