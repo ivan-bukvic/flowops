@@ -111,11 +111,15 @@ Deno.serve(async (req) => {
     const aiData = await aiResponse.json();
     const answer = aiData.choices?.[0]?.message?.content ?? "No response generated.";
 
+    // Extract user_id from JWT
+    const { data: { user } } = await userClient.auth.getUser();
+
     // Save query to ai_queries table
     await adminClient.from("ai_queries").insert({
       question,
       answer,
       project_id,
+      user_id: user?.id ?? null,
     });
 
     return respond(200, { answer });

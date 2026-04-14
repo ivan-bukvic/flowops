@@ -393,9 +393,7 @@ const ProjectDetail = () => {
         </TabsContent>
 
         <TabsContent value="ai">
-          <div className="mt-4">
-            <p className="text-sm text-muted-foreground">AI queries for this project will appear here.</p>
-          </div>
+          <ProjectAiQueries projectId={projectId!} />
         </TabsContent>
 
         <TabsContent value="members">
