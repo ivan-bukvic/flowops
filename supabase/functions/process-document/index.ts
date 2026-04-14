@@ -149,7 +149,7 @@ Deno.serve(async (req) => {
       const deadlines = extractDeadlines(rawText);
 
       // Update the document with results
-      await adminClient
+      const { error: updateErr } = await adminClient
         .from("documents")
         .update({
           raw_text: rawText.slice(0, 50000), // cap storage
@@ -159,6 +159,11 @@ Deno.serve(async (req) => {
           processed_at: new Date().toISOString(),
         })
         .eq("id", document_id);
+
+      if (updateErr) {
+        console.error("Failed to update document:", updateErr);
+        throw new Error(`DB update failed: ${updateErr.message}`);
+      }
 
       return respond(200, { status: "completed", summary });
     } catch (processErr) {
