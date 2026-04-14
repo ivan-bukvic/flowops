@@ -50,16 +50,24 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    // Get documents for this project
-    const { data: docs } = await adminClient
+    // Get documents for this project (optionally filtered by document_id)
+    let docQuery = adminClient
       .from("documents")
       .select("id, original_name, summary, raw_text")
       .eq("project_id", project_id)
-      .is("deleted_at", null)
-      .limit(20);
+      .is("deleted_at", null);
+
+    if (document_id) {
+      docQuery = docQuery.eq("id", document_id);
+    }
+
+    const { data: docs } = await docQuery.limit(20);
 
     if (!docs || docs.length === 0) {
-      return respond(400, { error: "No documents found for this project. Upload documents first." });
+      const msg = document_id
+        ? "The selected document has no content. Try reprocessing it."
+        : "No documents found for this project. Upload documents first.";
+      return respond(400, { error: msg });
     }
 
     // Build context from document summaries and raw text
@@ -119,6 +127,7 @@ Deno.serve(async (req) => {
       question,
       answer,
       project_id,
+      document_id: document_id || null,
       user_id: user?.id ?? null,
     });
 
