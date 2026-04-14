@@ -122,6 +122,16 @@ const DocumentDetailPage = () => {
       <div className="flex items-center gap-3 mb-1">
         <PageHeader title={fileName} />
         <StatusBadge status={doc.processing_status} />
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleReprocess}
+          disabled={reprocessing}
+          className="ml-auto"
+        >
+          {reprocessing ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <RefreshCw className="h-4 w-4 mr-1" />}
+          {reprocessing ? "Processing..." : "Reprocess"}
+        </Button>
       </div>
       <div className="flex items-center gap-4 text-sm text-muted-foreground mb-6">
         {projectName && <span>Project: {projectName}</span>}
