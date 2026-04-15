@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { getDisplayName } from "@/lib/utils";
 import ColoredIcon from "@/components/shared/ColoredIcon";
 import {
   FolderPlus, Pencil, Trash2, UserPlus, UserMinus, Building2, Crown, Zap, FileText,
@@ -142,14 +143,11 @@ const RecentActivity = ({ orgId }: RecentActivityProps) => {
       if (actorIds.length > 0) {
         const { data: profiles } = await supabase
           .from("profiles")
-          .select("id, email")
+          .select("id, full_name, email")
           .in("id", actorIds);
         const map: Record<string, string> = {};
         (profiles ?? []).forEach((p) => {
-          const email = p.email ?? "Unknown";
-          // Use the part before @ as display name, capitalize first letter
-          const name = email.split("@")[0];
-          map[p.id] = name.charAt(0).toUpperCase() + name.slice(1);
+          map[p.id] = getDisplayName(p as any);
         });
         setActorMap(map);
       }

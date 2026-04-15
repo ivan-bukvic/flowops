@@ -5,7 +5,7 @@ import { useOrg } from "@/contexts/OrgContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase as rawSupabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { extractFileName } from "@/lib/utils";
+import { extractFileName, getDisplayName } from "@/lib/utils";
 import PageHeader from "@/components/shared/PageHeader";
 import DataTable, { Column } from "@/components/shared/DataTable";
 import MembersList from "@/components/projects/MembersList";
@@ -41,7 +41,7 @@ interface MemberRow {
   user_id: string;
   role: string;
   created_at: string;
-  profiles: { email: string | null } | null;
+  profiles: { full_name: string | null; email: string | null } | null;
 }
 
 interface DocumentRow {
@@ -57,6 +57,7 @@ interface DocumentRow {
 interface OrgMemberOption {
   user_id: string;
   email: string;
+  full_name: string | null;
 }
 
 const ProjectDetail = () => {
@@ -94,10 +95,10 @@ const ProjectDetail = () => {
       if (data?.created_by) {
         const { data: profile } = await supabase
           .from("profiles")
-          .select("email")
+          .select("full_name, email")
           .eq("id", data.created_by)
           .maybeSingle();
-        setCreatorDisplay(profile?.email || "Unknown User");
+        setCreatorDisplay(getDisplayName(profile));
       }
       setLoading(false);
     };
@@ -145,7 +146,7 @@ const ProjectDetail = () => {
 
     const userIds = members.map((m: any) => m.user_id);
 
-    const { data: profiles } = await supabase.from("profiles").select("id, email").in("id", userIds);
+    const { data: profiles } = await supabase.from("profiles").select("id, full_name, email").in("id", userIds);
 
     const merged = members.map((m: any) => {
       const profile = profiles?.find((p: any) => p.id === m.user_id);
@@ -153,6 +154,7 @@ const ProjectDetail = () => {
       return {
         ...m,
         profiles: {
+          full_name: profile?.full_name || null,
           email: profile?.email || m.user_id,
         },
       };
@@ -182,7 +184,7 @@ const ProjectDetail = () => {
   useEffect(() => {
     if (!selectedOrgId || !isAdmin) return;
     supabase.rpc("get_org_members_with_email", { p_org_id: selectedOrgId }).then(({ data }: any) => {
-      setOrgMembers((data ?? []).map((m: any) => ({ user_id: m.user_id, email: m.email ?? "" })));
+      setOrgMembers((data ?? []).map((m: any) => ({ user_id: m.user_id, email: m.email ?? "", full_name: m.full_name ?? null })));
     });
   }, [selectedOrgId, isAdmin]);
 
@@ -456,7 +458,7 @@ const ProjectDetail = () => {
                 <SelectContent>
                   {orgMembers.map((m) => (
                     <SelectItem key={m.user_id} value={m.user_id}>
-                      {m.email}
+                      {m.full_name || m.email}
                     </SelectItem>
                   ))}
                 </SelectContent>

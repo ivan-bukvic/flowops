@@ -1,11 +1,12 @@
 import { Users } from "lucide-react";
+import { getDisplayName } from "@/lib/utils";
 
 interface MemberRow {
   id: string;
   user_id: string;
   role: string;
   created_at: string;
-  profiles: { email: string | null } | null;
+  profiles: { full_name: string | null; email: string | null } | null;
 }
 
 interface MembersListProps {
@@ -38,35 +39,44 @@ const MembersList = ({ members, loading }: MembersListProps) => {
 
   return (
     <div className="space-y-2">
-      {members.map((member) => (
-        <div
-          key={member.id}
-          className="flex items-center justify-between px-4 py-3 rounded-lg border border-border bg-card hover:bg-muted/30 transition-colors"
-        >
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center shrink-0">
-              <span className="text-xs font-medium text-muted-foreground uppercase">
-                {(member.profiles?.email ?? "?")[0]}
-              </span>
-            </div>
-            <div className="min-w-0">
-              <p className="text-sm font-medium text-foreground truncate">
-                {member.profiles?.email ?? "Unknown"}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                Joined {new Date(member.created_at).toLocaleDateString()}
-              </p>
-            </div>
-          </div>
-          <span
-            className={`inline-flex items-center text-xs font-medium px-2.5 py-0.5 rounded-md ${
-              roleBadgeStyles[member.role] ?? roleBadgeStyles.viewer
-            }`}
+      {members.map((member) => {
+        const displayName = getDisplayName(member.profiles);
+        const email = member.profiles?.email;
+        const initial = (member.profiles?.full_name ?? email ?? "?")[0];
+
+        return (
+          <div
+            key={member.id}
+            className="flex items-center justify-between px-4 py-3 rounded-lg border border-border bg-card hover:bg-muted/30 transition-colors"
           >
-            {member.role}
-          </span>
-        </div>
-      ))}
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center shrink-0">
+                <span className="text-xs font-medium text-muted-foreground uppercase">
+                  {initial}
+                </span>
+              </div>
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-foreground truncate">
+                  {displayName}
+                </p>
+                {member.profiles?.full_name && email && (
+                  <p className="text-xs text-muted-foreground truncate">{email}</p>
+                )}
+                <p className="text-xs text-muted-foreground">
+                  Joined {new Date(member.created_at).toLocaleDateString()}
+                </p>
+              </div>
+            </div>
+            <span
+              className={`inline-flex items-center text-xs font-medium px-2.5 py-0.5 rounded-md ${
+                roleBadgeStyles[member.role] ?? roleBadgeStyles.viewer
+              }`}
+            >
+              {member.role}
+            </span>
+          </div>
+        );
+      })}
     </div>
   );
 };

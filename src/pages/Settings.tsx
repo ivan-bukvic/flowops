@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { useOrg } from "@/contexts/OrgContext";
+import { getDisplayName } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import PageHeader from "@/components/shared/PageHeader";
@@ -21,6 +22,7 @@ type OrgRole = Database["public"]["Enums"]["org_role"];
 interface MemberRow {
   user_id: string;
   email: string;
+  full_name: string | null;
   role: OrgRole;
 }
 
@@ -54,13 +56,14 @@ const Settings = () => {
     // Use the view that includes role
     const { data } = await supabase
       .from("org_members_simple")
-      .select("user_id, email, role")
+      .select("user_id, email, full_name, role")
       .eq("org_id", selectedOrgId);
 
     setMembers(
-      (data ?? []).map((m) => ({
+      (data ?? []).map((m: any) => ({
         user_id: m.user_id ?? "",
         email: m.email ?? "—",
+        full_name: m.full_name ?? null,
         role: (m.role as OrgRole) ?? "member",
       }))
     );
@@ -198,7 +201,10 @@ const Settings = () => {
               <div className="divide-y divide-border">
                 {members.map((member) => (
                   <div key={member.user_id} className="flex items-center justify-between py-3">
-                    <span className="text-sm font-medium">{member.email}</span>
+                    <div>
+                      <span className="text-sm font-medium">{getDisplayName(member)}</span>
+                      {member.full_name && <p className="text-xs text-muted-foreground">{member.email}</p>}
+                    </div>
                     <div className="flex items-center gap-2">
                       {editingRoleUserId === member.user_id ? (
                         <Select
