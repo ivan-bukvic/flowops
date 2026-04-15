@@ -490,6 +490,7 @@ export type Database = {
         Args: { p_org_id: string }
         Returns: {
           email: string
+          full_name: string
           user_id: string
         }[]
       }

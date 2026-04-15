@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useOrg } from "@/contexts/OrgContext";
 import { supabase } from "@/integrations/supabase/client";
+import { getDisplayName } from "@/lib/utils";
 import PageHeader from "@/components/shared/PageHeader";
 import { Badge } from "@/components/ui/badge";
 
@@ -33,7 +34,7 @@ function describeEvent(type: string, metadata: Record<string, unknown>): string 
 const Events = () => {
   const { selectedOrgId } = useOrg();
   const [events, setEvents] = useState<EventRow[]>([]);
-  const [actorEmails, setActorEmails] = useState<Record<string, string>>({});
+  const [actorNames, setActorNames] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -54,11 +55,11 @@ const Events = () => {
       if (actorIds.length > 0) {
         const { data: profiles } = await supabase
           .from("profiles")
-          .select("id, email")
+          .select("id, full_name, email")
           .in("id", actorIds);
         const map: Record<string, string> = {};
-        (profiles as any[] ?? []).forEach((p: any) => { map[p.id] = p.email ?? p.id; });
-        setActorEmails(map);
+        (profiles as any[] ?? []).forEach((p: any) => { map[p.id] = getDisplayName(p); });
+        setActorNames(map);
       }
       setLoading(false);
     };
@@ -77,7 +78,7 @@ const Events = () => {
         <div className="space-y-2">
           {events.map((evt) => {
             const actorLabel = evt.actor_user_id
-              ? actorEmails[evt.actor_user_id] ?? evt.actor_user_id.slice(0, 8)
+              ? actorNames[evt.actor_user_id] ?? "Unknown User"
               : "System";
             const description = describeEvent(evt.type, evt.metadata ?? {});
 
