@@ -41,6 +41,11 @@ const Signup = () => {
         <h1 className="text-3xl font-bold text-foreground">Create Account</h1>
 
         <div className="space-y-2">
+          <Label htmlFor="name">Full Name</Label>
+          <Input id="name" type="text" value={name} onChange={(e) => setName(e.target.value)} required placeholder="John Doe" />
+        </div>
+
+        <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
           <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
         </div>
