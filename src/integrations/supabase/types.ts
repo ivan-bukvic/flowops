@@ -527,6 +527,7 @@ export type Database = {
         | "PROJECT_MEMBER_REMOVED"
         | "DOCUMENT_UPLOADED"
       org_role: "owner" | "admin" | "member"
+      processing_status: "uploaded" | "processing" | "processed" | "failed"
       project_role: "editor" | "viewer" | "owner"
     }
     CompositeTypes: {
@@ -669,6 +670,7 @@ export const Constants = {
         "DOCUMENT_UPLOADED",
       ],
       org_role: ["owner", "admin", "member"],
+      processing_status: ["uploaded", "processing", "processed", "failed"],
       project_role: ["editor", "viewer", "owner"],
     },
   },
