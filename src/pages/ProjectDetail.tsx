@@ -87,18 +87,16 @@ const ProjectDetail = () => {
       setLoading(true);
       const { data } = await supabase
         .from("projects")
-        .select("id, name, description, created_at, created_by")
+        .select("id, name, description, created_at, created_by, profiles:created_by (full_name, email)")
         .eq("id", projectId)
         .is("deleted_at", null)
         .maybeSingle();
-      setProject(data as ProjectRow | null);
-      if (data?.created_by) {
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("full_name, email")
-          .eq("id", data.created_by)
-          .maybeSingle();
-        setCreatorDisplay(getDisplayName(profile));
+      if (data) {
+        const { profiles: creatorProfile, ...projectData } = data;
+        setProject(projectData as ProjectRow);
+        setCreatorDisplay(getDisplayName(creatorProfile));
+      } else {
+        setProject(null);
       }
       setLoading(false);
     };
