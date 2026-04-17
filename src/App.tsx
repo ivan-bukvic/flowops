@@ -51,7 +51,14 @@ const App = () => (
             />
             <Route path="/dashboard" element={<OrgPage><Dashboard /></OrgPage>} />
             <Route path="/projects" element={<OrgPage><Projects /></OrgPage>} />
-            <Route path="/projects/:projectId" element={<OrgPage><ProjectDetail /></OrgPage>} />
+            <Route
+              path="/projects/:projectId"
+              element={
+                <AuthenticatedLayout>
+                  <ProjectDetail />
+                </AuthenticatedLayout>
+              }
+            />
             <Route path="/documents" element={<OrgPage><Documents /></OrgPage>} />
             <Route path="/documents/:documentId" element={<OrgPage><DocumentDetail /></OrgPage>} />
             <Route path="/ai" element={<OrgPage><AI /></OrgPage>} />
