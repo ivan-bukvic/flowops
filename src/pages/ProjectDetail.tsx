@@ -95,7 +95,7 @@ const ProjectDetail = () => {
 
   useEffect(() => {
     console.log("FETCH EFFECT TRIGGERED", { projectId });
-    if (authLoading || !projectId || !authSession || !user) {
+    if (!projectId) {
       setProject(null);
       setLoading(true);
       return;
@@ -106,16 +106,6 @@ const ProjectDetail = () => {
     const fetchProject = async () => {
       console.log("FETCH FUNCTION CALLED");
       setLoading(true);
-
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
-      if (!isActive) return;
-
-      if (!session) {
-        return;
-      }
 
       const { data, error } = await supabase
         .from("projects")
@@ -154,7 +144,7 @@ const ProjectDetail = () => {
     return () => {
       isActive = false;
     };
-  }, [projectId, authLoading, authSession, user?.id, setSelectedOrgId]);
+  }, [projectId]);
 
   useEffect(() => {
     if (!projectId || !activeOrgId || !orgContextReady) return;
