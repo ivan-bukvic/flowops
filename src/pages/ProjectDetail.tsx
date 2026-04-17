@@ -65,7 +65,7 @@ interface OrgMemberOption {
 const ProjectDetail = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const { selectedOrgId } = useOrg();
-  const { user } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const [project, setProject] = useState<ProjectRow | null>(null);
   const [loading, setLoading] = useState(true);
   const [projectEvents, setProjectEvents] = useState<EventRow[]>([]);
@@ -92,6 +92,11 @@ const ProjectDetail = () => {
   const creatorDisplay = loading ? "Loading..." : resolveCreatorName(project);
 
   useEffect(() => {
+    if (authLoading) {
+      setLoading(true);
+      return;
+    }
+
     if (!projectId) {
       setProject(null);
       setLoading(true);
@@ -102,6 +107,18 @@ const ProjectDetail = () => {
 
     const fetchProject = async () => {
       setLoading(true);
+
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!isActive) return;
+
+      if (!session) {
+        setProject(null);
+        setLoading(true);
+        return;
+      }
 
       const { data, error } = await supabase
         .from("projects")
@@ -132,7 +149,7 @@ const ProjectDetail = () => {
     return () => {
       isActive = false;
     };
-  }, [projectId]);
+  }, [projectId, authLoading]);
 
   useEffect(() => {
     if (!projectId || !selectedOrgId) return;
