@@ -442,8 +442,6 @@ const ProjectDetail = () => {
 
       <PageHeader title={project.name} description={project.description || undefined} />
 
-      <pre className="text-xs bg-muted p-3 rounded mb-4 overflow-auto">{JSON.stringify(project, null, 2)}</pre>
-
       <Tabs defaultValue="overview" className="w-full">
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
