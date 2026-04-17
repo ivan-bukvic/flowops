@@ -5,7 +5,7 @@ import { useOrg } from "@/contexts/OrgContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase as rawSupabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { extractFileName, getDisplayName } from "@/lib/utils";
+import { extractFileName } from "@/lib/utils";
 import PageHeader from "@/components/shared/PageHeader";
 import DataTable, { Column } from "@/components/shared/DataTable";
 import MembersList from "@/components/projects/MembersList";
@@ -27,6 +27,7 @@ interface ProjectRow {
   description: string | null;
   created_at: string;
   created_by: string;
+  profiles: { full_name: string | null } | null;
 }
 
 interface EventRow {
@@ -65,7 +66,6 @@ const ProjectDetail = () => {
   const { selectedOrgId } = useOrg();
   const { user } = useAuth();
   const [project, setProject] = useState<ProjectRow | null>(null);
-  const [creatorDisplay, setCreatorDisplay] = useState("Unknown User");
   const [loading, setLoading] = useState(true);
   const [projectEvents, setProjectEvents] = useState<EventRow[]>([]);
   const [eventsLoading, setEventsLoading] = useState(true);
@@ -80,27 +80,49 @@ const ProjectDetail = () => {
   const [adding, setAdding] = useState(false);
 
   const isAdmin = orgRole === "owner" || orgRole === "admin";
+  const creatorDisplay = loading ? "Loading..." : project?.profiles?.full_name?.trim() || "Unknown User";
 
   useEffect(() => {
     if (!projectId) return;
+
+    let isActive = true;
+
     const fetchProject = async () => {
       setLoading(true);
-      const { data } = await supabase
+
+      const { data, error } = await supabase
         .from("projects")
-        .select("id, name, description, created_at, created_by, profiles:created_by (full_name, email)")
+        .select(`
+          id,
+          name,
+          description,
+          created_at,
+          created_by,
+          profiles:created_by (
+            full_name
+          )
+        `)
         .eq("id", projectId)
         .is("deleted_at", null)
-        .maybeSingle();
-      if (data) {
-        const { profiles: creatorProfile, ...projectData } = data;
-        setProject(projectData as ProjectRow);
-        setCreatorDisplay(getDisplayName(creatorProfile));
-      } else {
+        .single();
+
+      if (!isActive) return;
+
+      if (error || !data) {
         setProject(null);
+        setLoading(false);
+        return;
       }
+
+      setProject(data as ProjectRow);
       setLoading(false);
     };
+
     fetchProject();
+
+    return () => {
+      isActive = false;
+    };
   }, [projectId]);
 
   useEffect(() => {
