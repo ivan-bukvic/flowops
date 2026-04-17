@@ -92,7 +92,11 @@ const ProjectDetail = () => {
   const creatorDisplay = loading ? "Loading..." : resolveCreatorName(project);
 
   useEffect(() => {
-    if (!projectId) return;
+    if (!projectId) {
+      setProject(null);
+      setLoading(true);
+      return;
+    }
 
     let isActive = true;
 
@@ -123,7 +127,7 @@ const ProjectDetail = () => {
       setLoading(false);
     };
 
-    fetchProject();
+    void fetchProject();
 
     return () => {
       isActive = false;
