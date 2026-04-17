@@ -27,7 +27,8 @@ interface ProjectRow {
   description: string | null;
   created_at: string;
   created_by: string;
-  profiles: { full_name: string | null } | null;
+  org_id?: string;
+  profiles: { full_name: string | null } | { full_name: string | null }[] | null;
 }
 
 interface EventRow {
