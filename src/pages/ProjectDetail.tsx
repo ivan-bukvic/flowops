@@ -127,6 +127,8 @@ const ProjectDetail = () => {
         .is("deleted_at", null)
         .single();
 
+      console.log("PROJECT DATA:", data);
+
       if (!isActive) return;
 
       if (error || !data) {
