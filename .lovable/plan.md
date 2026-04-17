@@ -1,64 +1,48 @@
 
+## Plan: Make Project Detail creator name source unambiguous
 
-## Plan: Display Full Names Instead of Emails
-
-### Problem
-The app shows emails (or UUID fragments) for user identity across all pages. The `profiles` table has a `full_name` column that should be used with fallback to email.
-
-### Approach
-
-**1. Add a shared utility function** in `src/lib/utils.ts`:
+### What I’ll change
+1. In `src/pages/ProjectDetail.tsx`, replace the current project fetch with a single source-of-truth query that always loads the creator profile together with the project:
 ```ts
-export function getDisplayName(profile: { full_name?: string | null; email?: string | null } | null): string {
-  return profile?.full_name || profile?.email || "Unknown User";
-}
+const { data, error } = await supabase
+  .from("projects")
+  .select(`
+    *,
+    profiles:created_by (
+      full_name
+    )
+  `)
+  .eq("id", projectId)
+  .single();
 ```
+- No alternate project fetches
+- No `.select("*")` fallback branch
+- No dependence on navigation state, cached list data, or previous page context
 
-**2. Update files that resolve user identity** — fetch `full_name` alongside `email` from `profiles`, then use `getDisplayName()`:
+2. Tighten the page state/rendering so the creator label only comes from the joined profile:
+- While loading: `"Loading..."`
+- After load: `project.profiles?.full_name ?? "Unknown User"`
+- Never render `project.created_by` anywhere in the page UI
 
-| File | Current behavior | Change |
-|------|-----------------|--------|
-| `src/pages/ProjectDetail.tsx` | Fetches `profiles.email` for creator | Add `full_name` to select, use `getDisplayName` |
-| `src/components/projects/ProjectSettings.tsx` | Receives `creatorDisplay` (email) | No change needed — upstream fix handles it |
-| `src/pages/Events.tsx` | Resolves actor emails only | Fetch `full_name`, use `getDisplayName` in actor label |
-| `src/components/dashboard/RecentActivity.tsx` | Resolves actor emails, splits at `@` | Fetch `full_name`, use `getDisplayName` for actor name |
-| `src/components/projects/MembersList.tsx` | Shows `profiles.email` | Update parent to pass `full_name`; display with `getDisplayName` |
-| `src/pages/ProjectDetail.tsx` (members fetch) | Fetches `profiles.id, email` for members | Add `full_name` to select, pass to MembersList |
-| `src/components/projects/ProjectAiQueries.tsx` | Shows no user info | Fetch `user_id` and resolve to name (optional enhancement) |
-| `src/pages/Settings.tsx` | Uses `org_members_simple` view (email only) | Need DB migration to add `full_name` to the view |
+3. Keep the existing layout exactly as-is:
+- Overview tab “Created By” text stays in the same place/styles
+- Settings tab continues to show the same field, but from the resolved creator label only
 
-**3. Database migration** — Update `org_members_simple` view to include `full_name`:
-```sql
-CREATE OR REPLACE VIEW org_members_simple AS
-SELECT om.org_id, om.user_id, om.role, p.email, p.full_name
-FROM organization_members om
-LEFT JOIN profiles p ON p.id = om.user_id;
-```
+4. Remove ambiguity in related code paths:
+- Update the `ProjectRow` type to include the joined `profiles` object from the query
+- Review `creatorDisplay` and any child props so there is no UUID fallback left in `ProjectDetail` or `ProjectSettings`
 
-Also update `get_org_members_with_email` RPC to return `full_name`:
-```sql
-CREATE OR REPLACE FUNCTION public.get_org_members_with_email(p_org_id uuid)
-RETURNS TABLE(user_id uuid, email text, full_name text)
-...
-  return query
-  select om.user_id, p.email, p.full_name
-  from organization_members om
-  left join profiles p on p.id = om.user_id
-  where om.org_id = p_org_id;
-```
+### Extra hardening
+- Because direct links can open a project before workspace context is fully aligned, I’ll keep the project fetch driven by `projectId` itself so direct URL, refresh, and in-app navigation all use the same fresh query path.
+- If needed, I’ll also sync workspace context from the fetched project’s `org_id` so other tabs on the page remain consistent for Slack/deep links.
 
-### Files to modify
-- `src/lib/utils.ts` — add `getDisplayName`
-- `src/pages/ProjectDetail.tsx` — creator + members full_name
-- `src/components/projects/MembersList.tsx` — display full_name with email subtitle
-- `src/pages/Events.tsx` — actor full_name
-- `src/components/dashboard/RecentActivity.tsx` — actor full_name
-- `src/pages/Settings.tsx` — member full_name display
-- `src/components/projects/ProjectAiQueries.tsx` — show querying user name
-- **Migration**: update `org_members_simple` view and `get_org_members_with_email` RPC
+## Technical details
+- I inspected the current code: `ProjectDetail.tsx` already has a joined fetch pattern, but the fix should make that query the only fetch path and make the UI read only from `project.profiles?.full_name`.
+- No database migration is needed for this step; the foreign key and embedded join support are already present.
+- `created_by` may still exist in the returned row because `*` includes it, but the UI will not read or display it.
 
-### Not modified
-- `src/pages/Documents.tsx` — no user display
-- `src/pages/DocumentDetail.tsx` — no user display
-- `src/components/automations/AutomationActivity.tsx` — no user display currently
-
+## Expected result
+- Slack/direct URL load shows full name
+- Refresh shows full name
+- Internal navigation still works
+- UUID is never shown in the “Created By” field
