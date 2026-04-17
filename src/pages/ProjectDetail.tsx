@@ -81,7 +81,15 @@ const ProjectDetail = () => {
   const [adding, setAdding] = useState(false);
 
   const isAdmin = orgRole === "owner" || orgRole === "admin";
-  const creatorDisplay = loading ? "Loading..." : project?.profiles?.full_name?.trim() || "Unknown User";
+
+  const resolveCreatorName = (p: ProjectRow | null): string => {
+    if (!p) return "Unknown User";
+    const prof: any = p.profiles;
+    const name = Array.isArray(prof) ? prof[0]?.full_name : prof?.full_name;
+    const trimmed = typeof name === "string" ? name.trim() : "";
+    return trimmed || "Unknown User";
+  };
+  const creatorDisplay = loading ? "Loading..." : resolveCreatorName(project);
 
   useEffect(() => {
     if (!projectId) return;
