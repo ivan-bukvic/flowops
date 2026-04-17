@@ -64,7 +64,7 @@ interface OrgMemberOption {
 
 const ProjectDetail = () => {
   const { projectId } = useParams<{ projectId: string }>();
-  const { selectedOrgId } = useOrg();
+  const { selectedOrgId, setSelectedOrgId } = useOrg();
   const { user, isLoading: authLoading } = useAuth();
   const [project, setProject] = useState<ProjectRow | null>(null);
   const [loading, setLoading] = useState(true);
@@ -90,6 +90,8 @@ const ProjectDetail = () => {
     return trimmed || "Unknown User";
   };
   const creatorDisplay = loading ? "Loading..." : resolveCreatorName(project);
+  const activeOrgId = project?.org_id ?? null;
+  const orgContextReady = !activeOrgId || selectedOrgId === activeOrgId;
 
   useEffect(() => {
     if (authLoading) {
@@ -140,7 +142,13 @@ const ProjectDetail = () => {
         return;
       }
 
-      setProject(data as ProjectRow);
+        const nextProject = data as ProjectRow;
+
+        if (nextProject.org_id) {
+          setSelectedOrgId(nextProject.org_id);
+        }
+
+        setProject(nextProject);
       setLoading(false);
     };
 
@@ -149,23 +157,23 @@ const ProjectDetail = () => {
     return () => {
       isActive = false;
     };
-  }, [projectId, authLoading]);
+  }, [projectId, authLoading, setSelectedOrgId]);
 
   useEffect(() => {
-    if (!projectId || !selectedOrgId) return;
+    if (!projectId || !activeOrgId || !orgContextReady) return;
     const fetchEvents = async () => {
       setEventsLoading(true);
       const { data } = await supabase
         .from("events")
         .select("id, type, metadata, created_at")
-        .eq("org_id", selectedOrgId)
+        .eq("org_id", activeOrgId)
         .filter("metadata->>project_id", "eq", projectId)
         .order("created_at", { ascending: false });
       setProjectEvents((data as EventRow[]) ?? []);
       setEventsLoading(false);
     };
     fetchEvents();
-  }, [projectId, selectedOrgId]);
+  }, [projectId, activeOrgId, orgContextReady]);
 
   const fetchMembers = async () => {
     if (!project?.id) return;
@@ -217,25 +225,25 @@ const ProjectDetail = () => {
   }, [project]);
 
   useEffect(() => {
-    if (!selectedOrgId || !user) return;
+    if (!activeOrgId || !user || !orgContextReady) return;
     supabase
       .from("organization_members")
       .select("role")
-      .eq("org_id", selectedOrgId)
+      .eq("org_id", activeOrgId)
       .eq("user_id", user.id)
       .maybeSingle()
       .then(({ data }: any) => setOrgRole(data?.role ?? null));
-  }, [selectedOrgId, user]);
+  }, [activeOrgId, user, orgContextReady]);
 
   useEffect(() => {
-    if (!selectedOrgId || !isAdmin) return;
-    supabase.rpc("get_org_members_with_email", { p_org_id: selectedOrgId }).then(({ data }: any) => {
+    if (!activeOrgId || !isAdmin || !orgContextReady) return;
+    supabase.rpc("get_org_members_with_email", { p_org_id: activeOrgId }).then(({ data }: any) => {
       setOrgMembers((data ?? []).map((m: any) => ({ user_id: m.user_id, email: m.email ?? "", full_name: m.full_name ?? null })));
     });
-  }, [selectedOrgId, isAdmin]);
+  }, [activeOrgId, isAdmin, orgContextReady]);
 
   useEffect(() => {
-    if (!projectId || !selectedOrgId) return;
+    if (!projectId || !activeOrgId || !orgContextReady) return;
     const fetchDocuments = async () => {
       setDocumentsLoading(true);
       const { data } = await supabase
@@ -248,11 +256,11 @@ const ProjectDetail = () => {
       setDocumentsLoading(false);
     };
     fetchDocuments();
-  }, [projectId, selectedOrgId]);
+  }, [projectId, activeOrgId, orgContextReady]);
 
   const handleFileUpload = async (file: File) => {
-    if (!selectedOrgId || !projectId || !user) return;
-    const filePath = `${selectedOrgId}/${projectId}/${crypto.randomUUID()}-${file.name}`;
+    if (!activeOrgId || !projectId || !user) return;
+    const filePath = `${activeOrgId}/${projectId}/${crypto.randomUUID()}-${file.name}`;
     const { error: uploadError } = await supabase.storage.from("documents").upload(filePath, file);
     if (uploadError) {
       toast.error("File upload failed");
@@ -260,7 +268,7 @@ const ProjectDetail = () => {
     }
 
     const { error: insertError } = await supabase.from("documents").insert({
-      org_id: selectedOrgId,
+      org_id: activeOrgId,
       project_id: projectId,
       uploaded_by: user.id,
       file_url: filePath,
@@ -327,7 +335,7 @@ const ProjectDetail = () => {
   };
 
   const handleAddMember = async () => {
-    if (!projectId || !selectedOrgId || !selectedUserId) return;
+    if (!projectId || !activeOrgId || !selectedUserId) return;
     setAdding(true);
     const { error } = await supabase
       .from("project_members")
@@ -341,7 +349,7 @@ const ProjectDetail = () => {
 
     supabase
       .rpc("emit_event", {
-        p_org_id: selectedOrgId,
+        p_org_id: activeOrgId,
         p_type: "PROJECT_MEMBER_ADDED" as never,
         p_metadata: {
           project_id: projectId,
@@ -362,7 +370,7 @@ const ProjectDetail = () => {
     await fetchMembers();
   };
 
-  if (loading) {
+  if (loading || (project && !orgContextReady)) {
     return (
       <main className="p-6">
         <p className="text-sm text-muted-foreground">Loading...</p>
