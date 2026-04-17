@@ -94,6 +94,7 @@ const ProjectDetail = () => {
   const orgContextReady = !activeOrgId || selectedOrgId === activeOrgId;
 
   useEffect(() => {
+    console.log("FETCH EFFECT TRIGGERED", { projectId });
     if (authLoading || !projectId || !authSession || !user) {
       setProject(null);
       setLoading(true);
@@ -103,6 +104,7 @@ const ProjectDetail = () => {
     let isActive = true;
 
     const fetchProject = async () => {
+      console.log("FETCH FUNCTION CALLED");
       setLoading(true);
 
       const {
