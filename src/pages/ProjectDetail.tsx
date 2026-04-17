@@ -102,11 +102,7 @@ const ProjectDetail = () => {
       const { data, error } = await supabase
         .from("projects")
         .select(`
-          id,
-          name,
-          description,
-          created_at,
-          created_by,
+          *,
           profiles:created_by (
             full_name
           )
