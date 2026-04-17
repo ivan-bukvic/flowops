@@ -1,48 +1,33 @@
 
-## Plan: Make Project Detail creator name source unambiguous
+## Investigation
 
-### What I’ll change
-1. In `src/pages/ProjectDetail.tsx`, replace the current project fetch with a single source-of-truth query that always loads the creator profile together with the project:
-```ts
-const { data, error } = await supabase
-  .from("projects")
-  .select(`
-    *,
-    profiles:created_by (
-      full_name
-    )
-  `)
-  .eq("id", projectId)
-  .single();
+Route in `src/App.tsx`:
+```tsx
+<Route path="/projects/:projectId" element={<OrgPage><ProjectDetail /></OrgPage>} />
 ```
-- No alternate project fetches
-- No `.select("*")` fallback branch
-- No dependence on navigation state, cached list data, or previous page context
 
-2. Tighten the page state/rendering so the creator label only comes from the joined profile:
-- While loading: `"Loading..."`
-- After load: `project.profiles?.full_name ?? "Unknown User"`
-- Never render `project.created_by` anywhere in the page UI
+Only one route matches `/projects/:projectId` and it renders `ProjectDetail` from `./pages/ProjectDetail`. There is no other component registered for that path, no duplicate route, and no alternate router.
 
-3. Keep the existing layout exactly as-is:
-- Overview tab “Created By” text stays in the same place/styles
-- Settings tab continues to show the same field, but from the resolved creator label only
+So `ProjectDetail.tsx` IS the component rendered for both internal navigation and direct Slack URL loads. The debug `<pre>` was correctly added there.
 
-4. Remove ambiguity in related code paths:
-- Update the `ProjectRow` type to include the joined `profiles` object from the query
-- Review `creatorDisplay` and any child props so there is no UUID fallback left in `ProjectDetail` or `ProjectSettings`
+### Why the debug line may "not appear" via Slack
+`ProjectDetail` is wrapped in `<OrgPage>` = `AuthenticatedLayout` + `RequireOrg`. On a cold Slack load:
+- `AuthenticatedLayout` likely shows a loading state until `AuthContext` hydrates and redirects unauthenticated users to `/login`.
+- `RequireOrg` redirects to `/create-workspace` if `selectedOrgId` is null.
+- `ProjectDetail` itself returns an early "Loading..." (or null) while `authLoading` / `!project` — so the `<pre>` block, which sits inside the loaded view, never renders.
 
-### Extra hardening
-- Because direct links can open a project before workspace context is fully aligned, I’ll keep the project fetch driven by `projectId` itself so direct URL, refresh, and in-app navigation all use the same fresh query path.
-- If needed, I’ll also sync workspace context from the fetched project’s `org_id` so other tabs on the page remain consistent for Slack/deep links.
+The user is therefore never actually seeing `ProjectDetail`'s rendered body — they're being bounced by a guard before the project ever loads. That's the real bug, not a wrong component.
 
-## Technical details
-- I inspected the current code: `ProjectDetail.tsx` already has a joined fetch pattern, but the fix should make that query the only fetch path and make the UI read only from `project.profiles?.full_name`.
-- No database migration is needed for this step; the foreign key and embedded join support are already present.
-- `created_by` may still exist in the returned row because `*` includes it, but the UI will not read or display it.
+## Plan
 
-## Expected result
-- Slack/direct URL load shows full name
-- Refresh shows full name
-- Internal navigation still works
-- UUID is never shown in the “Created By” field
+1. Verify routing one more time in default mode and read `RequireAuth`/`RequireOrg`/`AuthenticatedLayout` to confirm which guard short-circuits on direct Slack load.
+2. Add a top-level always-visible debug banner in `ProjectDetail.tsx` placed BEFORE any early returns (above the `if (loading) return ...` guards), so we can confirm whether the component mounts at all on Slack load. Banner shows: `authLoading`, `hasSession`, `userId`, `projectId`, `selectedOrgId`, `loading`, `project?.id`, `project?.profiles`.
+3. Also add the same banner inside `RequireOrg` (just before its redirect) so we can see if the redirect is what's swallowing the page.
+4. Report back which guard fires on Slack load, then fix the actual root cause (likely `RequireOrg` redirecting before project-driven `setSelectedOrgId` runs — because `RequireOrg` blocks `ProjectDetail` from ever mounting, so the project fetch that would set the org never executes).
+
+## Likely real fix (after confirmation)
+Allow `/projects/:projectId` to mount without `RequireOrg`, OR have `RequireOrg` skip its redirect on project/document detail routes so `ProjectDetail` can fetch the project and hydrate `selectedOrgId` itself.
+
+## Files to touch
+- `src/pages/ProjectDetail.tsx` — add unconditional debug banner above early returns
+- `src/components/RequireOrg.tsx` — add debug log + temporary banner before redirect
