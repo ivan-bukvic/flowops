@@ -34,6 +34,19 @@ const categoryLabels: Record<EventCategory, string> = {
   document: "Document",
 };
 
+const eventStyles: Record<string, { bg: string; text: string }> = {
+  PROJECT_CREATED: { bg: "bg-emerald-500/10", text: "text-emerald-600" },
+  PROJECT_UPDATED: { bg: "bg-sky-500/10", text: "text-sky-600" },
+  PROJECT_DELETED: { bg: "bg-red-500/10", text: "text-red-600" },
+  MEMBER_ADDED: { bg: "bg-blue-500/10", text: "text-blue-600" },
+  MEMBER_REMOVED: { bg: "bg-orange-500/10", text: "text-orange-600" },
+  PROJECT_MEMBER_ADDED: { bg: "bg-blue-500/10", text: "text-blue-600" },
+  PROJECT_MEMBER_REMOVED: { bg: "bg-orange-500/10", text: "text-orange-600" },
+  WORKSPACE_CREATED: { bg: "bg-amber-500/10", text: "text-amber-600" },
+  OWNERSHIP_TRANSFERRED: { bg: "bg-yellow-500/10", text: "text-yellow-600" },
+  DOCUMENT_UPLOADED: { bg: "bg-violet-500/10", text: "text-violet-600" },
+};
+
 const eventConfig: Record<string, { icon: LucideIcon; verb: string; category: EventCategory }> = {
   PROJECT_CREATED: { icon: FolderPlus, verb: "created the project", category: "project" },
   PROJECT_UPDATED: { icon: Pencil, verb: "updated the project", category: "project" },
@@ -191,7 +204,7 @@ const RecentActivity = ({ orgId }: RecentActivityProps) => {
       {events.map((evt) => {
         const config = eventConfig[evt.type] ?? { icon: Zap, verb: evt.type.replace(/_/g, " ").toLowerCase(), category: "automation" as EventCategory };
         const Icon = config.icon;
-        const style = categoryStyles[config.category];
+        const style = eventStyles[evt.type] ?? categoryStyles[config.category];
         const actorName = evt.actor_user_id ? actorMap[evt.actor_user_id] ?? "Someone" : "System";
         const entityName = getEntityName(evt.type, evt.metadata);
         const detail = getSecondaryDetail(evt.type, evt.metadata);
