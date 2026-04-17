@@ -363,9 +363,32 @@ const ProjectDetail = () => {
     await fetchMembers();
   };
 
+  const debugBanner = (
+    <pre className="text-xs bg-yellow-100 text-black p-3 rounded m-4 overflow-auto border border-yellow-400">
+{JSON.stringify(
+  {
+    where: "ProjectDetail",
+    authLoading,
+    hasSession: !!authSession,
+    userId: user?.id ?? null,
+    projectId: projectId ?? null,
+    selectedOrgId,
+    activeOrgId,
+    orgContextReady,
+    loading,
+    projectIdLoaded: project?.id ?? null,
+    projectProfiles: project?.profiles ?? null,
+  },
+  null,
+  2,
+)}
+    </pre>
+  );
+
   if (loading || (project && !orgContextReady)) {
     return (
       <main className="p-6">
+        {debugBanner}
         <p className="text-sm text-muted-foreground">Loading...</p>
       </main>
     );
@@ -374,6 +397,7 @@ const ProjectDetail = () => {
   if (!project) {
     return (
       <main className="p-6">
+        {debugBanner}
         <p className="text-sm text-muted-foreground">Project not found.</p>
         <Link to="/projects" className="text-sm text-primary hover:underline mt-2 inline-block">
           Back to Projects
