@@ -65,7 +65,7 @@ interface OrgMemberOption {
 const ProjectDetail = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const { selectedOrgId, setSelectedOrgId } = useOrg();
-  const { user, isLoading: authLoading } = useAuth();
+  const { session: authSession, user, isLoading: authLoading } = useAuth();
   const [project, setProject] = useState<ProjectRow | null>(null);
   const [loading, setLoading] = useState(true);
   const [projectEvents, setProjectEvents] = useState<EventRow[]>([]);
@@ -94,12 +94,7 @@ const ProjectDetail = () => {
   const orgContextReady = !activeOrgId || selectedOrgId === activeOrgId;
 
   useEffect(() => {
-    if (authLoading) {
-      setLoading(true);
-      return;
-    }
-
-    if (!projectId) {
+    if (authLoading || !projectId || !authSession || !user) {
       setProject(null);
       setLoading(true);
       return;
@@ -117,8 +112,6 @@ const ProjectDetail = () => {
       if (!isActive) return;
 
       if (!session) {
-        setProject(null);
-        setLoading(true);
         return;
       }
 
@@ -157,7 +150,7 @@ const ProjectDetail = () => {
     return () => {
       isActive = false;
     };
-  }, [projectId, authLoading, setSelectedOrgId]);
+  }, [projectId, authLoading, authSession, user?.id, setSelectedOrgId]);
 
   useEffect(() => {
     if (!projectId || !activeOrgId || !orgContextReady) return;
