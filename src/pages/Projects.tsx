@@ -263,7 +263,7 @@ const Projects = () => {
                   className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleDelete(row);
+                    setDeleteProject(row);
                   }}
                 >
                   <Trash2 className="h-3.5 w-3.5" />
