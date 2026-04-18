@@ -25,7 +25,9 @@ interface MembersListProps {
   members: MemberRow[];
   loading: boolean;
   canRemove?: boolean;
+  canEditRole?: boolean;
   onRemove?: (member: MemberRow) => Promise<void> | void;
+  onToggleRole?: (member: MemberRow, newRole: "editor" | "viewer") => Promise<void> | void;
 }
 
 const roleBadgeStyles: Record<string, string> = {
@@ -34,7 +36,7 @@ const roleBadgeStyles: Record<string, string> = {
   owner: "bg-[hsl(160,84%,39%,0.08)] text-[hsl(160,84%,39%)]",
 };
 
-const MembersList = ({ members, loading, canRemove, onRemove }: MembersListProps) => {
+const MembersList = ({ members, loading, canRemove, canEditRole, onRemove, onToggleRole }: MembersListProps) => {
   const [pendingRemove, setPendingRemove] = useState<MemberRow | null>(null);
   const [removing, setRemoving] = useState(false);
 
@@ -101,13 +103,29 @@ const MembersList = ({ members, loading, canRemove, onRemove }: MembersListProps
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <span
-                  className={`inline-flex items-center text-xs font-medium px-2.5 py-0.5 rounded-md ${
+                {(() => {
+                  const isToggleable =
+                    canEditRole &&
+                    !!onToggleRole &&
+                    (member.role === "viewer" || member.role === "editor");
+                  const baseCls = `inline-flex items-center text-xs font-medium px-2.5 py-0.5 rounded-md ${
                     roleBadgeStyles[member.role] ?? roleBadgeStyles.viewer
-                  }`}
-                >
-                  {member.role}
-                </span>
+                  }`;
+                  if (!isToggleable) {
+                    return <span className={baseCls}>{member.role}</span>;
+                  }
+                  const nextRole = member.role === "viewer" ? "editor" : "viewer";
+                  return (
+                    <button
+                      type="button"
+                      onClick={() => onToggleRole!(member, nextRole)}
+                      className={`${baseCls} cursor-pointer hover:opacity-80 transition-opacity`}
+                      title="Click to change role"
+                    >
+                      {member.role}
+                    </button>
+                  );
+                })()}
                 {showRemove && (
                   <Button
                     variant="ghost"

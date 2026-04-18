@@ -386,6 +386,47 @@ const ProjectDetail = () => {
     await fetchMembers();
   };
 
+  const handleToggleRole = async (
+    member: { id: string; user_id: string; role: string },
+    newRole: "editor" | "viewer",
+  ) => {
+    if (!projectId || !activeOrgId) return;
+
+    // Optimistic update
+    setProjectMembers((prev) =>
+      prev.map((m) => (m.id === member.id ? { ...m, role: newRole } : m)),
+    );
+
+    const { data, error } = await supabase
+      .from("project_members")
+      .update({ role: newRole })
+      .eq("id", member.id)
+      .select();
+
+    if (error || !data || data.length === 0) {
+      console.error("[ProjectDetail] role update failed", error);
+      alert("Failed to update role" + (error ? `: ${error.message}` : ""));
+      await fetchMembers();
+      return;
+    }
+
+    supabase
+      .rpc("emit_event", {
+        p_org_id: activeOrgId,
+        p_type: "PROJECT_MEMBER_UPDATED" as never,
+        p_metadata: {
+          project_id: projectId,
+          project_name: project?.name || "Unknown Project",
+          user_id: member.user_id,
+          new_role: newRole,
+        },
+      })
+      .then(() => triggerAutomations(), () => {});
+
+    toast.success(`Role updated to ${newRole}`);
+    await fetchMembers();
+  };
+
   if (loading || (project && !orgContextReady)) {
     return (
       <main className="p-6 space-y-4">
@@ -554,7 +595,9 @@ const ProjectDetail = () => {
             members={projectMembers}
             loading={membersLoading}
             canRemove={isAdmin}
+            canEditRole={isAdmin}
             onRemove={handleRemoveMember}
+            onToggleRole={handleToggleRole}
           />
         </TabsContent>
 
