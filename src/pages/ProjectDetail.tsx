@@ -94,7 +94,6 @@ const ProjectDetail = () => {
   const orgContextReady = !activeOrgId || selectedOrgId === activeOrgId;
 
   useEffect(() => {
-    console.log("FETCH EFFECT TRIGGERED", { projectId });
     if (!projectId) {
       setProject(null);
       setLoading(true);
@@ -104,7 +103,6 @@ const ProjectDetail = () => {
     let isActive = true;
 
     const fetchProject = async () => {
-      console.log("FETCH FUNCTION CALLED");
       setLoading(true);
 
       const { data, error } = await supabase
@@ -118,8 +116,6 @@ const ProjectDetail = () => {
         .eq("id", projectId)
         .is("deleted_at", null)
         .single();
-
-      console.log("PROJECT DATA:", data);
 
       if (!isActive) return;
 
