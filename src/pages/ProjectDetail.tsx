@@ -384,6 +384,7 @@ const ProjectDetail = () => {
 
     toast.success("Member removed");
     await fetchMembers();
+  };
 
   if (loading || (project && !orgContextReady)) {
     return (
