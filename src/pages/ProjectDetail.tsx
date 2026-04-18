@@ -595,7 +595,9 @@ const ProjectDetail = () => {
             members={projectMembers}
             loading={membersLoading}
             canRemove={isAdmin}
+            canEditRole={isAdmin}
             onRemove={handleRemoveMember}
+            onToggleRole={handleToggleRole}
           />
         </TabsContent>
 
