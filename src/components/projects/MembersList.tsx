@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Trash2, Users } from "lucide-react";
+import { ArrowLeftRight, Trash2, Users } from "lucide-react";
 import { getDisplayName } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
