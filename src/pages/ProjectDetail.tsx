@@ -353,6 +353,38 @@ const ProjectDetail = () => {
     await fetchMembers();
   };
 
+  const handleRemoveMember = async (member: { id: string; user_id: string; profiles: { full_name: string | null; email: string | null } | null }) => {
+    if (!projectId || !activeOrgId) return;
+    const { error } = await supabase
+      .from("project_members")
+      .delete()
+      .eq("id", member.id);
+
+    if (error) {
+      console.error("[ProjectDetail] remove member failed", error);
+      toast.error("Failed to remove member: " + error.message);
+      return;
+    }
+
+    // Optimistic UI update
+    setProjectMembers((prev) => prev.filter((m) => m.id !== member.id));
+
+    supabase
+      .rpc("emit_event", {
+        p_org_id: activeOrgId,
+        p_type: "PROJECT_MEMBER_REMOVED" as never,
+        p_metadata: {
+          project_id: projectId,
+          project_name: project?.name || "Unknown Project",
+          removed_user_id: member.user_id,
+          user_email: member.profiles?.email ?? null,
+        },
+      })
+      .then(() => triggerAutomations(), () => {});
+
+    toast.success("Member removed");
+    await fetchMembers();
+
   if (loading || (project && !orgContextReady)) {
     return (
       <main className="p-6 space-y-4">
