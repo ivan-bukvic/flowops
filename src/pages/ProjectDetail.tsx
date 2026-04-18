@@ -517,7 +517,12 @@ const ProjectDetail = () => {
             </div>
           )}
 
-          <MembersList members={projectMembers} loading={membersLoading} />
+          <MembersList
+            members={projectMembers}
+            loading={membersLoading}
+            canRemove={isAdmin}
+            onRemove={handleRemoveMember}
+          />
         </TabsContent>
 
         <TabsContent value="settings">
