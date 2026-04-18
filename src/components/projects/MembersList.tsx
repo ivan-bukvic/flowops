@@ -111,11 +111,12 @@ const MembersList = ({ members, loading, canRemove, canEditRole, onRemove, onTog
                     }
                     title="Click to change role"
                     aria-label={`Change role from ${member.role}`}
-                    className={`inline-flex items-center text-xs font-medium px-2.5 py-0.5 rounded-md cursor-pointer transition-all hover:ring-2 hover:ring-primary/30 hover:brightness-95 active:scale-95 ${
+                    className={`group inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-md cursor-pointer transition-all duration-200 hover:ring-2 hover:ring-primary/40 hover:shadow-sm hover:brightness-95 hover:scale-[1.04] active:scale-95 animate-fade-in ${
                       roleBadgeStyles[member.role] ?? roleBadgeStyles.viewer
                     }`}
                   >
-                    {member.role}
+                    <span key={member.role} className="animate-fade-in">{member.role}</span>
+                    <ArrowLeftRight className="h-3 w-3 opacity-60 group-hover:opacity-100 transition-opacity" />
                   </button>
                 ) : (
                   <span
