@@ -173,17 +173,31 @@ const Projects = () => {
   const handleDelete = async (project: ProjectRow) => {
     if (!selectedOrgId) return;
     setDeleting(true);
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from("projects")
       .update({ deleted_at: new Date().toISOString() })
       .eq("id", project.id)
-      .eq("org_id", selectedOrgId);
+      .eq("org_id", selectedOrgId)
+      .select();
 
     if (error) {
+      console.error("[Projects] delete failed", error);
       setDeleting(false);
-      alert("Delete failed");
+      alert("Delete failed: " + error.message);
       return;
     }
+
+    if (!data || data.length === 0) {
+      console.warn("[Projects] no rows updated — likely RLS / no permission", project.id);
+      setDeleting(false);
+      alert("You don't have permission to delete this project.");
+      return;
+    }
+
+    console.log("[Projects] soft-deleted", project.id);
+
+    // Optimistically remove from local state
+    setProjects((prev) => prev.filter((p) => p.id !== project.id));
 
     supabase.rpc("emit_event", {
       p_org_id: selectedOrgId,
