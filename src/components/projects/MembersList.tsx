@@ -25,7 +25,9 @@ interface MembersListProps {
   members: MemberRow[];
   loading: boolean;
   canRemove?: boolean;
+  canEditRole?: boolean;
   onRemove?: (member: MemberRow) => Promise<void> | void;
+  onToggleRole?: (member: MemberRow, newRole: "editor" | "viewer") => Promise<void> | void;
 }
 
 const roleBadgeStyles: Record<string, string> = {
