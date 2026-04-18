@@ -103,29 +103,29 @@ const MembersList = ({ members, loading, canRemove, canEditRole, onRemove, onTog
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                {(() => {
-                  const isToggleable =
-                    canEditRole &&
-                    !!onToggleRole &&
-                    (member.role === "viewer" || member.role === "editor");
-                  const baseCls = `inline-flex items-center text-xs font-medium px-2.5 py-0.5 rounded-md ${
-                    roleBadgeStyles[member.role] ?? roleBadgeStyles.viewer
-                  }`;
-                  if (!isToggleable) {
-                    return <span className={baseCls}>{member.role}</span>;
-                  }
-                  const nextRole = member.role === "viewer" ? "editor" : "viewer";
-                  return (
-                    <button
-                      type="button"
-                      onClick={() => onToggleRole!(member, nextRole)}
-                      className={`${baseCls} cursor-pointer hover:opacity-80 transition-opacity`}
-                      title="Click to change role"
-                    >
-                      {member.role}
-                    </button>
-                  );
-                })()}
+                {canEditRole && onToggleRole && (member.role === "viewer" || member.role === "editor") ? (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      onToggleRole(member, member.role === "viewer" ? "editor" : "viewer")
+                    }
+                    title="Click to change role"
+                    aria-label={`Change role from ${member.role}`}
+                    className={`inline-flex items-center text-xs font-medium px-2.5 py-0.5 rounded-md cursor-pointer transition-all hover:ring-2 hover:ring-primary/30 hover:brightness-95 active:scale-95 ${
+                      roleBadgeStyles[member.role] ?? roleBadgeStyles.viewer
+                    }`}
+                  >
+                    {member.role}
+                  </button>
+                ) : (
+                  <span
+                    className={`inline-flex items-center text-xs font-medium px-2.5 py-0.5 rounded-md ${
+                      roleBadgeStyles[member.role] ?? roleBadgeStyles.viewer
+                    }`}
+                  >
+                    {member.role}
+                  </span>
+                )}
                 {showRemove && (
                   <Button
                     variant="ghost"
