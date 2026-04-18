@@ -103,13 +103,29 @@ const MembersList = ({ members, loading, canRemove, canEditRole, onRemove, onTog
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <span
-                  className={`inline-flex items-center text-xs font-medium px-2.5 py-0.5 rounded-md ${
+                {(() => {
+                  const isToggleable =
+                    canEditRole &&
+                    !!onToggleRole &&
+                    (member.role === "viewer" || member.role === "editor");
+                  const baseCls = `inline-flex items-center text-xs font-medium px-2.5 py-0.5 rounded-md ${
                     roleBadgeStyles[member.role] ?? roleBadgeStyles.viewer
-                  }`}
-                >
-                  {member.role}
-                </span>
+                  }`;
+                  if (!isToggleable) {
+                    return <span className={baseCls}>{member.role}</span>;
+                  }
+                  const nextRole = member.role === "viewer" ? "editor" : "viewer";
+                  return (
+                    <button
+                      type="button"
+                      onClick={() => onToggleRole!(member, nextRole)}
+                      className={`${baseCls} cursor-pointer hover:opacity-80 transition-opacity`}
+                      title="Click to change role"
+                    >
+                      {member.role}
+                    </button>
+                  );
+                })()}
                 {showRemove && (
                   <Button
                     variant="ghost"
