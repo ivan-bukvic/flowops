@@ -17,6 +17,16 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Plus, Pencil, Trash2, Users, FolderKanban } from "lucide-react";
 
 interface ProjectRow {
@@ -49,6 +59,9 @@ const Projects = () => {
   const [editDesc, setEditDesc] = useState("");
   const [editError, setEditError] = useState("");
   const [updating, setUpdating] = useState(false);
+
+  const [deleteProject, setDeleteProject] = useState<ProjectRow | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const canCreate = currentRole === "owner" || currentRole === "admin";
 
@@ -159,6 +172,7 @@ const Projects = () => {
 
   const handleDelete = async (project: ProjectRow) => {
     if (!selectedOrgId) return;
+    setDeleting(true);
     const { error } = await supabase
       .from("projects")
       .update({ deleted_at: new Date().toISOString() })
@@ -166,6 +180,7 @@ const Projects = () => {
       .eq("org_id", selectedOrgId);
 
     if (error) {
+      setDeleting(false);
       alert("Delete failed");
       return;
     }
@@ -176,6 +191,8 @@ const Projects = () => {
       p_metadata: { project_id: project.id, project_name: project.name } as unknown as undefined,
     }).then(() => triggerAutomations(), () => {});
 
+    setDeleting(false);
+    setDeleteProject(null);
     fetchProjects();
   };
 
@@ -246,7 +263,7 @@ const Projects = () => {
                   className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleDelete(row);
+                    setDeleteProject(row);
                   }}
                 >
                   <Trash2 className="h-3.5 w-3.5" />
@@ -327,6 +344,31 @@ const Projects = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Delete Confirmation */}
+      <AlertDialog open={!!deleteProject} onOpenChange={(open) => !open && !deleting && setDeleteProject(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure you want to delete this project?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {deleteProject ? `"${deleteProject.name}" will be removed from your workspace.` : ""}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                if (deleteProject) handleDelete(deleteProject);
+              }}
+              disabled={deleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleting ? "Deleting..." : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </main>
   );
 };
