@@ -172,6 +172,7 @@ const Projects = () => {
 
   const handleDelete = async (project: ProjectRow) => {
     if (!selectedOrgId) return;
+    setDeleting(true);
     const { error } = await supabase
       .from("projects")
       .update({ deleted_at: new Date().toISOString() })
@@ -179,6 +180,7 @@ const Projects = () => {
       .eq("org_id", selectedOrgId);
 
     if (error) {
+      setDeleting(false);
       alert("Delete failed");
       return;
     }
@@ -189,6 +191,8 @@ const Projects = () => {
       p_metadata: { project_id: project.id, project_name: project.name } as unknown as undefined,
     }).then(() => triggerAutomations(), () => {});
 
+    setDeleting(false);
+    setDeleteProject(null);
     fetchProjects();
   };
 
