@@ -122,9 +122,54 @@ Deno.serve(async (req) => {
           }
 
           case "GOOGLE_CALENDAR_EVENT": {
-            // Placeholder - requires Google Calendar API integration
-            resultJson = { note: "Google Calendar integration not yet configured" };
-            status = "completed";
+            const clientEmail = Deno.env.get("GOOGLE_CLIENT_EMAIL");
+            const rawKey = Deno.env.get("GOOGLE_PRIVATE_KEY");
+            const calendarId = Deno.env.get("GOOGLE_CALENDAR_ID");
+            if (!clientEmail) throw new Error("GOOGLE_CLIENT_EMAIL not configured");
+            if (!rawKey) throw new Error("GOOGLE_PRIVATE_KEY not configured");
+            if (!calendarId) throw new Error("GOOGLE_CALENDAR_ID not configured");
+
+            const privateKeyPem = rawKey.replace(/\\n/g, "\n");
+            const accessToken = await getGoogleAccessToken(clientEmail, privateKeyPem);
+
+            const now = new Date();
+            const oneHour = new Date(now.getTime() + 60 * 60 * 1000);
+            const summary =
+              config.title || config.summary || `Automation: ${event?.type}`;
+            const description =
+              config.description ||
+              `Triggered by event ${event?.type}\nMetadata: ${JSON.stringify(event?.metadata ?? {})}`;
+            const startDateTime = config.start_datetime || now.toISOString();
+            const endDateTime = config.end_datetime || oneHour.toISOString();
+            const timeZone = config.timezone || "UTC";
+
+            const calRes = await fetch(
+              `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events`,
+              {
+                method: "POST",
+                headers: {
+                  Authorization: `Bearer ${accessToken}`,
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  summary,
+                  description,
+                  start: { dateTime: startDateTime, timeZone },
+                  end: { dateTime: endDateTime, timeZone },
+                }),
+              },
+            );
+            const calBodyText = await calRes.text();
+            if (!calRes.ok) {
+              throw new Error(`Google Calendar error [${calRes.status}]: ${calBodyText}`);
+            }
+            const calData = JSON.parse(calBodyText);
+            resultJson = {
+              event_id: calData.id,
+              html_link: calData.htmlLink,
+              calendar_id: calendarId,
+              summary,
+            };
             break;
           }
 
