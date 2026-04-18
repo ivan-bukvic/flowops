@@ -5,6 +5,76 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+function base64urlEncode(data: ArrayBuffer | Uint8Array | string): string {
+  let bytes: Uint8Array;
+  if (typeof data === "string") {
+    bytes = new TextEncoder().encode(data);
+  } else if (data instanceof Uint8Array) {
+    bytes = data;
+  } else {
+    bytes = new Uint8Array(data);
+  }
+  let binary = "";
+  for (let i = 0; i < bytes.byteLength; i++) binary += String.fromCharCode(bytes[i]);
+  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+function pemToPkcs8(pem: string): ArrayBuffer {
+  const cleaned = pem
+    .replace(/-----BEGIN PRIVATE KEY-----/g, "")
+    .replace(/-----END PRIVATE KEY-----/g, "")
+    .replace(/\s+/g, "");
+  const binary = atob(cleaned);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return bytes.buffer;
+}
+
+async function getGoogleAccessToken(clientEmail: string, privateKeyPem: string): Promise<string> {
+  const now = Math.floor(Date.now() / 1000);
+  const header = { alg: "RS256", typ: "JWT" };
+  const claims = {
+    iss: clientEmail,
+    scope: "https://www.googleapis.com/auth/calendar",
+    aud: "https://oauth2.googleapis.com/token",
+    iat: now,
+    exp: now + 3600,
+  };
+  const headerB64 = base64urlEncode(JSON.stringify(header));
+  const claimsB64 = base64urlEncode(JSON.stringify(claims));
+  const signingInput = `${headerB64}.${claimsB64}`;
+
+  const keyData = pemToPkcs8(privateKeyPem);
+  const cryptoKey = await crypto.subtle.importKey(
+    "pkcs8",
+    keyData,
+    { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
+  const signature = await crypto.subtle.sign(
+    "RSASSA-PKCS1-v1_5",
+    cryptoKey,
+    new TextEncoder().encode(signingInput),
+  );
+  const jwt = `${signingInput}.${base64urlEncode(signature)}`;
+
+  const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: `grant_type=${encodeURIComponent("urn:ietf:params:oauth:grant-type:jwt-bearer")}&assertion=${encodeURIComponent(jwt)}`,
+  });
+  const tokenText = await tokenRes.text();
+  if (!tokenRes.ok) {
+    throw new Error(`Google token exchange failed [${tokenRes.status}]: ${tokenText}`);
+  }
+  const tokenData = JSON.parse(tokenText);
+  if (!tokenData.access_token) {
+    throw new Error(`No access_token in Google response: ${tokenText}`);
+  }
+  return tokenData.access_token as string;
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -122,9 +192,54 @@ Deno.serve(async (req) => {
           }
 
           case "GOOGLE_CALENDAR_EVENT": {
-            // Placeholder - requires Google Calendar API integration
-            resultJson = { note: "Google Calendar integration not yet configured" };
-            status = "completed";
+            const clientEmail = Deno.env.get("GOOGLE_CLIENT_EMAIL");
+            const rawKey = Deno.env.get("GOOGLE_PRIVATE_KEY");
+            const calendarId = Deno.env.get("GOOGLE_CALENDAR_ID");
+            if (!clientEmail) throw new Error("GOOGLE_CLIENT_EMAIL not configured");
+            if (!rawKey) throw new Error("GOOGLE_PRIVATE_KEY not configured");
+            if (!calendarId) throw new Error("GOOGLE_CALENDAR_ID not configured");
+
+            const privateKeyPem = rawKey.replace(/\\n/g, "\n");
+            const accessToken = await getGoogleAccessToken(clientEmail, privateKeyPem);
+
+            const now = new Date();
+            const oneHour = new Date(now.getTime() + 60 * 60 * 1000);
+            const summary =
+              config.title || config.summary || `Automation: ${event?.type}`;
+            const description =
+              config.description ||
+              `Triggered by event ${event?.type}\nMetadata: ${JSON.stringify(event?.metadata ?? {})}`;
+            const startDateTime = config.start_datetime || now.toISOString();
+            const endDateTime = config.end_datetime || oneHour.toISOString();
+            const timeZone = config.timezone || "UTC";
+
+            const calRes = await fetch(
+              `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events`,
+              {
+                method: "POST",
+                headers: {
+                  Authorization: `Bearer ${accessToken}`,
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  summary,
+                  description,
+                  start: { dateTime: startDateTime, timeZone },
+                  end: { dateTime: endDateTime, timeZone },
+                }),
+              },
+            );
+            const calBodyText = await calRes.text();
+            if (!calRes.ok) {
+              throw new Error(`Google Calendar error [${calRes.status}]: ${calBodyText}`);
+            }
+            const calData = JSON.parse(calBodyText);
+            resultJson = {
+              event_id: calData.id,
+              html_link: calData.htmlLink,
+              calendar_id: calendarId,
+              summary,
+            };
             break;
           }
 
