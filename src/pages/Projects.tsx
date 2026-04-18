@@ -60,6 +60,9 @@ const Projects = () => {
   const [editError, setEditError] = useState("");
   const [updating, setUpdating] = useState(false);
 
+  const [deleteProject, setDeleteProject] = useState<ProjectRow | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
   const canCreate = currentRole === "owner" || currentRole === "admin";
 
   const fetchProjects = async () => {
