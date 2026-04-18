@@ -36,7 +36,7 @@ const roleBadgeStyles: Record<string, string> = {
   owner: "bg-[hsl(160,84%,39%,0.08)] text-[hsl(160,84%,39%)]",
 };
 
-const MembersList = ({ members, loading, canRemove, onRemove }: MembersListProps) => {
+const MembersList = ({ members, loading, canRemove, canEditRole, onRemove, onToggleRole }: MembersListProps) => {
   const [pendingRemove, setPendingRemove] = useState<MemberRow | null>(null);
   const [removing, setRemoving] = useState(false);
 
