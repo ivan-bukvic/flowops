@@ -1,5 +1,17 @@
-import { Users } from "lucide-react";
+import { useState } from "react";
+import { Trash2, Users } from "lucide-react";
 import { getDisplayName } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface MemberRow {
   id: string;
@@ -12,6 +24,8 @@ interface MemberRow {
 interface MembersListProps {
   members: MemberRow[];
   loading: boolean;
+  canRemove?: boolean;
+  onRemove?: (member: MemberRow) => Promise<void> | void;
 }
 
 const roleBadgeStyles: Record<string, string> = {
@@ -20,7 +34,10 @@ const roleBadgeStyles: Record<string, string> = {
   owner: "bg-[hsl(160,84%,39%,0.08)] text-[hsl(160,84%,39%)]",
 };
 
-const MembersList = ({ members, loading }: MembersListProps) => {
+const MembersList = ({ members, loading, canRemove, onRemove }: MembersListProps) => {
+  const [pendingRemove, setPendingRemove] = useState<MemberRow | null>(null);
+  const [removing, setRemoving] = useState(false);
+
   if (loading) {
     return <p className="text-sm text-muted-foreground py-8 text-center">Loading...</p>;
   }
@@ -37,47 +54,106 @@ const MembersList = ({ members, loading }: MembersListProps) => {
     );
   }
 
-  return (
-    <div className="space-y-2">
-      {members.map((member) => {
-        const displayName = getDisplayName(member.profiles);
-        const email = member.profiles?.email;
-        const initial = (member.profiles?.full_name ?? email ?? "?")[0];
+  const ownerCount = members.filter((m) => m.role === "owner").length;
 
-        return (
-          <div
-            key={member.id}
-            className="flex items-center justify-between px-4 py-3 rounded-lg border border-border bg-card hover:bg-muted/30 transition-colors"
-          >
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center shrink-0">
-                <span className="text-xs font-medium text-muted-foreground uppercase">
-                  {initial}
-                </span>
+  const handleConfirm = async () => {
+    if (!pendingRemove || !onRemove) return;
+    setRemoving(true);
+    try {
+      await onRemove(pendingRemove);
+    } finally {
+      setRemoving(false);
+      setPendingRemove(null);
+    }
+  };
+
+  return (
+    <>
+      <div className="space-y-2">
+        {members.map((member) => {
+          const displayName = getDisplayName(member.profiles);
+          const email = member.profiles?.email;
+          const initial = (member.profiles?.full_name ?? email ?? "?")[0];
+          const isLastOwner = member.role === "owner" && ownerCount <= 1;
+          const showRemove = canRemove && !isLastOwner;
+
+          return (
+            <div
+              key={member.id}
+              className="flex items-center justify-between px-4 py-3 rounded-lg border border-border bg-card hover:bg-muted/30 transition-colors"
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center shrink-0">
+                  <span className="text-xs font-medium text-muted-foreground uppercase">
+                    {initial}
+                  </span>
+                </div>
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-foreground truncate">
+                    {displayName}
+                  </p>
+                  {member.profiles?.full_name && email && (
+                    <p className="text-xs text-muted-foreground truncate">{email}</p>
+                  )}
+                  <p className="text-xs text-muted-foreground">
+                    Joined {new Date(member.created_at).toLocaleDateString()}
+                  </p>
+                </div>
               </div>
-              <div className="min-w-0">
-                <p className="text-sm font-medium text-foreground truncate">
-                  {displayName}
-                </p>
-                {member.profiles?.full_name && email && (
-                  <p className="text-xs text-muted-foreground truncate">{email}</p>
+              <div className="flex items-center gap-2">
+                <span
+                  className={`inline-flex items-center text-xs font-medium px-2.5 py-0.5 rounded-md ${
+                    roleBadgeStyles[member.role] ?? roleBadgeStyles.viewer
+                  }`}
+                >
+                  {member.role}
+                </span>
+                {showRemove && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                    onClick={() => setPendingRemove(member)}
+                    aria-label="Remove member"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
                 )}
-                <p className="text-xs text-muted-foreground">
-                  Joined {new Date(member.created_at).toLocaleDateString()}
-                </p>
               </div>
             </div>
-            <span
-              className={`inline-flex items-center text-xs font-medium px-2.5 py-0.5 rounded-md ${
-                roleBadgeStyles[member.role] ?? roleBadgeStyles.viewer
-              }`}
+          );
+        })}
+      </div>
+
+      <AlertDialog
+        open={!!pendingRemove}
+        onOpenChange={(open) => !open && !removing && setPendingRemove(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure you want to remove this member from the project?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {pendingRemove
+                ? `${getDisplayName(pendingRemove.profiles)} will lose access to this project.`
+                : ""}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={removing}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                handleConfirm();
+              }}
+              disabled={removing}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              {member.role}
-            </span>
-          </div>
-        );
-      })}
-    </div>
+              {removing ? "Removing..." : "Remove"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 };
 
