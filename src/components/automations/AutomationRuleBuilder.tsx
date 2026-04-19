@@ -82,7 +82,7 @@ const SectionHeader = ({
 const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
   const { selectedOrgId } = useOrg();
   const [trigger, setTrigger] = useState("");
-  const [action, setAction] = useState("");
+  const [action, setAction] = useState("EMAIL");
   const [email, setEmail] = useState("");
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
