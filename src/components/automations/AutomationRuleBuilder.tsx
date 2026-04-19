@@ -131,7 +131,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
 
     toast.success("Automation rule created.");
     setTrigger("");
-    setAction("");
+    setAction("EMAIL");
     setEmail("");
     setSubject("");
     setMessage("");
