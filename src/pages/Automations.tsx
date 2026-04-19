@@ -9,7 +9,6 @@ import AutomationActivity from "@/components/automations/AutomationActivity";
 import AutomationRuleBuilder from "@/components/automations/AutomationRuleBuilder";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Zap, Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 interface AutomationLog {
@@ -134,14 +133,6 @@ const Automations = () => {
         title="Automations"
         description="Event-driven automation rules"
       />
-
-      <div className="flex items-center gap-3 mb-6 p-4 rounded-lg border border-border bg-card">
-        <span className="text-sm font-medium text-muted-foreground mr-auto">Automation Control</span>
-        <Button onClick={handleExecuteAutomations} disabled={runningEdge} size="sm">
-          {runningEdge ? <Loader2 className="h-4 w-4 animate-spin" /> : <Zap className="h-4 w-4" />}
-          Execute Automations
-        </Button>
-      </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-6">
         <TabsList className="bg-transparent border-b border-border rounded-none p-0 h-auto gap-6">
