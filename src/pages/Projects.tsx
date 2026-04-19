@@ -10,13 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -78,7 +72,7 @@ const Projects = () => {
       ((data as any[]) ?? []).map((p) => ({
         ...p,
         member_count: Array.isArray(p.project_members) ? p.project_members.length : 0,
-      }))
+      })),
     );
     setLoading(false);
   };
@@ -123,11 +117,31 @@ const Projects = () => {
       return;
     }
 
-    supabase.rpc("emit_event", {
-      p_org_id: selectedOrgId,
-      p_type: "PROJECT_CREATED" as const,
-      p_metadata: { project_id: (newProject as any).id, project_name: (newProject as any).name } as unknown as undefined,
-    }).then(() => triggerAutomations(), () => {});
+    // Fetch user profile (for full name)
+    const { data: profile } = await supabase.from("profiles").select("full_name").eq("id", user.id).single();
+
+    // Fetch organization name
+    const { data: org } = await supabase.from("organizations").select("name").eq("id", selectedOrgId).single();
+
+    // Fetch member count (just created project → 1 member)
+    const memberCount = 1;
+
+    supabase
+      .rpc("emit_event", {
+        p_org_id: selectedOrgId,
+        p_type: "PROJECT_CREATED" as const,
+        p_metadata: {
+          project_id: (newProject as any).id,
+          project_name: (newProject as any).name,
+          user_name: profile?.full_name || "User",
+          org_name: org?.name || "Workspace",
+          member_count: memberCount,
+        } as unknown as undefined,
+      })
+      .then(
+        () => triggerAutomations(),
+        () => {},
+      );
 
     setCreateName("");
     setCreateDesc("");
@@ -159,11 +173,16 @@ const Projects = () => {
       return;
     }
 
-    supabase.rpc("emit_event", {
-      p_org_id: selectedOrgId,
-      p_type: "PROJECT_UPDATED" as const,
-      p_metadata: { project_id: editProject.id, new_name: editName.trim() } as unknown as undefined,
-    }).then(() => triggerAutomations(), () => {});
+    supabase
+      .rpc("emit_event", {
+        p_org_id: selectedOrgId,
+        p_type: "PROJECT_UPDATED" as const,
+        p_metadata: { project_id: editProject.id, new_name: editName.trim() } as unknown as undefined,
+      })
+      .then(
+        () => triggerAutomations(),
+        () => {},
+      );
 
     setUpdating(false);
     setEditProject(null);
@@ -199,11 +218,16 @@ const Projects = () => {
     // Optimistically remove from local state
     setProjects((prev) => prev.filter((p) => p.id !== project.id));
 
-    supabase.rpc("emit_event", {
-      p_org_id: selectedOrgId,
-      p_type: "PROJECT_DELETED" as const,
-      p_metadata: { project_id: project.id, project_name: project.name } as unknown as undefined,
-    }).then(() => triggerAutomations(), () => {});
+    supabase
+      .rpc("emit_event", {
+        p_org_id: selectedOrgId,
+        p_type: "PROJECT_DELETED" as const,
+        p_metadata: { project_id: project.id, project_name: project.name } as unknown as undefined,
+      })
+      .then(
+        () => triggerAutomations(),
+        () => {},
+      );
 
     setDeleting(false);
     setDeleteProject(null);
@@ -234,9 +258,7 @@ const Projects = () => {
       render: (row) => (
         <div className="flex items-center gap-1.5">
           <Users className="h-3.5 w-3.5 text-muted-foreground/50" />
-          <span className="text-[13px] text-muted-foreground font-medium">
-            {row.member_count ?? 0}
-          </span>
+          <span className="text-[13px] text-muted-foreground font-medium">{row.member_count ?? 0}</span>
         </div>
       ),
     },
@@ -244,9 +266,7 @@ const Projects = () => {
       key: "created_at",
       header: "Created",
       render: (row) => (
-        <span className="text-sm text-muted-foreground">
-          {new Date(row.created_at).toLocaleDateString()}
-        </span>
+        <span className="text-sm text-muted-foreground">{new Date(row.created_at).toLocaleDateString()}</span>
       ),
     },
     ...(canCreate
@@ -320,12 +340,19 @@ const Projects = () => {
             </div>
             <div className="space-y-2">
               <Label>Description</Label>
-              <Textarea value={createDesc} onChange={(e) => setCreateDesc(e.target.value)} placeholder="Optional description" className="min-h-[80px]" />
+              <Textarea
+                value={createDesc}
+                onChange={(e) => setCreateDesc(e.target.value)}
+                placeholder="Optional description"
+                className="min-h-[80px]"
+              />
             </div>
             {createError && <p className="text-sm text-destructive">{createError}</p>}
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowCreate(false)}>Cancel</Button>
+            <Button variant="outline" onClick={() => setShowCreate(false)}>
+              Cancel
+            </Button>
             <Button onClick={handleCreate} disabled={creating || !createName.trim()}>
               {creating ? "Creating..." : "Create"}
             </Button>
@@ -351,7 +378,9 @@ const Projects = () => {
             {editError && <p className="text-sm text-destructive">{editError}</p>}
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setEditProject(null)}>Cancel</Button>
+            <Button variant="outline" onClick={() => setEditProject(null)}>
+              Cancel
+            </Button>
             <Button onClick={handleUpdate} disabled={updating || !editName.trim()}>
               {updating ? "Saving..." : "Save"}
             </Button>
