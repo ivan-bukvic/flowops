@@ -23,7 +23,10 @@ const Login = () => {
       setError(error.message);
       setIsSubmitting(false);
     } else {
-      navigate("/dashboard", { replace: true });
+      const params = new URLSearchParams(window.location.search);
+      const redirect = params.get("redirect") || "/dashboard";
+
+      navigate(redirect, { replace: true });
     }
   };
 
@@ -39,7 +42,13 @@ const Login = () => {
 
         <div className="space-y-2">
           <Label htmlFor="password">Password</Label>
-          <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+          <Input
+            id="password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
         </div>
 
         {error && <p className="text-sm text-destructive">{error}</p>}
@@ -50,7 +59,9 @@ const Login = () => {
 
         <p className="text-center text-sm text-muted-foreground">
           Don't have an account?{" "}
-          <Link to="/signup" className="text-primary underline">Sign up</Link>
+          <Link to="/signup" className="text-primary underline">
+            Sign up
+          </Link>
         </p>
       </form>
     </div>
