@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowDown, Zap, Settings, Mail, Calendar, MessageSquare, LayoutTemplate } from "lucide-react";
+import { ArrowDown, Zap, Settings, Mail, Calendar, MessageSquare, LayoutTemplate, Webhook, FileText } from "lucide-react";
 import { toast } from "sonner";
 
 const TRIGGER_OPTIONS = [
@@ -25,7 +25,13 @@ const TRIGGER_OPTIONS = [
   { label: "Workspace Created", value: "WORKSPACE_CREATED" },
 ];
 
-const ACTIONS = ["EMAIL", "SLACK_MESSAGE", "GOOGLE_CALENDAR_EVENT", "WEBHOOK", "LOG"];
+const ACTION_OPTIONS: { value: string; label: string; icon: React.ElementType }[] = [
+  { value: "EMAIL", label: "Email", icon: Mail },
+  { value: "SLACK_MESSAGE", label: "Slack", icon: MessageSquare },
+  { value: "GOOGLE_CALENDAR_EVENT", label: "Calendar", icon: Calendar },
+  { value: "WEBHOOK", label: "Webhook", icon: Webhook },
+  { value: "LOG", label: "Log", icon: FileText },
+];
 
 interface AutomationRuleBuilderProps {
   onCreated: () => void;
@@ -76,7 +82,7 @@ const SectionHeader = ({
 const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
   const { selectedOrgId } = useOrg();
   const [trigger, setTrigger] = useState("");
-  const [action, setAction] = useState("");
+  const [action, setAction] = useState("EMAIL");
   const [email, setEmail] = useState("");
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
@@ -125,7 +131,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
 
     toast.success("Automation rule created.");
     setTrigger("");
-    setAction("");
+    setAction("EMAIL");
     setEmail("");
     setSubject("");
     setMessage("");
@@ -191,40 +197,51 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
 
       <SectionArrow />
 
-      {/* Action */}
-      <div className="rounded-lg border border-border/80 bg-card p-7 shadow-[0_2px_8px_0_rgba(0,0,0,0.05)]">
-        <SectionHeader
-          icon={Settings}
-          title="Do this"
-          description="Choose what happens next"
-          variant="trigger"
-        />
-        <div className="space-y-1.5 pl-11">
-          <Label className="text-[13px] text-foreground/80">Action</Label>
-          <Select value={action} onValueChange={setAction}>
-            <SelectTrigger className="h-11 rounded-lg text-sm border-border/80 focus:ring-1 focus:ring-primary focus:border-primary">
-              <SelectValue placeholder="Select an action" />
-            </SelectTrigger>
-            <SelectContent>
-              {ACTIONS.map((a) => (
-                <SelectItem key={a} value={a}>
-                  {a.replace(/_/g, " ")}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
+      {/* Action + Configuration — split view */}
+      <div className="rounded-lg border border-border/80 bg-card overflow-hidden">
+        <div className="grid grid-cols-1 md:grid-cols-[30%_70%]">
+          {/* LEFT: Action selection (sticky) */}
+          <div className="border-b md:border-b-0 md:border-r border-border/80 p-5 md:sticky md:top-4 md:self-start">
+            <div className="mb-4">
+              <h3 className="text-[15px] font-bold text-foreground leading-tight">Action</h3>
+              <p className="text-[12px] text-muted-foreground/70 mt-1">
+                Choose what happens when this event is triggered
+              </p>
+            </div>
+            <div className="flex flex-col gap-1">
+              {ACTION_OPTIONS.map((opt) => {
+                const Icon = opt.icon;
+                const active = action === opt.value;
+                return (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => setAction(opt.value)}
+                    className={`flex items-center gap-2.5 px-3 py-2.5 rounded-md text-[13px] font-medium text-left transition-colors ${
+                      active
+                        ? "bg-primary/10 text-primary"
+                        : "text-foreground/75 hover:bg-muted/60"
+                    }`}
+                  >
+                    <Icon className={`h-4 w-4 ${active ? "text-primary" : "text-muted-foreground"}`} />
+                    <span>{opt.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
 
-      {/* Configuration — conditional */}
-      {hasConfig && (
-        <>
-          <SectionArrow />
+          {/* RIGHT: Configuration */}
+          <div className="p-6">
+            <div className="mb-5">
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                Action: {ACTION_OPTIONS.find((a) => a.value === action)?.label ?? action}
+              </p>
+              <h4 className="text-[15px] font-bold text-foreground leading-tight mt-1">{configTitle}</h4>
+              <p className="text-[12px] text-muted-foreground/70 mt-1">{configDesc}</p>
+            </div>
 
-          <div className="rounded-lg border border-border/80 bg-card p-7 shadow-[0_2px_8px_0_rgba(0,0,0,0.05)] animate-in fade-in-0 slide-in-from-top-2 duration-300">
-            <SectionHeader icon={configIcon} title={configTitle} description={configDesc} variant="config" />
-
-            <div className="space-y-4 pl-11">
+            <div className="space-y-4">
               {action === "EMAIL" && (
                 <>
                   <div className="space-y-1.5">
@@ -233,7 +250,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="recipient@example.com"
-                    className="h-11 rounded-lg text-sm border-border/80 focus:ring-1 focus:ring-primary focus:border-primary"
+                      className="h-11 rounded-lg text-sm border-border/80 focus:ring-1 focus:ring-primary focus:border-primary"
                     />
                   </div>
                   <div className="space-y-1.5">
@@ -278,7 +295,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
                       value={webhookUrl}
                       onChange={(e) => setWebhookUrl(e.target.value)}
                       placeholder="https://hooks.slack.com/services/..."
-                    className="h-11 rounded-lg text-sm border-border/80 focus:ring-1 focus:ring-primary focus:border-primary"
+                      className="h-11 rounded-lg text-sm border-border/80 focus:ring-1 focus:ring-primary focus:border-primary"
                     />
                     <p className="text-xs text-muted-foreground/70 mt-1">Slack incoming webhook URL</p>
                   </div>
@@ -306,10 +323,16 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
                   <p className="text-xs text-muted-foreground/70 mt-1">Leave empty to use the trigger event name</p>
                 </div>
               )}
+
+              {(action === "WEBHOOK" || action === "LOG") && (
+                <p className="text-[13px] text-muted-foreground">
+                  No additional configuration required for this action.
+                </p>
+              )}
             </div>
           </div>
-        </>
-      )}
+        </div>
+      </div>
 
       {/* Create Button */}
       <div className="flex justify-end mt-8">
