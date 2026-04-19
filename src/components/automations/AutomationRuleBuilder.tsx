@@ -37,16 +37,6 @@ interface AutomationRuleBuilderProps {
   onCreated: () => void;
 }
 
-const SectionArrow = () => (
-  <div className="flex justify-center py-6">
-    <div className="flex flex-col items-center gap-1.5">
-      <div className="w-px h-6 bg-primary/20" />
-      <div className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center">
-        <ArrowDown className="h-4 w-4 text-primary/60" />
-      </div>
-    </div>
-  </div>
-);
 
 const iconStyles: Record<string, { bg: string; text: string }> = {
   trigger: { bg: "bg-blue-500/10", text: "text-blue-600" },
