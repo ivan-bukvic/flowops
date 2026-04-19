@@ -217,9 +217,9 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-[30%_70%] border-t border-border/80">
+          <div className="grid grid-cols-1 md:grid-cols-[30%_70%]">
             {/* LEFT: Action selection (sticky) */}
-            <div className="border-b md:border-b-0 md:border-r border-border/80 p-4 md:sticky md:top-4 md:self-start">
+            <div className="border-b md:border-b-0 md:border-r border-border/40 p-4 md:my-3 md:sticky md:top-4 md:self-start">
               <div className="flex flex-col gap-1">
                 {ACTION_OPTIONS.map((opt) => {
                   const Icon = opt.icon;
