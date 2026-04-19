@@ -32,13 +32,17 @@ useEffect(() => {
   setError(error.message);
   setIsSubmitting(false);
 } else {
-  const redirect =
-    localStorage.getItem("login_redirect") || "/dashboard";
+  let redirect =
+  localStorage.getItem("login_redirect") || "/dashboard";
 
-  localStorage.removeItem("login_redirect");
+localStorage.removeItem("login_redirect");
 
-  navigate(redirect, { replace: true });
+// ✅ ensure proper format
+if (!redirect.startsWith("/")) {
+  redirect = "/" + redirect;
 }
+
+navigate(redirect, { replace: true });
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background">
