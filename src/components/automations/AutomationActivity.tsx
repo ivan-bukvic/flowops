@@ -296,18 +296,31 @@ const AutomationActivity = () => {
             const status = statusStyles[row.status] ?? statusStyles.pending;
             const isExpanded = expandedId === row.id;
 
+            const iconTone =
+              row.status === "completed"
+                ? { bg: "bg-[hsl(160,84%,39%,0.1)]", text: "text-[hsl(160,84%,39%)]" }
+                : row.status === "failed"
+                ? { bg: "bg-[hsl(0,84%,60%,0.1)]", text: "text-[hsl(0,84%,60%)]" }
+                : { bg: "bg-muted", text: "text-muted-foreground" };
+            const leftBorder =
+              row.status === "completed"
+                ? "border-l-2 border-l-[hsl(160,84%,39%)]"
+                : row.status === "failed"
+                ? "border-l-2 border-l-[hsl(0,84%,60%)]"
+                : "";
+
             return (
               <div
                 key={row.id}
-                className="rounded-lg border border-border bg-card overflow-hidden"
+                className={`rounded-lg border border-border bg-card overflow-hidden ${leftBorder}`}
               >
                 {/* Main row */}
                 <button
                   onClick={() => setExpandedId(isExpanded ? null : row.id)}
                   className="flex items-center gap-4 px-5 py-4 w-full text-left transition-colors hover:bg-accent/40"
                 >
-                  <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center shrink-0">
-                    <Icon className="h-[18px] w-[18px] text-muted-foreground" />
+                  <div className={`h-10 w-10 rounded-full flex items-center justify-center shrink-0 border border-border/60 ${iconTone.bg}`}>
+                    <Icon className={`h-[18px] w-[18px] ${iconTone.text}`} />
                   </div>
 
                   <div className="flex-1 min-w-0">
