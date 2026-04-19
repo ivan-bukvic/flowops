@@ -80,6 +80,24 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
   const [calendarTitle, setCalendarTitle] = useState("");
   const [creating, setCreating] = useState(false);
   const [templatesOpen, setTemplatesOpen] = useState(false);
+  const messageRef = useRef<HTMLTextAreaElement>(null);
+
+  const insertVariable = (variable: string) => {
+    const el = messageRef.current;
+    if (!el) {
+      setMessage((prev) => prev + variable);
+      return;
+    }
+    const start = el.selectionStart ?? message.length;
+    const end = el.selectionEnd ?? message.length;
+    const next = message.slice(0, start) + variable + message.slice(end);
+    setMessage(next);
+    requestAnimationFrame(() => {
+      el.focus();
+      const pos = start + variable.length;
+      el.setSelectionRange(pos, pos);
+    });
+  };
 
   const isValid = () => {
     if (!trigger || !action) return false;
