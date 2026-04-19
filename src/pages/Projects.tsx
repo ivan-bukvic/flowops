@@ -136,7 +136,7 @@ const Projects = () => {
           user_name: profile?.full_name || "User",
           org_name: org?.name || "Workspace",
           member_count: memberCount,
-        } as unknown as undefined,
+        },
       })
       .then(
         () => triggerAutomations(),
