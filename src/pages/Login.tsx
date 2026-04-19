@@ -12,37 +12,44 @@ const Login = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
-useEffect(() => {
-  const params = new URLSearchParams(window.location.search);
-  const redirectParam = params.get("redirect");
+  // ✅ Store redirect from URL ONCE
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const redirectParam = params.get("redirect");
 
-  if (redirectParam) {
-    localStorage.setItem("login_redirect", redirectParam);
-  }
-}, []);
+    if (redirectParam) {
+      localStorage.setItem("login_redirect", redirectParam);
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setIsSubmitting(true);
 
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
     if (error) {
-  setError(error.message);
-  setIsSubmitting(false);
-} else {
-  let redirect =
-  localStorage.getItem("login_redirect") || "/dashboard";
+      setError(error.message);
+      setIsSubmitting(false);
+      return;
+    }
 
-localStorage.removeItem("login_redirect");
+    // ✅ Get redirect AFTER login
+    let redirect = localStorage.getItem("login_redirect") || "/dashboard";
 
-// ✅ ensure proper format
-if (!redirect.startsWith("/")) {
-  redirect = "/" + redirect;
-}
+    localStorage.removeItem("login_redirect");
 
-navigate(redirect, { replace: true });
+    // ✅ Normalize path (important)
+    if (!redirect.startsWith("/")) {
+      redirect = "/" + redirect;
+    }
+
+    navigate(redirect, { replace: true });
+  };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background">
