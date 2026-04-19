@@ -135,14 +135,6 @@ const Automations = () => {
         description="Event-driven automation rules"
       />
 
-      <div className="flex items-center gap-3 mb-6 p-4 rounded-lg border border-border bg-card">
-        <span className="text-sm font-medium text-muted-foreground mr-auto">Automation Control</span>
-        <Button onClick={handleExecuteAutomations} disabled={runningEdge} size="sm">
-          {runningEdge ? <Loader2 className="h-4 w-4 animate-spin" /> : <Zap className="h-4 w-4" />}
-          Execute Automations
-        </Button>
-      </div>
-
       <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-6">
         <TabsList className="bg-transparent border-b border-border rounded-none p-0 h-auto gap-6">
           <TabsTrigger value="rules" className="rounded-none border-b-2 border-transparent px-1 pb-3 pt-1 text-[13px] font-semibold data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none text-muted-foreground hover:text-foreground transition-colors">Builder</TabsTrigger>
