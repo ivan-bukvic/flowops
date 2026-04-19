@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,15 @@ const Login = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
+useEffect(() => {
+  const params = new URLSearchParams(window.location.search);
+  const redirectParam = params.get("redirect");
+
+  if (redirectParam) {
+    localStorage.setItem("login_redirect", redirectParam);
+  }
+}, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -20,15 +29,16 @@ const Login = () => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
-      setError(error.message);
-      setIsSubmitting(false);
-    } else {
-      const params = new URLSearchParams(window.location.search);
-      const redirect = params.get("redirect") || "/dashboard";
+  setError(error.message);
+  setIsSubmitting(false);
+} else {
+  const redirect =
+    localStorage.getItem("login_redirect") || "/dashboard";
 
-      navigate(redirect, { replace: true });
-    }
-  };
+  localStorage.removeItem("login_redirect");
+
+  navigate(redirect, { replace: true });
+}
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background">
