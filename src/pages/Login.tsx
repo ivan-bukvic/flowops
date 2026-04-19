@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -10,17 +10,9 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
   const navigate = useNavigate();
-
-  // ✅ Store redirect from URL ONCE
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const redirectParam = params.get("redirect");
-
-    if (redirectParam) {
-      localStorage.setItem("login_redirect", redirectParam);
-    }
-  }, []);
+  const location = useLocation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,17 +30,10 @@ const Login = () => {
       return;
     }
 
-    // ✅ Get redirect AFTER login
-    let redirect = localStorage.getItem("login_redirect") || "/dashboard";
+    // ✅ Correct redirect AFTER login
+    const from = (location.state as any)?.from || (location.state as any)?.from?.pathname || "/dashboard";
 
-    localStorage.removeItem("login_redirect");
-
-    // ✅ Normalize path (important)
-    if (!redirect.startsWith("/")) {
-      redirect = "/" + redirect;
-    }
-
-    navigate(redirect, { replace: true });
+    navigate(from, { replace: true });
   };
 
   return (
