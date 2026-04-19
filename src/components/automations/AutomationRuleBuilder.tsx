@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowDown, Zap, Settings, Mail, Calendar, MessageSquare, LayoutTemplate, Webhook, FileText } from "lucide-react";
+import { Zap, Settings, Mail, Calendar, MessageSquare, LayoutTemplate, Webhook, FileText } from "lucide-react";
 import { toast } from "sonner";
 
 const TRIGGER_OPTIONS = [
