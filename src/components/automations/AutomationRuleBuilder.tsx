@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowDown, Zap, Settings, Mail, Calendar, MessageSquare, LayoutTemplate } from "lucide-react";
+import { ArrowDown, Zap, Settings, Mail, Calendar, MessageSquare, LayoutTemplate, Webhook, FileText } from "lucide-react";
 import { toast } from "sonner";
 
 const TRIGGER_OPTIONS = [
@@ -25,7 +25,13 @@ const TRIGGER_OPTIONS = [
   { label: "Workspace Created", value: "WORKSPACE_CREATED" },
 ];
 
-const ACTIONS = ["EMAIL", "SLACK_MESSAGE", "GOOGLE_CALENDAR_EVENT", "WEBHOOK", "LOG"];
+const ACTION_OPTIONS: { value: string; label: string; icon: React.ElementType }[] = [
+  { value: "EMAIL", label: "Email", icon: Mail },
+  { value: "SLACK_MESSAGE", label: "Slack", icon: MessageSquare },
+  { value: "GOOGLE_CALENDAR_EVENT", label: "Calendar", icon: Calendar },
+  { value: "WEBHOOK", label: "Webhook", icon: Webhook },
+  { value: "LOG", label: "Log", icon: FileText },
+];
 
 interface AutomationRuleBuilderProps {
   onCreated: () => void;
