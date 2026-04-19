@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import AutomationTemplatesModal from "./AutomationTemplatesModal";
 import { useOrg } from "@/contexts/OrgContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -80,6 +80,24 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
   const [calendarTitle, setCalendarTitle] = useState("");
   const [creating, setCreating] = useState(false);
   const [templatesOpen, setTemplatesOpen] = useState(false);
+  const messageRef = useRef<HTMLTextAreaElement>(null);
+
+  const insertVariable = (variable: string) => {
+    const el = messageRef.current;
+    if (!el) {
+      setMessage((prev) => prev + variable);
+      return;
+    }
+    const start = el.selectionStart ?? message.length;
+    const end = el.selectionEnd ?? message.length;
+    const next = message.slice(0, start) + variable + message.slice(end);
+    setMessage(next);
+    requestAnimationFrame(() => {
+      el.focus();
+      const pos = start + variable.length;
+      el.setSelectionRange(pos, pos);
+    });
+  };
 
   const isValid = () => {
     if (!trigger || !action) return false;
@@ -260,22 +278,23 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
                     <div className="space-y-1.5">
                       <Label className="text-[13px] text-foreground/80">Message</Label>
                       <Textarea
+                        ref={messageRef}
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
                         placeholder="Email body content"
                         className="min-h-[100px] rounded-lg text-sm border-border/80 focus:ring-1 focus:ring-primary focus:border-primary"
                       />
-                    </div>
-                    <div className="rounded-lg border border-border/60 bg-muted/40 px-4 py-3">
-                      <p className="text-xs font-medium text-muted-foreground mb-1.5">You can use variables:</p>
-                      <div className="flex flex-wrap gap-2">
+                      <div className="flex flex-wrap items-center gap-1.5 pt-1.5">
+                        <span className="text-xs text-muted-foreground/70">Use variables:</span>
                         {["{project_name}", "{user_email}", "{event_type}"].map((v) => (
-                          <code
+                          <button
                             key={v}
-                            className="text-xs bg-background border border-border rounded px-2 py-0.5 font-mono text-foreground/70"
+                            type="button"
+                            onClick={() => insertVariable(v)}
+                            className="text-xs font-mono text-foreground/75 bg-muted/60 hover:bg-muted border border-border/80 rounded px-1.5 py-0.5 transition-colors cursor-pointer active:scale-[0.97]"
                           >
                             {v}
-                          </code>
+                          </button>
                         ))}
                       </div>
                     </div>
