@@ -206,8 +206,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
           </div>
         </div>
 
-        {/* SECTION 2 — DIVIDER (edge-to-edge) */}
-        <div className="h-px bg-border" />
+        {/* SECTION 2 — DIVIDER removed */}
 
         {/* SECTION 3 — ACTION (split layout) */}
         <div>
