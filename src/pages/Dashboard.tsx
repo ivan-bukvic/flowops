@@ -143,7 +143,7 @@ const Dashboard = () => {
 
       {/* Quick Actions */}
       <h2 className="text-sm font-bold uppercase tracking-wide text-foreground/80 mb-5">Quick Actions</h2>
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-5 mb-14">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-5">
         {quickActions.map((action) => (
           <button
             key={action.label}
@@ -155,6 +155,10 @@ const Dashboard = () => {
           </button>
         ))}
       </div>
+      </div>
+      {/* end dotted background wrapper */}
+
+      <div className="mb-14" />
 
       {/* Recent Activity Timeline */}
       <div className="mb-2 mt-2">
