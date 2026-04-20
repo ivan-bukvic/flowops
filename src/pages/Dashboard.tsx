@@ -80,8 +80,12 @@ const Dashboard = () => {
 
   const dotPatternStyle = {
     backgroundImage:
-      "radial-gradient(circle, hsl(var(--primary) / 0.08) 1px, transparent 1px)",
-    backgroundSize: "20px 20px",
+      "radial-gradient(circle, hsl(var(--primary) / 0.13) 1px, transparent 1px)",
+    backgroundSize: "15px 15px",
+    WebkitMaskImage:
+      "linear-gradient(to right, black 0%, rgba(0,0,0,0.55) 55%, rgba(0,0,0,0.15) 88%, transparent 100%)",
+    maskImage:
+      "linear-gradient(to right, black 0%, rgba(0,0,0,0.55) 55%, rgba(0,0,0,0.15) 88%, transparent 100%)",
   };
 
   return (
