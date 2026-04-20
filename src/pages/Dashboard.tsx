@@ -78,23 +78,27 @@ const Dashboard = () => {
     { label: "Ask AI", icon: Sparkles, onClick: () => navigate("/ai"), bgClass: "bg-violet-50", iconClass: "text-violet-600" },
   ];
 
-  const dotPatternStyle = {
-    backgroundImage:
-      "radial-gradient(circle, hsl(var(--primary) / 0.13) 1px, transparent 1px)",
-    backgroundSize: "15px 15px",
-    WebkitMaskImage:
-      "linear-gradient(to right, black 0%, rgba(0,0,0,0.55) 55%, rgba(0,0,0,0.15) 88%, transparent 100%)",
-    maskImage:
-      "linear-gradient(to right, black 0%, rgba(0,0,0,0.55) 55%, rgba(0,0,0,0.15) 88%, transparent 100%)",
-  };
-
   return (
     <main className="p-6 pt-4">
       {/* Dotted background wrapper for Welcome + Quick Actions */}
-      <div
-        className="rounded-xl p-6 mb-10"
-        style={dotPatternStyle}
-      >
+      <div className="relative rounded-xl p-6 mb-10 overflow-hidden">
+        {/* Background layer: dots + left→right fade (does NOT affect content) */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 z-0"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle, hsl(var(--primary) / 0.13) 1px, transparent 1px)",
+            backgroundSize: "15px 15px",
+            WebkitMaskImage:
+              "linear-gradient(to right, black 0%, rgba(0,0,0,0.55) 55%, rgba(0,0,0,0.15) 88%, transparent 100%)",
+            maskImage:
+              "linear-gradient(to right, black 0%, rgba(0,0,0,0.55) 55%, rgba(0,0,0,0.15) 88%, transparent 100%)",
+          }}
+        />
+        {/* Content layer */}
+        <div className="relative z-10">
+
       {/* Welcome + System Overview Card */}
       <section className="rounded-lg border border-border/80 bg-card p-7 mb-8">
         {/* Header */}
@@ -159,6 +163,7 @@ const Dashboard = () => {
           </button>
         ))}
       </div>
+        </div>
       </div>
       {/* end dotted background wrapper */}
 
