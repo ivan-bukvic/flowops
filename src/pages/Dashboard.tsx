@@ -56,8 +56,9 @@ const Dashboard = () => {
     fetchStats();
   }, [selectedOrgId]);
 
+  const fullName = (user?.user_metadata as any)?.full_name as string | undefined;
   const userName =
-    (user?.user_metadata as any)?.full_name ||
+    (fullName?.trim().split(/\s+/)[0]) ||
     user?.email?.split("@")[0] ||
     "there";
 
@@ -85,7 +86,7 @@ const Dashboard = () => {
         <div className="flex items-start justify-between gap-4 mb-6">
           <div>
             <h1 className="text-xl font-bold text-foreground">
-              Welcome back, {userName} 👋
+              Welcome back, {userName}
             </h1>
             <p className="text-sm text-muted-foreground mt-1">
               Here's what's happening in your workspace
