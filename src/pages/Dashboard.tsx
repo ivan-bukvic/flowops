@@ -78,10 +78,21 @@ const Dashboard = () => {
     { label: "Ask AI", icon: Sparkles, onClick: () => navigate("/ai"), bgClass: "bg-violet-50", iconClass: "text-violet-600" },
   ];
 
+  const dotPatternStyle = {
+    backgroundImage:
+      "radial-gradient(circle, hsl(var(--primary) / 0.08) 1px, transparent 1px)",
+    backgroundSize: "20px 20px",
+  };
+
   return (
     <main className="p-6 pt-4">
+      {/* Dotted background wrapper for Welcome + Quick Actions */}
+      <div
+        className="rounded-xl p-6 mb-10"
+        style={dotPatternStyle}
+      >
       {/* Welcome + System Overview Card */}
-      <section className="rounded-lg border border-border/80 bg-card p-7 mb-10">
+      <section className="rounded-lg border border-border/80 bg-card p-7 mb-8">
         {/* Header */}
         <div className="flex items-start justify-between gap-4 mb-6">
           <div>
@@ -132,7 +143,7 @@ const Dashboard = () => {
 
       {/* Quick Actions */}
       <h2 className="text-sm font-bold uppercase tracking-wide text-foreground/80 mb-5">Quick Actions</h2>
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-5 mb-14">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-5">
         {quickActions.map((action) => (
           <button
             key={action.label}
@@ -144,6 +155,10 @@ const Dashboard = () => {
           </button>
         ))}
       </div>
+      </div>
+      {/* end dotted background wrapper */}
+
+      <div className="mb-14" />
 
       {/* Recent Activity Timeline */}
       <div className="mb-2 mt-2">
