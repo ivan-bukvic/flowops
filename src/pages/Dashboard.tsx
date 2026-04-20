@@ -3,7 +3,7 @@ import { useOrg } from "@/contexts/OrgContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import ColoredIcon from "@/components/shared/ColoredIcon";
-import RecentActivity from "@/components/dashboard/RecentActivity";
+import ActivityTimeline from "@/components/dashboard/ActivityTimeline";
 import {
   FolderKanban, FileText, Zap, Bot, Plus, Upload, Sparkles,
 } from "lucide-react";
@@ -145,9 +145,14 @@ const Dashboard = () => {
         ))}
       </div>
 
-      {/* Recent Activity */}
-      <h2 className="text-sm font-bold uppercase tracking-wide text-foreground/80 mb-5">Recent Activity</h2>
-      {selectedOrgId && <RecentActivity orgId={selectedOrgId} />}
+      {/* Recent Activity Timeline */}
+      <div className="mb-2 mt-2">
+        <h2 className="text-sm font-bold uppercase tracking-wide text-foreground/80">Recent Activity</h2>
+        <p className="text-xs text-muted-foreground mt-1 mb-5">
+          Latest events and automation activity in your workspace
+        </p>
+      </div>
+      {selectedOrgId && <ActivityTimeline orgId={selectedOrgId} />}
     </main>
   );
 };
