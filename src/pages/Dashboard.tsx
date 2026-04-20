@@ -163,6 +163,7 @@ const Dashboard = () => {
           </button>
         ))}
       </div>
+        </div>
       </div>
       {/* end dotted background wrapper */}
 
