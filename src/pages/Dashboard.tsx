@@ -3,7 +3,7 @@ import { useOrg } from "@/contexts/OrgContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import ColoredIcon from "@/components/shared/ColoredIcon";
-import RecentActivity from "@/components/dashboard/RecentActivity";
+import ActivityTimeline from "@/components/dashboard/ActivityTimeline";
 import {
   FolderKanban, FileText, Zap, Bot, Plus, Upload, Sparkles,
 } from "lucide-react";
