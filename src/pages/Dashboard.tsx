@@ -78,10 +78,21 @@ const Dashboard = () => {
     { label: "Ask AI", icon: Sparkles, onClick: () => navigate("/ai"), bgClass: "bg-violet-50", iconClass: "text-violet-600" },
   ];
 
+  const dotPatternStyle = {
+    backgroundImage:
+      "radial-gradient(circle, hsl(var(--primary) / 0.08) 1px, transparent 1px)",
+    backgroundSize: "20px 20px",
+  };
+
   return (
     <main className="p-6 pt-4">
+      {/* Dotted background wrapper for Welcome + Quick Actions */}
+      <div
+        className="rounded-xl p-6 mb-10"
+        style={dotPatternStyle}
+      >
       {/* Welcome + System Overview Card */}
-      <section className="rounded-lg border border-border/80 bg-card p-7 mb-10">
+      <section className="rounded-lg border border-border/80 bg-card p-7 mb-8">
         {/* Header */}
         <div className="flex items-start justify-between gap-4 mb-6">
           <div>
