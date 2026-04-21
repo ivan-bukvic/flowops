@@ -36,7 +36,7 @@ const Signup = () => {
   };
 
   return (
-    <div className="min-h-screen grid grid-cols-1 md:grid-cols-2 bg-background">
+    <div className="min-h-screen grid grid-cols-1 md:grid-cols-[2fr_3fr] bg-background">
       {/* LEFT — visual area */}
       <div className="relative hidden md:block overflow-hidden">
         {/* Background layer: dots + fade */}
