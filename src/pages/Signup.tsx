@@ -45,18 +45,18 @@ const Signup = () => {
           className="pointer-events-none absolute inset-0 z-0"
           style={{
             backgroundImage:
-              "radial-gradient(circle, hsl(var(--primary) / 0.09) 1.5px, transparent 1.5px)",
+              "radial-gradient(circle, hsl(var(--primary) / 0.13) 1.5px, transparent 1.5px)",
             backgroundSize: "16px 16px",
             maskImage:
-              "linear-gradient(to right, black 0%, rgba(0,0,0,0.5) 45%, rgba(0,0,0,0.1) 80%, transparent 100%)",
+              "linear-gradient(to right, black 0%, rgba(0,0,0,0.55) 40%, rgba(0,0,0,0.15) 75%, transparent 100%)",
             WebkitMaskImage:
-              "linear-gradient(to right, black 0%, rgba(0,0,0,0.5) 45%, rgba(0,0,0,0.1) 80%, transparent 100%)",
+              "linear-gradient(to right, black 0%, rgba(0,0,0,0.55) 40%, rgba(0,0,0,0.15) 75%, transparent 100%)",
           }}
         />
         {/* Content layer */}
         <div className="relative z-10 flex h-full flex-col justify-between p-10">
           <div className="flex items-center gap-2">
-            <img src="/logo.svg" alt="Logo" className="h-[2.1rem]" />
+            <img src="/logo.svg" alt="Logo" className="h-[2.94rem]" />
           </div>
           <div className="max-w-sm">
             <h2 className="text-[1.75rem] leading-[1.25] font-semibold text-foreground">
@@ -82,7 +82,7 @@ const Signup = () => {
 
           <div className="space-y-2">
             <Label htmlFor="name">Full Name</Label>
-            <Input id="name" type="text" value={name} onChange={(e) => setName(e.target.value)} required placeholder="John Doe" />
+            <Input id="name" type="text" value={name} onChange={(e) => setName(e.target.value)} required />
           </div>
 
           <div className="space-y-2">
