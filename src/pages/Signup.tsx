@@ -56,7 +56,7 @@ const Signup = () => {
         {/* Content layer */}
         <div className="relative z-10 flex h-full flex-col justify-between p-10">
           <div className="flex items-center gap-2">
-            <img src="/src/assets/logo.svg" alt="Logo" className="h-[2.1rem]" />
+            <img src="/logo.svg" alt="Logo" className="h-[2.1rem]" />
           </div>
           <div className="max-w-sm">
             <h2 className="text-[1.75rem] leading-[1.25] font-semibold text-foreground">
