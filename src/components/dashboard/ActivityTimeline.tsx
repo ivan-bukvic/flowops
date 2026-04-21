@@ -301,7 +301,7 @@ const ActivityTimeline = ({ orgId, limit = 8 }: Props) => {
                   )}
                 </div>
 
-                {hasActions && (
+                {hasActions ? (
                   <ul className="mt-3 space-y-1.5">
                     {group.actions.map((a) => {
                       const ActionIcon = actionIcons[a.action_type] ?? FileText;
@@ -325,6 +325,10 @@ const ActivityTimeline = ({ orgId, limit = 8 }: Props) => {
                       );
                     })}
                   </ul>
+                ) : (
+                  <p className="mt-2 text-[12px] text-muted-foreground/70 italic">
+                    No automations triggered
+                  </p>
                 )}
               </div>
             </div>
