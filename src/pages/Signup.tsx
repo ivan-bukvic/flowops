@@ -76,8 +76,22 @@ const Signup = () => {
       </div>
 
       {/* RIGHT — form area */}
-      <div className="flex items-center justify-center p-6">
-        <form onSubmit={handleSubmit} className="w-full max-w-[420px] space-y-6">
+      <div className="relative overflow-hidden flex items-center justify-center p-6">
+        {/* Background layer: mirrored dots + fade (right → center) */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 z-0"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle, hsl(var(--primary) / 0.13) 1.5px, transparent 1.5px)",
+            backgroundSize: "16px 16px",
+            maskImage:
+              "linear-gradient(to left, black 0%, rgba(0,0,0,0.55) 40%, rgba(0,0,0,0.15) 75%, transparent 100%)",
+            WebkitMaskImage:
+              "linear-gradient(to left, black 0%, rgba(0,0,0,0.55) 40%, rgba(0,0,0,0.15) 75%, transparent 100%)",
+          }}
+        />
+        <form onSubmit={handleSubmit} className="relative z-10 w-full max-w-[420px] space-y-6">
           <div className="space-y-1.5">
             <h1 className="text-3xl font-bold text-foreground">Create Account</h1>
             <p className="text-sm text-muted-foreground">
