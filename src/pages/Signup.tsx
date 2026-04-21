@@ -38,7 +38,7 @@ const Signup = () => {
   return (
     <div className="min-h-screen grid grid-cols-1 md:grid-cols-2 bg-background">
       {/* LEFT — visual area */}
-      <div className="relative hidden md:block overflow-hidden border-r border-border">
+      <div className="relative hidden md:block overflow-hidden">
         {/* Background layer: dots + fade */}
         <div
           aria-hidden
@@ -68,6 +68,11 @@ const Signup = () => {
           </div>
           <div />
         </div>
+        {/* Refined vertical separator */}
+        <div
+          className="absolute right-0 top-[50px] bottom-[50px] w-px"
+          style={{ backgroundColor: "rgba(229, 231, 235, 0.6)" }}
+        />
       </div>
 
       {/* RIGHT — form area */}
