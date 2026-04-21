@@ -323,7 +323,12 @@ const Projects = () => {
         columns={columns}
         data={projects}
         loading={loading}
-        emptyMessage="No projects yet."
+        emptyIcon={FolderKanban}
+        emptyTitle="No projects yet"
+        emptyDescription="Create your first project to get started."
+        emptyActionLabel={canCreate ? "Create Project" : undefined}
+        emptyActionIcon={Plus}
+        onEmptyAction={canCreate ? () => setShowCreate(true) : undefined}
         onRowClick={(row) => navigate(`/projects/${row.id}`)}
       />
 
