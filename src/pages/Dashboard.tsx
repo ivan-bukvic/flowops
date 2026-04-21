@@ -4,6 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import ColoredIcon from "@/components/shared/ColoredIcon";
 import ActivityTimeline from "@/components/dashboard/ActivityTimeline";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   FolderKanban, FileText, Zap, Bot, Plus, Upload, Sparkles,
 } from "lucide-react";
@@ -137,12 +138,16 @@ const Dashboard = () => {
                 <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
                   {m.label}
                 </p>
-                <p className="text-lg font-bold text-foreground tabular-nums leading-tight mt-0.5">
-                  {loading ? "—" : `${m.value} `}
-                  <span className="text-xs font-normal text-muted-foreground">
-                    {loading ? "" : m.suffix}
-                  </span>
-                </p>
+                {loading ? (
+                  <Skeleton className="h-5 w-20 mt-1" />
+                ) : (
+                  <p className="text-lg font-bold text-foreground tabular-nums leading-tight mt-0.5">
+                    {`${m.value} `}
+                    <span className="text-xs font-normal text-muted-foreground">
+                      {m.suffix}
+                    </span>
+                  </p>
+                )}
               </div>
             </button>
           ))}

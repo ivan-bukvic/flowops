@@ -1,3 +1,6 @@
+import { Skeleton } from "@/components/ui/skeleton";
+import EmptyState from "@/components/shared/EmptyState";
+import { LucideIcon } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -20,6 +23,13 @@ interface DataTableProps<T> {
   data: T[];
   loading?: boolean;
   emptyMessage?: string;
+  emptyTitle?: string;
+  emptyDescription?: string;
+  emptyIcon?: LucideIcon;
+  emptyActionLabel?: string;
+  emptyActionIcon?: LucideIcon;
+  onEmptyAction?: () => void;
+  skeletonRows?: number;
   onRowClick?: (row: T) => void;
 }
 
@@ -27,15 +37,70 @@ function DataTable<T extends Record<string, any>>({
   columns,
   data,
   loading,
-  emptyMessage = "No data found.",
+  emptyMessage,
+  emptyTitle,
+  emptyDescription,
+  emptyIcon,
+  emptyActionLabel,
+  emptyActionIcon,
+  onEmptyAction,
+  skeletonRows = 5,
   onRowClick,
 }: DataTableProps<T>) {
+  const renderHeader = () => (
+    <TableHeader>
+      <TableRow className="bg-muted/40 hover:bg-muted/40 border-b border-border/80">
+        {columns.map((col) => (
+          <TableHead
+            key={col.key}
+            className={`h-auto px-6 py-4 text-left align-middle text-sm font-medium text-muted-foreground ${col.className ?? ""}`}
+          >
+            {col.header}
+          </TableHead>
+        ))}
+      </TableRow>
+    </TableHeader>
+  );
+
   if (loading) {
-    return <p className="text-sm text-muted-foreground py-8 text-center">Loading...</p>;
+    return (
+      <div className="border border-border/80 rounded-lg overflow-hidden overflow-x-auto bg-card shadow-[0_1px_3px_0_rgba(0,0,0,0.04)]">
+        <Table className="w-full table-fixed">
+          {columns.some((col) => col.width) && (
+            <colgroup>
+              {columns.map((col) => (
+                <col key={col.key} style={col.width ? { width: col.width } : undefined} />
+              ))}
+            </colgroup>
+          )}
+          {renderHeader()}
+          <TableBody>
+            {Array.from({ length: skeletonRows }).map((_, i) => (
+              <TableRow key={i} className="border-b border-border/60 last:border-0">
+                {columns.map((col, j) => (
+                  <TableCell key={col.key} className="px-6 py-4 align-middle">
+                    <Skeleton className={`h-4 ${j === 0 ? "w-2/3" : "w-1/2"}`} />
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    );
   }
 
   if (data.length === 0) {
-    return <p className="text-sm text-muted-foreground py-8 text-center">{emptyMessage}</p>;
+    return (
+      <EmptyState
+        icon={emptyIcon}
+        title={emptyTitle ?? emptyMessage ?? "No data found"}
+        description={emptyDescription}
+        actionLabel={emptyActionLabel}
+        actionIcon={emptyActionIcon}
+        onAction={onEmptyAction}
+      />
+    );
   }
 
   return (
@@ -48,15 +113,7 @@ function DataTable<T extends Record<string, any>>({
             ))}
           </colgroup>
         )}
-        <TableHeader>
-          <TableRow className="bg-muted/40 hover:bg-muted/40 border-b border-border/80">
-            {columns.map((col) => (
-              <TableHead key={col.key} className={`h-auto px-6 py-4 text-left align-middle text-sm font-medium text-muted-foreground ${col.className ?? ""}`}>
-                {col.header}
-              </TableHead>
-            ))}
-          </TableRow>
-        </TableHeader>
+        {renderHeader()}
         <TableBody>
           {data.map((row, i) => (
             <TableRow

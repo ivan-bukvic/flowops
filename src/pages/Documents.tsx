@@ -218,7 +218,12 @@ const Documents = () => {
         columns={columns}
         data={documents}
         loading={loading}
-        emptyMessage="No documents uploaded yet."
+        emptyIcon={FileText}
+        emptyTitle="No documents yet"
+        emptyDescription="Upload documents to analyze them with AI."
+        emptyActionLabel="Upload Document"
+        emptyActionIcon={Upload}
+        onEmptyAction={handleUpload}
         onRowClick={(row) => navigate(`/documents/${row.id}`)}
       />
     </main>

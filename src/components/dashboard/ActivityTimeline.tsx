@@ -212,13 +212,20 @@ const ActivityTimeline = ({ orgId, limit = 8 }: Props) => {
   if (groups.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-14 text-center rounded-lg border border-border/80 bg-card">
-        <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center mb-3">
-          <Activity className="h-4 w-4 text-muted-foreground" />
+        <div className="h-11 w-11 rounded-full bg-muted flex items-center justify-center mb-4">
+          <Activity className="h-5 w-5 text-muted-foreground" />
         </div>
-        <p className="text-sm font-semibold text-foreground">No recent activity</p>
-        <p className="text-xs text-muted-foreground mt-1">
-          Events and automation activity will appear here.
+        <p className="text-[15px] font-semibold text-foreground">No activity yet</p>
+        <p className="text-sm text-muted-foreground mt-1.5 max-w-sm">
+          Create a project or automation to see activity here.
         </p>
+        <button
+          onClick={() => navigate("/projects")}
+          className="mt-5 inline-flex items-center gap-2 h-10 px-4 rounded-md bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors"
+        >
+          <FolderPlus className="h-4 w-4" />
+          Create Project
+        </button>
       </div>
     );
   }
