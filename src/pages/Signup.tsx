@@ -39,29 +39,31 @@ const Signup = () => {
     <div className="min-h-screen grid grid-cols-1 md:grid-cols-2 bg-background">
       {/* LEFT — visual area */}
       <div className="relative hidden md:block overflow-hidden border-r border-border">
+        {/* Background layer: dots + fade */}
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 z-0"
           style={{
             backgroundImage:
-              "radial-gradient(circle, hsl(var(--primary) / 0.13) 1px, transparent 1px)",
+              "radial-gradient(circle, hsl(var(--primary) / 0.09) 1.5px, transparent 1.5px)",
             backgroundSize: "16px 16px",
             maskImage:
-              "linear-gradient(to right, black 0%, rgba(0,0,0,0.6) 50%, rgba(0,0,0,0.15) 85%, transparent 100%)",
+              "linear-gradient(to right, black 0%, rgba(0,0,0,0.5) 45%, rgba(0,0,0,0.1) 80%, transparent 100%)",
             WebkitMaskImage:
-              "linear-gradient(to right, black 0%, rgba(0,0,0,0.6) 50%, rgba(0,0,0,0.15) 85%, transparent 100%)",
+              "linear-gradient(to right, black 0%, rgba(0,0,0,0.5) 45%, rgba(0,0,0,0.1) 80%, transparent 100%)",
           }}
         />
+        {/* Content layer */}
         <div className="relative z-10 flex h-full flex-col justify-between p-10">
           <div className="flex items-center gap-2">
-            <img src="/src/assets/logo.svg" alt="Logo" className="h-[2.1rem]" />
+            <img src="/logo.svg" alt="Logo" className="h-[2.1rem]" />
           </div>
           <div className="max-w-sm">
-            <h2 className="text-2xl font-semibold text-foreground">
+            <h2 className="text-[1.75rem] leading-[1.25] font-semibold text-foreground">
               Build your workspace
             </h2>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Organize projects, automate workflows, and collaborate with your team — all in one place.
+            <p className="mt-2 text-[15px] text-muted-foreground">
+              Organize projects, automate workflows, and collaborate with your team - all in one place.
             </p>
           </div>
           <div />
