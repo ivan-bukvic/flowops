@@ -3,7 +3,10 @@ import { useOrg } from "@/contexts/OrgContext";
 import { supabase } from "@/integrations/supabase/client";
 import { getDisplayName } from "@/lib/utils";
 import PageHeader from "@/components/shared/PageHeader";
+import EmptyState from "@/components/shared/EmptyState";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
+import { Activity } from "lucide-react";
 
 interface EventRow {
   id: string;
@@ -71,9 +74,23 @@ const Events = () => {
       <PageHeader title="Events" description="Activity timeline for your workspace" />
 
       {loading ? (
-        <p className="text-sm text-muted-foreground">Loading...</p>
+        <div className="space-y-2">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className="p-4 rounded-lg border border-border bg-card space-y-2">
+              <div className="flex items-center gap-2">
+                <Skeleton className="h-5 w-32 rounded-full" />
+                <Skeleton className="h-3 w-24" />
+              </div>
+              <Skeleton className="h-4 w-2/3" />
+            </div>
+          ))}
+        </div>
       ) : events.length === 0 ? (
-        <p className="text-sm text-muted-foreground">No events recorded yet.</p>
+        <EmptyState
+          icon={Activity}
+          title="No activity yet"
+          description="Activity will appear here when events are triggered."
+        />
       ) : (
         <div className="space-y-2">
           {events.map((evt) => {
