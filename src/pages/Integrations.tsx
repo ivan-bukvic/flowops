@@ -66,10 +66,29 @@ const Integrations = () => {
   const activeIntegration = integrations.find((i) => i.key === modalKey);
 
   return (
-    <main className="p-6">
-      <PageHeader title="Integrations" description="Connect your workspace to external services" />
+    <main className="p-6 pt-4">
+      <div className="relative rounded-xl p-6 overflow-hidden">
+        {/* Background layer: dots + left→right + top→bottom fade */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 z-0"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle, hsl(var(--primary) / 0.20) 1px, transparent 1px)",
+            backgroundSize: "15px 15px",
+            WebkitMaskImage:
+              "linear-gradient(to right, black 0%, rgba(0,0,0,0.55) 55%, rgba(0,0,0,0.05) 85%, transparent 100%), linear-gradient(to bottom, black 0%, black 28%, rgba(0,0,0,0.30) 42%, rgba(0,0,0,0.05) 55%, transparent 65%)",
+            maskImage:
+              "linear-gradient(to right, black 0%, rgba(0,0,0,0.55) 55%, rgba(0,0,0,0.05) 85%, transparent 100%), linear-gradient(to bottom, black 0%, black 28%, rgba(0,0,0,0.30) 42%, rgba(0,0,0,0.05) 55%, transparent 65%)",
+            WebkitMaskComposite: "source-in",
+            maskComposite: "intersect",
+          }}
+        />
+        {/* Content layer */}
+        <div className="relative z-10">
+          <PageHeader title="Integrations" description="Connect your workspace to external services" />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {integrations.map((integration, idx) => {
           const connected = states[integration.key]?.connected;
           return (
