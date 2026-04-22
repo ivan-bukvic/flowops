@@ -89,7 +89,7 @@ const Dashboard = () => {
           className="pointer-events-none absolute inset-0 z-0"
           style={{
             backgroundImage:
-              "radial-gradient(circle, hsl(var(--primary) / 0.22) 1px, transparent 1px)",
+              "radial-gradient(circle, hsl(var(--primary) / 0.20) 1px, transparent 1px)",
             backgroundSize: "15px 15px",
             WebkitMaskImage:
               "linear-gradient(to right, black 0%, rgba(0,0,0,0.55) 55%, rgba(0,0,0,0.05) 85%, transparent 100%)",
