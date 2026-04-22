@@ -83,12 +83,12 @@ const Signup = () => {
           className="pointer-events-none absolute inset-0 z-0"
           style={{
             backgroundImage:
-              "radial-gradient(circle, hsl(var(--primary) / 0.17) 1.5px, transparent 1.5px)",
+              "radial-gradient(circle, hsl(var(--primary) / 0.22) 1.5px, transparent 1.5px)",
             backgroundSize: "16px 16px",
             maskImage:
-              "linear-gradient(to left, black 0%, rgba(0,0,0,0.55) 40%, rgba(0,0,0,0.15) 75%, transparent 100%)",
+              "linear-gradient(to left, black 0%, rgba(0,0,0,0.55) 55%, rgba(0,0,0,0.05) 80%, transparent 100%)",
             WebkitMaskImage:
-              "linear-gradient(to left, black 0%, rgba(0,0,0,0.55) 40%, rgba(0,0,0,0.15) 75%, transparent 100%)",
+              "linear-gradient(to left, black 0%, rgba(0,0,0,0.55) 55%, rgba(0,0,0,0.05) 80%, transparent 100%)",
           }}
         />
         <form onSubmit={handleSubmit} className="relative z-10 w-full max-w-[420px] space-y-6">
