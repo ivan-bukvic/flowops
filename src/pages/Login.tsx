@@ -30,46 +30,100 @@ const Login = () => {
       return;
     }
 
-    // ✅ Correct redirect AFTER login
     const from = (location.state as any)?.from || (location.state as any)?.from?.pathname || "/dashboard";
-
     navigate(from, { replace: true });
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <form onSubmit={handleSubmit} className="w-full max-w-md space-y-6 p-6">
-        <h1 className="text-3xl font-bold text-foreground">Login</h1>
-
-        <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+    <div className="min-h-screen grid grid-cols-1 md:grid-cols-[3fr_7fr] bg-background">
+      {/* LEFT — visual area */}
+      <div className="relative hidden md:block overflow-hidden">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 z-0"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle, hsl(var(--primary) / 0.17) 1.5px, transparent 1.5px)",
+            backgroundSize: "16px 16px",
+            maskImage:
+              "linear-gradient(to right, black 0%, rgba(0,0,0,0.55) 40%, rgba(0,0,0,0.15) 75%, transparent 100%)",
+            WebkitMaskImage:
+              "linear-gradient(to right, black 0%, rgba(0,0,0,0.55) 40%, rgba(0,0,0,0.15) 75%, transparent 100%)",
+          }}
+        />
+        <div className="relative z-10 flex h-full flex-col justify-between p-10">
+          <div className="flex items-center gap-2">
+            <img src="/logo.svg" alt="Logo" className="h-[2.94rem]" />
+          </div>
+          <div className="max-w-sm">
+            <h2 className="text-[1.75rem] leading-[1.25] font-semibold text-foreground">
+              Welcome back
+            </h2>
+            <p className="mt-2 text-[15px] text-muted-foreground">
+              Sign in to access your workspace, projects, and automations.
+            </p>
+          </div>
+          <div />
         </div>
+        <div
+          className="absolute right-0 top-[50px] bottom-[50px] w-px"
+          style={{ backgroundColor: "rgba(229, 231, 235, 0.6)" }}
+        />
+      </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="password">Password</Label>
-          <Input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
+      {/* RIGHT — form area */}
+      <div className="relative overflow-hidden flex items-center justify-center p-6">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 z-0"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle, hsl(var(--primary) / 0.17) 1.5px, transparent 1.5px)",
+            backgroundSize: "16px 16px",
+            maskImage:
+              "linear-gradient(to left, black 0%, rgba(0,0,0,0.55) 40%, rgba(0,0,0,0.15) 75%, transparent 100%)",
+            WebkitMaskImage:
+              "linear-gradient(to left, black 0%, rgba(0,0,0,0.55) 40%, rgba(0,0,0,0.15) 75%, transparent 100%)",
+          }}
+        />
+        <form onSubmit={handleSubmit} className="relative z-10 w-full max-w-[420px] space-y-6">
+          <div className="space-y-1.5">
+            <h1 className="text-3xl font-bold text-foreground">Login</h1>
+            <p className="text-sm text-muted-foreground">
+              Welcome back. Enter your credentials to continue.
+            </p>
+          </div>
 
-        {error && <p className="text-sm text-destructive">{error}</p>}
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          </div>
 
-        <Button type="submit" disabled={isSubmitting} className="w-full">
-          {isSubmitting ? "Logging in..." : "Login"}
-        </Button>
+          <div className="space-y-2">
+            <Label htmlFor="password">Password</Label>
+            <Input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
 
-        <p className="text-center text-sm text-muted-foreground">
-          Don't have an account?{" "}
-          <Link to="/signup" className="text-primary underline">
-            Sign up
-          </Link>
-        </p>
-      </form>
+          {error && <p className="text-sm text-destructive">{error}</p>}
+
+          <Button type="submit" disabled={isSubmitting} className="w-full">
+            {isSubmitting ? "Logging in..." : "Login"}
+          </Button>
+
+          <p className="text-center text-sm text-muted-foreground">
+            Don't have an account?{" "}
+            <Link to="/signup" className="text-primary underline">
+              Sign up
+            </Link>
+          </p>
+        </form>
+      </div>
     </div>
   );
 };
