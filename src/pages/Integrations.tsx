@@ -134,6 +134,8 @@ const Integrations = () => {
             </Card>
           );
         })}
+          </div>
+        </div>
       </div>
 
       <IntegrationModal
