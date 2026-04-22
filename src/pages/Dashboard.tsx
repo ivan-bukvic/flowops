@@ -92,9 +92,11 @@ const Dashboard = () => {
               "radial-gradient(circle, hsl(var(--primary) / 0.20) 1px, transparent 1px)",
             backgroundSize: "15px 15px",
             WebkitMaskImage:
-              "linear-gradient(to right, black 0%, rgba(0,0,0,0.55) 55%, rgba(0,0,0,0.05) 85%, transparent 100%)",
+              "linear-gradient(to right, black 0%, rgba(0,0,0,0.55) 55%, rgba(0,0,0,0.05) 85%, transparent 100%), linear-gradient(to bottom, black 0%, black 50%, rgba(0,0,0,0.35) 68%, rgba(0,0,0,0.05) 82%, transparent 92%)",
             maskImage:
-              "linear-gradient(to right, black 0%, rgba(0,0,0,0.55) 55%, rgba(0,0,0,0.05) 85%, transparent 100%)",
+              "linear-gradient(to right, black 0%, rgba(0,0,0,0.55) 55%, rgba(0,0,0,0.05) 85%, transparent 100%), linear-gradient(to bottom, black 0%, black 50%, rgba(0,0,0,0.35) 68%, rgba(0,0,0,0.05) 82%, transparent 92%)",
+            WebkitMaskComposite: "source-in",
+            maskComposite: "intersect",
           }}
         />
         {/* Content layer */}
