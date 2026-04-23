@@ -128,12 +128,12 @@ const Dashboard = () => {
             <button
               key={m.label}
               onClick={() => navigate(m.route)}
-              className="flex items-center gap-3.5 rounded-lg border border-border/80 bg-card p-4 text-left hover:border-primary/40 hover:bg-accent/30 transition-all duration-150 cursor-pointer group"
+              className="relative overflow-hidden flex items-center gap-3.5 rounded-lg border border-border/80 bg-card p-4 pl-[18px] text-left border-l-2 border-l-primary/70 hover:border-l-primary hover:border-primary/40 hover:bg-accent/30 hover:shadow-[0_4px_12px_-4px_hsl(var(--primary)/0.18)] transition-all duration-150 cursor-pointer group"
             >
               <ColoredIcon
                 icon={m.icon}
-                bgClass="bg-muted/60 group-hover:bg-primary/10"
-                iconClass="text-muted-foreground/70 group-hover:text-primary"
+                bgClass="bg-primary/10 group-hover:bg-primary/15"
+                iconClass="text-primary group-hover:text-primary"
                 size="sm"
               />
               <div className="min-w-0">
@@ -144,7 +144,7 @@ const Dashboard = () => {
                   <Skeleton className="h-5 w-20 mt-1" />
                 ) : (
                   <p className="text-lg font-bold text-foreground tabular-nums leading-tight mt-0.5">
-                    {`${m.value} `}
+                    <span className="text-primary">{m.value}</span>{` `}
                     <span className="text-xs font-normal text-muted-foreground">
                       {m.suffix}
                     </span>
