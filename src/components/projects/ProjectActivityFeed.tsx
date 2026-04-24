@@ -170,6 +170,30 @@ const ProjectActivityFeed = ({ orgId, projectId }: Props) => {
     });
   }, [events, logs]);
 
+  const sections = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+
+    const buckets: { label: string; items: typeof grouped }[] = [
+      { label: "Today", items: [] },
+      { label: "Yesterday", items: [] },
+      { label: "Earlier", items: [] },
+    ];
+
+    grouped.forEach((g) => {
+      const d = new Date(g.evt.created_at);
+      const dayStart = new Date(d);
+      dayStart.setHours(0, 0, 0, 0);
+      if (dayStart.getTime() === today.getTime()) buckets[0].items.push(g);
+      else if (dayStart.getTime() === yesterday.getTime()) buckets[1].items.push(g);
+      else buckets[2].items.push(g);
+    });
+
+    return buckets.filter((b) => b.items.length > 0);
+  }, [grouped]);
+
   if (loading) {
     return (
       <div className="space-y-3">
@@ -203,117 +227,126 @@ const ProjectActivityFeed = ({ orgId, projectId }: Props) => {
     );
   }
 
-  return (
-    <div className="space-y-3">
-      {grouped.map(({ evt, actions, status }) => {
-        const Icon = eventIcons[evt.type] ?? Zap;
-        const tone: EventTone = eventTones[evt.type] ?? "neutral";
-        const actorLabel = evt.actor_user_id
-          ? actorNames[evt.actor_user_id] ?? "Unknown User"
-          : "System";
-        const verb = eventVerbs[evt.type] ?? evt.type.replace(/_/g, " ").toLowerCase();
-        const entityName = getEntityName(evt.type, evt.metadata);
-        const hasActions = actions.length > 0;
-        const isCompleted = status === "completed";
-        const isFailed = status === "failed";
+  const renderCard = ({ evt, actions, status }: (typeof grouped)[number]) => {
+    const Icon = eventIcons[evt.type] ?? Zap;
+    const tone: EventTone = eventTones[evt.type] ?? "neutral";
+    const actorLabel = evt.actor_user_id
+      ? actorNames[evt.actor_user_id] ?? "Unknown User"
+      : "System";
+    const verb = eventVerbs[evt.type] ?? evt.type.replace(/_/g, " ").toLowerCase();
+    const entityName = getEntityName(evt.type, evt.metadata);
+    const hasActions = actions.length > 0;
+    const isCompleted = status === "completed";
+    const isFailed = status === "failed";
 
-        const iconTone =
-          tone === "success"
-            ? { bg: "bg-[hsl(160,84%,39%,0.1)]", text: "text-[hsl(160,84%,39%)]" }
-            : tone === "danger"
-            ? { bg: "bg-[hsl(0,84%,60%,0.1)]", text: "text-[hsl(0,84%,60%)]" }
-            : { bg: "bg-primary/10", text: "text-primary" };
+    const iconTone =
+      tone === "success"
+        ? { bg: "bg-[hsl(160,84%,39%,0.1)]", text: "text-[hsl(160,84%,39%)]" }
+        : tone === "danger"
+        ? { bg: "bg-[hsl(0,84%,60%,0.1)]", text: "text-[hsl(0,84%,60%)]" }
+        : { bg: "bg-primary/10", text: "text-primary" };
 
-        const leftBorder =
-          tone === "success"
-            ? "border-l-2 border-l-[hsl(160,84%,39%)]"
-            : tone === "danger"
-            ? "border-l-2 border-l-[hsl(0,84%,60%)]"
-            : "border-l-2 border-l-primary/60";
+    const leftBorder =
+      tone === "success"
+        ? "border-l-2 border-l-[hsl(160,84%,39%)]"
+        : tone === "danger"
+        ? "border-l-2 border-l-[hsl(0,84%,60%)]"
+        : "border-l-2 border-l-primary/60";
 
-        const statusBadge = isCompleted
-          ? "bg-[hsl(160,84%,39%,0.08)] text-[hsl(160,84%,39%)]"
-          : isFailed
-          ? "bg-[hsl(0,84%,60%,0.08)] text-[hsl(0,84%,60%)]"
-          : "bg-muted text-muted-foreground";
+    const statusBadge = isCompleted
+      ? "bg-[hsl(160,84%,39%,0.08)] text-[hsl(160,84%,39%)]"
+      : isFailed
+      ? "bg-[hsl(0,84%,60%,0.08)] text-[hsl(0,84%,60%)]"
+      : "bg-muted text-muted-foreground";
 
-        return (
+    return (
+      <div
+        key={evt.id}
+        className={`relative rounded-lg border border-border/80 bg-card ${leftBorder} hover:bg-accent/20 transition-colors`}
+      >
+        <div className="flex items-start gap-4 px-5 py-4">
           <div
-            key={evt.id}
-            className={`relative rounded-lg border border-border/80 bg-card ${leftBorder} hover:bg-accent/20 transition-colors`}
+            className={`h-10 w-10 rounded-full flex items-center justify-center shrink-0 ${iconTone.bg}`}
           >
-            <div className="flex items-start gap-4 px-5 py-4">
-              <div
-                className={`h-10 w-10 rounded-full flex items-center justify-center shrink-0 ${iconTone.bg}`}
-              >
-                <Icon className={`h-[18px] w-[18px] ${iconTone.text}`} />
-              </div>
-
-              <div className="flex-1 min-w-0">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="text-[14px] font-medium text-foreground leading-snug">
-                      <span className="font-semibold">{actorLabel}</span> {verb}
-                      {entityName && (
-                        <span className="font-semibold text-primary"> "{entityName}"</span>
-                      )}
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1 tabular-nums">
-                      {new Date(evt.created_at).toLocaleString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </p>
-                  </div>
-                  {hasActions && (
-                    <span
-                      className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1 rounded-full shrink-0 ${statusBadge}`}
-                    >
-                      {isCompleted ? (
-                        <CheckCircle2 className="h-3 w-3" />
-                      ) : isFailed ? (
-                        <XCircle className="h-3 w-3" />
-                      ) : null}
-                      {isCompleted ? "Completed" : isFailed ? "Failed" : "Pending"}
-                    </span>
-                  )}
-                </div>
-
-                {hasActions && (
-                  <ul className="mt-3 space-y-1.5">
-                    {actions.map((a) => {
-                      const ActionIcon = actionIcons[a.action_type] ?? FileText;
-                      const aFailed = a.status === "failed";
-                      const aPending = a.status !== "completed" && a.status !== "failed";
-                      return (
-                        <li
-                          key={a.id}
-                          className="flex items-center gap-2 text-[13px] text-muted-foreground"
-                        >
-                          <span className="text-muted-foreground/60 select-none">→</span>
-                          <ActionIcon className="h-3.5 w-3.5 text-muted-foreground/70 shrink-0" />
-                          <span className="text-foreground/80">
-                            {actionLabels[a.action_type] ??
-                              a.action_type.replace(/_/g, " ").toLowerCase()}
-                          </span>
-                          {aFailed && (
-                            <span className="text-[hsl(0,84%,60%)] font-medium">— Failed</span>
-                          )}
-                          {aPending && (
-                            <span className="text-muted-foreground italic">— Pending</span>
-                          )}
-                        </li>
-                      );
-                    })}
-                  </ul>
-                )}
-              </div>
-            </div>
+            <Icon className={`h-[18px] w-[18px] ${iconTone.text}`} />
           </div>
-        );
-      })}
+
+          <div className="flex-1 min-w-0">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-[14px] font-medium text-foreground leading-snug">
+                  <span className="font-semibold">{actorLabel}</span> {verb}
+                  {entityName && (
+                    <span className="font-semibold text-primary"> "{entityName}"</span>
+                  )}
+                </p>
+                <p className="text-xs text-muted-foreground mt-1 tabular-nums">
+                  {new Date(evt.created_at).toLocaleString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </p>
+              </div>
+              {hasActions && (
+                <span
+                  className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1 rounded-full shrink-0 ${statusBadge}`}
+                >
+                  {isCompleted ? (
+                    <CheckCircle2 className="h-3 w-3" />
+                  ) : isFailed ? (
+                    <XCircle className="h-3 w-3" />
+                  ) : null}
+                  {isCompleted ? "Completed" : isFailed ? "Failed" : "Pending"}
+                </span>
+              )}
+            </div>
+
+            {hasActions && (
+              <ul className="mt-3 space-y-1.5">
+                {actions.map((a) => {
+                  const ActionIcon = actionIcons[a.action_type] ?? FileText;
+                  const aFailed = a.status === "failed";
+                  const aPending = a.status !== "completed" && a.status !== "failed";
+                  return (
+                    <li
+                      key={a.id}
+                      className="flex items-center gap-2 text-[13px] text-muted-foreground"
+                    >
+                      <span className="text-muted-foreground/60 select-none">→</span>
+                      <ActionIcon className="h-3.5 w-3.5 text-muted-foreground/70 shrink-0" />
+                      <span className="text-foreground/80">
+                        {actionLabels[a.action_type] ??
+                          a.action_type.replace(/_/g, " ").toLowerCase()}
+                      </span>
+                      {aFailed && (
+                        <span className="text-[hsl(0,84%,60%)] font-medium">— Failed</span>
+                      )}
+                      {aPending && (
+                        <span className="text-muted-foreground italic">— Pending</span>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div>
+      {sections.map((section, idx) => (
+        <div key={section.label} className={idx === 0 ? "" : "mt-7"}>
+          <h4 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-2.5 px-1">
+            {section.label}
+          </h4>
+          <div className="space-y-3">{section.items.map(renderCard)}</div>
+        </div>
+      ))}
     </div>
   );
 };
