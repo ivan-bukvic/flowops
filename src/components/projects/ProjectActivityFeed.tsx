@@ -227,6 +227,7 @@ const ProjectActivityFeed = ({ orgId, projectId }: Props) => {
     );
   }
 
+  const renderCard = ({ evt, actions, status }: (typeof grouped)[number]) => {
     const Icon = eventIcons[evt.type] ?? Zap;
     const tone: EventTone = eventTones[evt.type] ?? "neutral";
     const actorLabel = evt.actor_user_id
