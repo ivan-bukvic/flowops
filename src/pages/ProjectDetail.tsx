@@ -9,6 +9,7 @@ import { extractFileName } from "@/lib/utils";
 import PageHeader from "@/components/shared/PageHeader";
 import DataTable, { Column } from "@/components/shared/DataTable";
 import MembersList from "@/components/projects/MembersList";
+import ProjectActivityFeed from "@/components/projects/ProjectActivityFeed";
 import ProjectAiQueries from "@/components/projects/ProjectAiQueries";
 import StatusBadge from "@/components/shared/StatusBadge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -512,23 +513,8 @@ const ProjectDetail = () => {
           </div>
 
           <h3 className="text-sm font-medium text-foreground mt-6 mb-3">Activity</h3>
-          {eventsLoading ? (
-            <p className="text-sm text-muted-foreground">Loading...</p>
-          ) : projectEvents.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No activity yet.</p>
-          ) : (
-            <div className="space-y-2">
-              {projectEvents.map((evt) => (
-                <div key={evt.id} className="p-3 rounded-lg border border-border bg-card">
-                  <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="text-xs font-mono">
-                      {evt.type}
-                    </Badge>
-                    <span className="text-xs text-muted-foreground">{new Date(evt.created_at).toLocaleString()}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
+          {activeOrgId && projectId && (
+            <ProjectActivityFeed orgId={activeOrgId} projectId={projectId} />
           )}
         </TabsContent>
 
