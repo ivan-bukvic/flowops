@@ -170,6 +170,30 @@ const ProjectActivityFeed = ({ orgId, projectId }: Props) => {
     });
   }, [events, logs]);
 
+  const sections = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+
+    const buckets: { label: string; items: typeof grouped }[] = [
+      { label: "Today", items: [] },
+      { label: "Yesterday", items: [] },
+      { label: "Earlier", items: [] },
+    ];
+
+    grouped.forEach((g) => {
+      const d = new Date(g.evt.created_at);
+      const dayStart = new Date(d);
+      dayStart.setHours(0, 0, 0, 0);
+      if (dayStart.getTime() === today.getTime()) buckets[0].items.push(g);
+      else if (dayStart.getTime() === yesterday.getTime()) buckets[1].items.push(g);
+      else buckets[2].items.push(g);
+    });
+
+    return buckets.filter((b) => b.items.length > 0);
+  }, [grouped]);
+
   if (loading) {
     return (
       <div className="space-y-3">
