@@ -129,7 +129,7 @@ const Automations = () => {
   ];
 
   return (
-    <main className="p-6">
+    <main className="p-3 sm:p-6">
       <PageHeader
         title="Automations"
         description="Event-driven automation rules"
