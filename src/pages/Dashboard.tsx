@@ -103,7 +103,7 @@ const Dashboard = () => {
         <div className="relative z-10">
 
       {/* Welcome + System Overview Card */}
-      <section className="rounded-lg border border-border/80 bg-card p-7 mb-8">
+      <section className="rounded-lg border border-border/80 bg-card p-4 sm:p-7 mb-8">
         {/* Header */}
         <div className="flex items-start justify-between gap-4 mb-6">
           <div>
