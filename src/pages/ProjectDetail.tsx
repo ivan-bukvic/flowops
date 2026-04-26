@@ -481,7 +481,7 @@ const ProjectDetail = () => {
   // memberColumns removed — using MembersList component instead
 
   return (
-    <main className="p-6">
+    <main className="p-3 sm:p-6">
       <Link
         to="/projects"
         className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-4"
