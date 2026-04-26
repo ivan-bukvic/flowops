@@ -492,7 +492,7 @@ const ProjectDetail = () => {
       <PageHeader title={project.name} description={project.description || undefined} />
 
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList>
+        <TabsList className="w-full justify-start overflow-x-auto no-scrollbar">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="documents">Documents</TabsTrigger>
           <TabsTrigger value="ai">AI Queries</TabsTrigger>
