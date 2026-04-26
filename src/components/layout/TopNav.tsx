@@ -17,9 +17,12 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Bell, Search, User, LogOut, Plus } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Bell, Search, LogOut, Plus, Settings as SettingsIcon, User as UserIcon } from "lucide-react";
 
 const TopNav = () => {
   const navigate = useNavigate();
@@ -30,6 +33,17 @@ const TopNav = () => {
     await supabase.auth.signOut();
     navigate("/login", { replace: true });
   };
+
+  const meta = (user?.user_metadata ?? {}) as { full_name?: string; avatar_url?: string };
+  const displayName =
+    meta.full_name?.trim() || user?.email?.split("@")[0] || "User";
+  const avatarUrl = meta.avatar_url;
+  const initials = (() => {
+    const source = (meta.full_name?.trim() || user?.email || "U").trim();
+    const parts = source.split(/[\s@._-]+/).filter(Boolean);
+    const letters = (parts[0]?.[0] ?? "") + (parts[1]?.[0] ?? "");
+    return (letters || source[0] || "U").toUpperCase().slice(0, 2);
+  })();
 
   return (
     <header className="bg-card">
@@ -83,15 +97,43 @@ const TopNav = () => {
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground">
-                <User className="h-4 w-4" />
-              </Button>
+              <button
+                type="button"
+                aria-label="Account menu"
+                className="flex items-center justify-center rounded-full transition-transform hover:scale-[1.04] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+              >
+                <Avatar className="h-9 w-9 border border-border/80 shadow-[0_1px_2px_0_rgba(0,0,0,0.04)]">
+                  {avatarUrl && <AvatarImage src={avatarUrl} alt={displayName} />}
+                  <AvatarFallback className="bg-primary/10 text-primary text-[12px] font-semibold tracking-wide">
+                    {initials}
+                  </AvatarFallback>
+                </Avatar>
+              </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuItem disabled className="text-xs text-muted-foreground">
-                {user?.email}
+            <DropdownMenuContent align="end" className="w-60 p-1.5 rounded-lg shadow-md border-border/80">
+              <DropdownMenuLabel className="px-2.5 py-2 font-normal">
+                <p className="text-sm font-semibold text-foreground leading-tight truncate">
+                  {displayName}
+                </p>
+                {user?.email && (
+                  <p className="text-xs text-muted-foreground mt-0.5 truncate">
+                    {user.email}
+                  </p>
+                )}
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => navigate("/settings")}
+                className="text-sm cursor-pointer rounded-md px-2.5 py-2"
+              >
+                <SettingsIcon className="h-4 w-4 mr-2 text-muted-foreground" />
+                Settings
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleLogout}>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={handleLogout}
+                className="text-sm cursor-pointer rounded-md px-2.5 py-2 text-destructive focus:text-destructive"
+              >
                 <LogOut className="h-4 w-4 mr-2" />
                 Logout
               </DropdownMenuItem>
