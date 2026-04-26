@@ -310,7 +310,7 @@ const Projects = () => {
   ];
 
   return (
-    <main className="p-6">
+    <main className="p-3 sm:p-6">
       <PageHeader
         title="Projects"
         description="Manage your workspace projects"
