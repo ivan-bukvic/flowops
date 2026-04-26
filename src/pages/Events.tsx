@@ -301,7 +301,7 @@ const Events = () => {
                     : ""
                 }`}
               >
-                <div className="flex items-start gap-4 px-5 py-4">
+                <div className="flex items-start gap-3 sm:gap-4 px-4 sm:px-5 py-3.5 sm:py-4">
                   <div
                     className={`h-10 w-10 rounded-full flex items-center justify-center shrink-0 ${iconTone.bg}`}
                   >
