@@ -49,7 +49,7 @@ const TopNav = () => {
     <header className="bg-card">
       <div className="flex h-14 items-center justify-between gap-2 sm:gap-4 px-3 sm:px-4">
         <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-          <SidebarTrigger />
+          <SidebarTrigger className="lg:hidden" />
 
           {organizations.length > 0 && (
             <Select value={selectedOrgId ?? ""} onValueChange={setSelectedOrgId}>
