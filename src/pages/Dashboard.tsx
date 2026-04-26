@@ -158,7 +158,7 @@ const Dashboard = () => {
 
       {/* Quick Actions */}
       <h2 className="text-sm font-bold uppercase tracking-wide text-foreground/80 mb-5">Quick Actions</h2>
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
         {quickActions.map((action) => (
           <button
             key={action.label}
