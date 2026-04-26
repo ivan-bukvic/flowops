@@ -17,9 +17,12 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Bell, Search, User, LogOut, Plus } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Bell, Search, LogOut, Plus, Settings as SettingsIcon, User as UserIcon } from "lucide-react";
 
 const TopNav = () => {
   const navigate = useNavigate();
