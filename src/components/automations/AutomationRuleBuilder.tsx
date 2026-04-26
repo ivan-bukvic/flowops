@@ -169,7 +169,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
   const hasConfig = ["EMAIL", "SLACK_MESSAGE", "GOOGLE_CALENDAR_EVENT"].includes(action);
 
   return (
-    <div className="max-w-[860px] mx-auto py-6 px-6">
+    <div className="max-w-[860px] mx-auto py-6 px-3 sm:px-6">
       <div className="flex justify-end mb-4">
         <Button variant="outline" size="sm" onClick={() => setTemplatesOpen(true)} className="text-xs h-9 gap-1.5">
           <LayoutTemplate className="h-4 w-4" />
