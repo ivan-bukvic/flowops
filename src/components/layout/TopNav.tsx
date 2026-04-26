@@ -34,6 +34,17 @@ const TopNav = () => {
     navigate("/login", { replace: true });
   };
 
+  const meta = (user?.user_metadata ?? {}) as { full_name?: string; avatar_url?: string };
+  const displayName =
+    meta.full_name?.trim() || user?.email?.split("@")[0] || "User";
+  const avatarUrl = meta.avatar_url;
+  const initials = (() => {
+    const source = (meta.full_name?.trim() || user?.email || "U").trim();
+    const parts = source.split(/[\s@._-]+/).filter(Boolean);
+    const letters = (parts[0]?.[0] ?? "") + (parts[1]?.[0] ?? "");
+    return (letters || source[0] || "U").toUpperCase().slice(0, 2);
+  })();
+
   return (
     <header className="bg-card">
       <div className="flex h-14 items-center justify-between gap-2 sm:gap-4 px-3 sm:px-4">
