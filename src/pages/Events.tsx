@@ -214,7 +214,7 @@ const Events = () => {
   }, [events, logs]);
 
   return (
-    <main className="p-6">
+    <main className="p-3 sm:p-6">
       <PageHeader title="Events" description="Activity timeline for your workspace" />
 
       {loading ? (
