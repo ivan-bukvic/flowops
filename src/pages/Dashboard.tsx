@@ -80,13 +80,13 @@ const Dashboard = () => {
   ];
 
   return (
-    <main className="p-6 pt-4">
+    <main className="p-3 sm:p-6 pt-3 sm:pt-4">
       {/* Dotted background wrapper for Welcome + Quick Actions + Recent Activity */}
-      <div className="relative rounded-xl p-6 mb-6 overflow-hidden">
+      <div className="relative rounded-xl p-3 sm:p-6 mb-6 overflow-hidden">
         {/* Background layer: dots + left→right fade (does NOT affect content) */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 z-0"
+          className="pointer-events-none absolute inset-0 z-0 opacity-60 sm:opacity-100"
           style={{
             backgroundImage:
               "radial-gradient(circle, hsl(var(--primary) / 0.20) 1px, transparent 1px)",
@@ -103,7 +103,7 @@ const Dashboard = () => {
         <div className="relative z-10">
 
       {/* Welcome + System Overview Card */}
-      <section className="rounded-lg border border-border/80 bg-card p-7 mb-8">
+      <section className="rounded-lg border border-border/80 bg-card p-4 sm:p-7 mb-8">
         {/* Header */}
         <div className="flex items-start justify-between gap-4 mb-6">
           <div>
@@ -123,7 +123,7 @@ const Dashboard = () => {
         </div>
 
         {/* Metrics Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           {metrics.map((m) => (
             <button
               key={m.label}
@@ -158,7 +158,7 @@ const Dashboard = () => {
 
       {/* Quick Actions */}
       <h2 className="text-sm font-bold uppercase tracking-wide text-foreground/80 mb-5">Quick Actions</h2>
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
         {quickActions.map((action) => (
           <button
             key={action.label}

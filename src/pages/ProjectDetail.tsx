@@ -481,7 +481,7 @@ const ProjectDetail = () => {
   // memberColumns removed — using MembersList component instead
 
   return (
-    <main className="p-6">
+    <main className="p-3 sm:p-6">
       <Link
         to="/projects"
         className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-4"
@@ -492,7 +492,7 @@ const ProjectDetail = () => {
       <PageHeader title={project.name} description={project.description || undefined} />
 
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList>
+        <TabsList className="w-full justify-start overflow-x-auto no-scrollbar">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="documents">Documents</TabsTrigger>
           <TabsTrigger value="ai">AI Queries</TabsTrigger>

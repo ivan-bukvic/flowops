@@ -169,7 +169,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
   const hasConfig = ["EMAIL", "SLACK_MESSAGE", "GOOGLE_CALENDAR_EVENT"].includes(action);
 
   return (
-    <div className="max-w-[860px] mx-auto py-6 px-6">
+    <div className="max-w-[860px] mx-auto py-6 px-3 sm:px-6">
       <div className="flex justify-end mb-4">
         <Button variant="outline" size="sm" onClick={() => setTemplatesOpen(true)} className="text-xs h-9 gap-1.5">
           <LayoutTemplate className="h-4 w-4" />
@@ -189,7 +189,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
             description="Choose what starts this automation"
             variant="trigger"
           />
-          <div className="space-y-1.5 pl-[52px]">
+          <div className="space-y-1.5 sm:pl-[52px]">
             <Label className="text-[13px] text-foreground/80">Event</Label>
             <Select value={trigger} onValueChange={setTrigger}>
               <SelectTrigger className="h-11 rounded-lg text-sm border-border/80 focus:ring-1 focus:ring-primary focus:border-primary">

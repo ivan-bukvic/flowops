@@ -33,14 +33,14 @@ const TopNav = () => {
 
   return (
     <header className="bg-card">
-      <div className="flex h-14 items-center justify-between gap-4 px-4">
-        <div className="flex items-center gap-3">
+      <div className="flex h-14 items-center justify-between gap-2 sm:gap-4 px-3 sm:px-4">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
           <SidebarTrigger />
 
           {organizations.length > 0 && (
             <Select value={selectedOrgId ?? ""} onValueChange={setSelectedOrgId}>
-              <SelectTrigger className="w-[180px] h-9 text-sm">
-                <SelectValue placeholder="Select workspace" />
+              <SelectTrigger className="w-[140px] sm:w-[180px] h-9 text-sm">
+                <SelectValue placeholder="Workspace" />
               </SelectTrigger>
               <SelectContent>
                 {organizations.map((org) => (
@@ -55,7 +55,7 @@ const TopNav = () => {
           <Button
             variant="ghost"
             size="sm"
-            className="text-muted-foreground"
+            className="text-muted-foreground hidden sm:inline-flex"
             onClick={() => navigate("/create-workspace")}
           >
             <Plus className="h-4 w-4 mr-1" />
@@ -63,7 +63,7 @@ const TopNav = () => {
           </Button>
         </div>
 
-        <div className="flex-1 max-w-md">
+        <div className="flex-1 max-w-md hidden md:block">
           <div className="relative">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -73,7 +73,10 @@ const TopNav = () => {
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 sm:gap-2">
+          <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground md:hidden" aria-label="Search">
+            <Search className="h-4 w-4" />
+          </Button>
           <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground">
             <Bell className="h-4 w-4" />
           </Button>
