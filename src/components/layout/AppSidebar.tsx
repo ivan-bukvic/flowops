@@ -39,8 +39,8 @@ const secondaryItems = [
 ];
 
 export function AppSidebar() {
-  const { state } = useSidebar();
-  const collapsed = state === "collapsed";
+  const { state, isMobile, setOpenMobile } = useSidebar();
+  const collapsed = state === "collapsed" && !isMobile;
   const location = useLocation();
 
   const isActive = (path: string) =>
@@ -53,6 +53,7 @@ export function AppSidebar() {
       <SidebarMenuItem key={item.title}>
         <Link
           to={item.url}
+          onClick={() => isMobile && setOpenMobile(false)}
           className={`
             relative flex items-center gap-3 rounded-md px-3 py-2 text-[15px] transition-all duration-150
             ${active

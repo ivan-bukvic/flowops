@@ -310,7 +310,7 @@ const Projects = () => {
   ];
 
   return (
-    <main className="p-6">
+    <main className="p-3 sm:p-6">
       <PageHeader
         title="Projects"
         description="Manage your workspace projects"
@@ -319,18 +319,107 @@ const Projects = () => {
         onAction={() => setShowCreate(true)}
       />
 
-      <DataTable
-        columns={columns}
-        data={projects}
-        loading={loading}
-        emptyIcon={FolderKanban}
-        emptyTitle="No projects yet"
-        emptyDescription="Create your first project to get started."
-        emptyActionLabel={canCreate ? "Create Project" : undefined}
-        emptyActionIcon={Plus}
-        onEmptyAction={canCreate ? () => setShowCreate(true) : undefined}
-        onRowClick={(row) => navigate(`/projects/${row.id}`)}
-      />
+      {/* Desktop / tablet table */}
+      <div className="hidden md:block">
+        <DataTable
+          columns={columns}
+          data={projects}
+          loading={loading}
+          emptyIcon={FolderKanban}
+          emptyTitle="No projects yet"
+          emptyDescription="Create your first project to get started."
+          emptyActionLabel={canCreate ? "Create Project" : undefined}
+          emptyActionIcon={Plus}
+          onEmptyAction={canCreate ? () => setShowCreate(true) : undefined}
+          onRowClick={(row) => navigate(`/projects/${row.id}`)}
+        />
+      </div>
+
+      {/* Mobile stacked cards */}
+      <div className="md:hidden space-y-3">
+        {loading ? (
+          Array.from({ length: 4 }).map((_, i) => (
+            <div
+              key={i}
+              className="border border-border/80 rounded-lg bg-card p-4 h-[110px] animate-pulse"
+            />
+          ))
+        ) : projects.length === 0 ? (
+          <div className="border border-dashed border-border rounded-lg bg-card p-8 text-center">
+            <FolderKanban className="h-8 w-8 mx-auto text-muted-foreground/50 mb-2" />
+            <p className="text-sm font-semibold text-foreground">No projects yet</p>
+            <p className="text-xs text-muted-foreground mt-1 mb-4">
+              Create your first project to get started.
+            </p>
+            {canCreate && (
+              <Button size="sm" onClick={() => setShowCreate(true)}>
+                <Plus className="h-3.5 w-3.5 mr-1" />
+                Create Project
+              </Button>
+            )}
+          </div>
+        ) : (
+          projects.map((p) => (
+            <div
+              key={p.id}
+              onClick={() => navigate(`/projects/${p.id}`)}
+              className="border border-border/80 rounded-lg bg-card p-4 shadow-[0_1px_3px_0_rgba(0,0,0,0.04)] cursor-pointer hover:bg-accent/30 transition-colors"
+            >
+              <div className="flex items-start gap-3">
+                <div className="h-9 w-9 rounded-xl bg-indigo-50 flex items-center justify-center shrink-0">
+                  <FolderKanban className="h-4 w-4 text-indigo-600" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="font-semibold text-foreground text-[14px] truncate">
+                    {p.name}
+                  </p>
+                  {p.description && (
+                    <p className="text-[12px] text-muted-foreground/70 truncate mt-0.5">
+                      {p.description}
+                    </p>
+                  )}
+                </div>
+                {canCreate && (
+                  <div className="flex items-center gap-0.5 -mr-1.5 -mt-1.5">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-muted-foreground"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setEditProject(p);
+                        setEditName(p.name);
+                        setEditDesc(p.description ?? "");
+                        setEditError("");
+                      }}
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setDeleteProject(p);
+                      }}
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                )}
+              </div>
+              <div className="flex items-center gap-4 mt-3 pl-12 text-[12px] text-muted-foreground">
+                <span className="flex items-center gap-1.5">
+                  <Users className="h-3.5 w-3.5 text-muted-foreground/60" />
+                  {p.member_count ?? 0} members
+                </span>
+                <span>{new Date(p.created_at).toLocaleDateString()}</span>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
 
       {/* Create Modal */}
       <Dialog open={showCreate} onOpenChange={setShowCreate}>
