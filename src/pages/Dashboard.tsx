@@ -80,13 +80,13 @@ const Dashboard = () => {
   ];
 
   return (
-    <main className="p-6 pt-4">
+    <main className="p-3 sm:p-6 pt-3 sm:pt-4">
       {/* Dotted background wrapper for Welcome + Quick Actions + Recent Activity */}
-      <div className="relative rounded-xl p-6 mb-6 overflow-hidden">
+      <div className="relative rounded-xl p-3 sm:p-6 mb-6 overflow-hidden">
         {/* Background layer: dots + left→right fade (does NOT affect content) */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 z-0"
+          className="pointer-events-none absolute inset-0 z-0 opacity-60 sm:opacity-100"
           style={{
             backgroundImage:
               "radial-gradient(circle, hsl(var(--primary) / 0.20) 1px, transparent 1px)",
