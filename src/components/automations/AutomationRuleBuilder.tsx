@@ -189,7 +189,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
             description="Choose what starts this automation"
             variant="trigger"
           />
-          <div className="space-y-1.5 pl-[52px]">
+          <div className="space-y-1.5 sm:pl-[52px]">
             <Label className="text-[13px] text-foreground/80">Event</Label>
             <Select value={trigger} onValueChange={setTrigger}>
               <SelectTrigger className="h-11 rounded-lg text-sm border-border/80 focus:ring-1 focus:ring-primary focus:border-primary">
