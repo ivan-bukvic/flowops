@@ -312,7 +312,7 @@ const Landing = () => {
             <div className="rounded-2xl border border-border/80 bg-card shadow-sm p-6 sm:p-7 bg-gradient-to-b from-white to-[hsl(var(--secondary)/0.35)]">
               <div className="flex items-center justify-between">
                 <p className="text-[10px] font-semibold text-muted-foreground/80 tracking-[0.22em] uppercase">
-                  Workflow
+                  Example Workflow
                 </p>
                 <span className="inline-flex items-center gap-1.5 text-[10px] font-medium text-muted-foreground">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
@@ -322,7 +322,7 @@ const Landing = () => {
 
               <div className="mt-5 grid grid-cols-1 sm:grid-cols-[1fr_auto_1fr_auto_1fr] items-stretch gap-3">
                 {[
-                  { label: "Trigger", text: "Document uploaded" },
+                  { label: "Example Trigger", text: "Document uploaded" },
                   { label: "Action", text: "Run automation" },
                 ].map((step) => (
                   <div key={step.label} className="contents">
@@ -365,6 +365,9 @@ const Landing = () => {
                 </div>
               </div>
             </div>
+            <p className="mt-3 text-xs text-muted-foreground text-center">
+              Create workflows for any event — this is just one example.
+            </p>
           </div>
         </div>
       </section>
