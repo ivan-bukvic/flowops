@@ -125,7 +125,7 @@ const Landing = () => {
               <h1 className="text-[44px] sm:text-[56px] font-bold tracking-tight text-foreground leading-[1.05]">
                 Automate your workflows without complexity
               </h1>
-              <p className="mt-6 text-[17px] leading-relaxed text-muted-foreground max-w-lg">
+              <p className="mt-6 text-[17px] leading-relaxed max-w-lg text-secondary-foreground">
                 Manage projects, trigger automations, and connect your tools - all in one place.
               </p>
               <div className="mt-8 flex items-center gap-3">
