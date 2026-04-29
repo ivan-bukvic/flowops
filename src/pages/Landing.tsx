@@ -92,7 +92,7 @@ const Landing = () => {
         </div>
       </header>
 
-      {/* HERO — dotted bg */}
+      {/* HERO - dotted bg */}
       <section className="relative overflow-hidden border-b border-border/80 bg-card">
         <DotBackground opacity={0.1} />
         <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 py-20 sm:py-28">
@@ -102,7 +102,7 @@ const Landing = () => {
                 Automate your workflows without complexity
               </h1>
               <p className="mt-6 text-[17px] leading-relaxed text-muted-foreground max-w-lg">
-                Manage projects, trigger automations, and connect your tools — all in one place.
+                Manage projects, trigger automations, and connect your tools - all in one place.
               </p>
               <div className="mt-8 flex items-center gap-3">
                 <Button asChild className="h-11 px-6">
@@ -120,7 +120,7 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* STATS — plain bg (#F9FAFB) */}
+      {/* STATS - plain bg (#F9FAFB) */}
       <section className="border-b border-border/80 bg-background">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-14 sm:py-16">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-4 text-center sm:text-left">
@@ -140,7 +140,7 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* PRODUCT SECTIONS — white surface for contrast vs background */}
+      {/* PRODUCT SECTIONS - white surface for contrast vs background */}
       <section className="border-b border-border/80 bg-card">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-20 sm:py-28 space-y-24 sm:space-y-32">
           <ProductSection
@@ -158,7 +158,7 @@ const Landing = () => {
           />
           <ProductSection
             title="Full activity visibility"
-            text="Every event in your workspace is logged in a clean, filterable timeline — no more guessing what happened."
+            text="Every event in your workspace is logged in a clean, filterable timeline - no more guessing what happened."
             image={eventsImg}
             alt="Events timeline"
           />
@@ -172,7 +172,7 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* HOW IT WORKS — flow strip on contrast surface */}
+      {/* HOW IT WORKS - flow strip on contrast surface */}
       <section className="relative overflow-hidden border-b border-border/80 bg-background">
         <DotBackground opacity={0.06} />
         <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 py-20 sm:py-24">
@@ -225,7 +225,7 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* FINAL CTA — bordered card on plain bg */}
+      {/* FINAL CTA - bordered card on plain bg */}
       <section className="bg-background">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-20 sm:py-24">
           <div className="relative overflow-hidden rounded-xl border border-border/80 bg-card px-6 py-16 sm:py-20 text-center">
