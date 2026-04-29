@@ -2,6 +2,12 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Menu, X } from "lucide-react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import dashboardImg from "@/assets/landing-dashboard-zoom.png";
 import heroAutomationImg from "@/assets/landing-hero-automation.png";
 import automationsImg from "@/assets/landing-automations-zoom.png";
@@ -380,6 +386,62 @@ const Landing = () => {
               ))}
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="bg-background border-t border-border/80">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-20 sm:py-24">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-foreground">
+              Frequently asked questions
+            </h2>
+            <p className="mt-3 text-[15px] text-muted-foreground">
+              Everything you need to know about FlowOps.
+            </p>
+          </div>
+
+          <Accordion type="single" collapsible className="space-y-3">
+            {[
+              {
+                q: "What is FlowOps?",
+                a: "FlowOps is a workspace platform that combines projects, documents, and event-driven automations in one place — so your team can ship work without juggling tools.",
+              },
+              {
+                q: "How do automations work?",
+                a: "Every action in your workspace emits a structured event. You build rules that listen for those events and trigger actions like sending an email, posting to Slack, or calling a webhook.",
+              },
+              {
+                q: "Do I need technical knowledge?",
+                a: "No. Automations are configured visually with a trigger → action flow. If you can describe a workflow, you can build it in FlowOps.",
+              },
+              {
+                q: "Which tools can I integrate?",
+                a: "FlowOps connects to common tools like Email, Slack, Google Calendar, and generic webhooks — so you can plug it into the stack you already use.",
+              },
+              {
+                q: "Can I track activity and logs?",
+                a: "Yes. Every event and automation run is logged in a clean, filterable timeline, so you always know what happened and when.",
+              },
+              {
+                q: "Is there a free plan?",
+                a: "You can create a workspace and run your first automations for free. Paid plans unlock higher limits and advanced integrations.",
+              },
+            ].map((item, i) => (
+              <AccordionItem
+                key={i}
+                value={`item-${i}`}
+                className="border border-border/80 rounded-xl bg-card hover:border-border transition-colors px-6"
+              >
+                <AccordionTrigger className="text-left text-[15px] font-semibold text-foreground hover:no-underline py-5">
+                  {item.q}
+                </AccordionTrigger>
+                <AccordionContent className="text-sm text-muted-foreground leading-relaxed pb-5">
+                  {item.a}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
         </div>
       </section>
 
