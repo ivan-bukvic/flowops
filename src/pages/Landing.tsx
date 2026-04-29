@@ -138,22 +138,24 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* STATS - dark highlight strip */}
-      <section className="bg-[#111827]">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-14 sm:py-16">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-4 text-center">
-            {[
-              { value: "12K+", label: "Projects managed" },
-              { value: "48K+", label: "Automations active" },
-              { value: "<200ms", label: "Real-time execution" },
-            ].map((s) => (
-              <div key={s.label}>
-                <p className="text-3xl sm:text-4xl font-bold text-white tracking-tight tabular-nums">
-                  {s.value}
-                </p>
-                <p className="mt-2 text-sm text-white/70">{s.label}</p>
-              </div>
-            ))}
+      {/* STATS - contained dark card */}
+      <section className="bg-background">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 my-16 sm:my-20">
+          <div className="rounded-2xl border border-white/5 bg-[#0F172A] px-6 sm:px-10 py-12 sm:py-14">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-4 text-center">
+              {[
+                { value: "12K+", label: "Projects managed" },
+                { value: "48K+", label: "Automations active" },
+                { value: "<200ms", label: "Real-time execution" },
+              ].map((s) => (
+                <div key={s.label}>
+                  <p className="text-3xl sm:text-4xl font-bold text-white tracking-tight tabular-nums">
+                    {s.value}
+                  </p>
+                  <p className="mt-2 text-sm text-white/70">{s.label}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
