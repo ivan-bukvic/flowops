@@ -461,7 +461,8 @@ export type Database = {
     Views: {
       org_members_simple: {
         Row: {
-          email: string | null
+          full_name: string | null
+          id: string | null
           org_id: string | null
           role: Database["public"]["Enums"]["org_role"] | null
           user_id: string | null
