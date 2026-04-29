@@ -118,7 +118,7 @@ const Landing = () => {
 
       {/* HERO - dotted bg */}
       <section className="relative overflow-hidden border-b border-border/80 bg-card">
-        <DotBackground opacity={0.1} />
+        <DotBackground />
         <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 py-20 sm:py-28">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 lg:gap-24 items-center">
             <div>
@@ -259,7 +259,7 @@ const Landing = () => {
       <section className="bg-background">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-20 sm:py-24">
           <div className="relative overflow-hidden rounded-xl border border-border/80 bg-card px-6 py-16 sm:py-20 text-center">
-            <DotBackground opacity={0.08} />
+            <DotBackground />
             <div className="relative z-10">
               <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
                 Start your workspace
