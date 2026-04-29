@@ -6,17 +6,23 @@ import automationsImg from "@/assets/landing-automations-zoom.png";
 import eventsImg from "@/assets/landing-events-zoom.png";
 import integrationsImg from "@/assets/landing-integrations-zoom.png";
 
-const DotBackground = ({ opacity = 0.1 }: { opacity?: number }) => (
+/**
+ * Dotted background with a left -> right horizontal fade.
+ * Dots use the primary color; opacity is strongest on the left and
+ * fades to zero on the right via a mask gradient.
+ * Same system used in HERO and CTA card for consistency.
+ */
+const DotBackground = () => (
   <div
     aria-hidden
     className="pointer-events-none absolute inset-0 z-0"
     style={{
-      backgroundImage: `radial-gradient(circle, hsl(var(--primary) / ${opacity}) 1.25px, transparent 1.25px)`,
+      backgroundImage: `radial-gradient(circle, hsl(var(--primary) / 0.55) 1px, transparent 1px)`,
       backgroundSize: "16px 16px",
       maskImage:
-        "linear-gradient(to bottom, black 0%, rgba(0,0,0,0.6) 60%, transparent 100%)",
+        "linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,0.45) 30%, rgba(0,0,0,0.12) 60%, rgba(0,0,0,0) 100%)",
       WebkitMaskImage:
-        "linear-gradient(to bottom, black 0%, rgba(0,0,0,0.6) 60%, transparent 100%)",
+        "linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,0.45) 30%, rgba(0,0,0,0.12) 60%, rgba(0,0,0,0) 100%)",
     }}
   />
 );
