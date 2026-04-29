@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import dashboardImg from "@/assets/landing-dashboard-zoom.png";
+import heroAutomationImg from "@/assets/landing-hero-automation.png";
 import automationsImg from "@/assets/landing-automations-zoom.png";
 import eventsImg from "@/assets/landing-events-zoom.png";
 import integrationsImg from "@/assets/landing-integrations-zoom.png";
