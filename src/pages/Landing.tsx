@@ -311,7 +311,7 @@ const Landing = () => {
       </section>
 
       {/* HOW IT WORKS - contained dark card */}
-      <section className="bg-background">
+      <section id="how-it-works" className="scroll-mt-24 bg-background">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 my-16 sm:my-20">
           <div className="rounded-2xl border border-white/5 bg-[#0F172A] px-6 sm:px-10 py-20 sm:py-24">
             <div className="text-center mb-14">
