@@ -27,14 +27,16 @@ const DotBackground = ({ opacity = 0.1 }: { opacity?: number }) => (
  * - inner card is white with a thin border + padding so the image reads as an object
  */
 const ImageFrame = ({ src, alt }: { src: string; alt: string }) => (
-  <div className="rounded-xl border border-border/80 bg-secondary/60 p-2 sm:p-3">
+  <div className="rounded-xl border border-border/80 bg-secondary/60 p-2 sm:p-3 w-full">
     <div className="rounded-lg border border-border/80 bg-card p-2 sm:p-3">
-      <img
-        src={src}
-        alt={alt}
-        className="w-full h-auto block rounded-md"
-        loading="lazy"
-      />
+      <div className="aspect-[16/10] w-full overflow-hidden rounded-md">
+        <img
+          src={src}
+          alt={alt}
+          className="w-full h-full object-cover block"
+          loading="lazy"
+        />
+      </div>
     </div>
   </div>
 );
