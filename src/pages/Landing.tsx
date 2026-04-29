@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
-import dashboardImg from "@/assets/landing-dashboard.png";
-import automationsImg from "@/assets/landing-automations.png";
-import eventsImg from "@/assets/landing-events.png";
-import integrationsImg from "@/assets/landing-integrations.png";
+import dashboardImg from "@/assets/landing-dashboard-zoom.png";
+import automationsImg from "@/assets/landing-automations-zoom.png";
+import eventsImg from "@/assets/landing-events-zoom.png";
+import integrationsImg from "@/assets/landing-integrations-zoom.png";
 
 const DotBackground = ({ opacity = 0.1 }: { opacity?: number }) => (
   <div
@@ -27,14 +27,16 @@ const DotBackground = ({ opacity = 0.1 }: { opacity?: number }) => (
  * - inner card is white with a thin border + padding so the image reads as an object
  */
 const ImageFrame = ({ src, alt }: { src: string; alt: string }) => (
-  <div className="rounded-xl border border-border/80 bg-secondary/60 p-2 sm:p-3">
+  <div className="rounded-xl border border-border/80 bg-secondary/60 p-2 sm:p-3 w-full">
     <div className="rounded-lg border border-border/80 bg-card p-2 sm:p-3">
-      <img
-        src={src}
-        alt={alt}
-        className="w-full h-auto block rounded-md"
-        loading="lazy"
-      />
+      <div className="aspect-[16/10] w-full overflow-hidden rounded-md">
+        <img
+          src={src}
+          alt={alt}
+          className="w-full h-full object-cover block"
+          loading="lazy"
+        />
+      </div>
     </div>
   </div>
 );
@@ -53,7 +55,7 @@ const ProductSection = ({
   reverse?: boolean;
 }) => (
   <div
-    className={`grid grid-cols-1 lg:grid-cols-[5fr_7fr] gap-12 lg:gap-20 items-center ${
+    className={`grid grid-cols-1 lg:grid-cols-[4fr_8fr] gap-12 lg:gap-20 items-center ${
       reverse ? "lg:[&>div:first-child]:order-2" : ""
     }`}
   >
