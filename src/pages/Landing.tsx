@@ -190,39 +190,41 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* HOW IT WORKS - flow strip on contrast surface */}
-      <section className="relative overflow-hidden border-b border-border/80 bg-background">
-        <DotBackground opacity={0.06} />
-        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 py-20 sm:py-24">
-          <div className="text-center mb-12">
-            <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-foreground">
+      {/* HOW IT WORKS - dark featured block */}
+      <section className="relative overflow-hidden bg-[#111827]">
+        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 py-24 sm:py-28">
+          <div className="text-center mb-14">
+            <p className="text-[11px] font-semibold text-white/60 tracking-[0.18em] uppercase">
               How it works
+            </p>
+            <h2 className="mt-3 text-3xl sm:text-4xl font-semibold tracking-tight text-white">
+              From setup to automated execution
             </h2>
-            <p className="mt-2 text-sm text-muted-foreground">
+            <p className="mt-3 text-sm text-white/70">
               Four simple steps from setup to automated execution.
             </p>
           </div>
 
           {/* Flow strip */}
-          <div className="flex flex-col lg:flex-row lg:items-stretch gap-4 lg:gap-0">
+          <div className="flex flex-col lg:flex-row lg:items-stretch gap-5 lg:gap-0">
             {[
               { n: "01", title: "Create Project", text: "Spin up a workspace project in seconds." },
-              { n: "02", title: "Trigger Event", text: "Workspace activity emits structured events.", emphasized: true },
-              { n: "03", title: "Automations Run", text: "Matching rules execute the configured actions." },
+              { n: "02", title: "Trigger Event", text: "Workspace activity emits structured events." },
+              { n: "03", title: "Automations Run", text: "Matching rules execute the configured actions.", emphasized: true },
               { n: "04", title: "Results Delivered", text: "Outcomes are logged and visible in real time." },
             ].map((step, idx, arr) => (
               <div key={step.n} className="flex-1 flex flex-col lg:flex-row items-stretch">
                 <div
-                  className={`flex-1 rounded-lg bg-card p-6 min-h-[170px] flex flex-col ${
+                  className={`flex-1 rounded-lg bg-white p-6 min-h-[190px] flex flex-col ${
                     step.emphasized
-                      ? "border-2 border-primary/30"
-                      : "border border-border/80"
+                      ? "border-2 border-primary/50"
+                      : "border border-[#E5E7EB]"
                   }`}
                 >
                   <p className="text-[11px] font-semibold text-primary tracking-[0.12em]">
                     STEP {step.n}
                   </p>
-                  <p className="mt-3 text-[15px] font-semibold text-foreground">
+                  <p className="mt-3 text-[15px] font-semibold text-[#111827]">
                     {step.title}
                   </p>
                   <p className="mt-1.5 text-sm text-muted-foreground leading-relaxed">
@@ -233,8 +235,8 @@ const Landing = () => {
                 {/* Connector */}
                 {idx < arr.length - 1 && (
                   <div className="flex items-center justify-center px-2 py-2 lg:py-0 lg:px-3">
-                    <ArrowRight className="h-4 w-4 text-border lg:block hidden" strokeWidth={2} />
-                    <div className="h-4 w-px bg-border lg:hidden" />
+                    <ArrowRight className="h-4 w-4 text-white/30 lg:block hidden" strokeWidth={2} />
+                    <div className="h-4 w-px bg-white/20 lg:hidden" />
                   </div>
                 )}
               </div>
