@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
-import dashboardImg from "@/assets/landing-dashboard.png";
-import automationsImg from "@/assets/landing-automations.png";
-import eventsImg from "@/assets/landing-events.png";
-import integrationsImg from "@/assets/landing-integrations.png";
+import dashboardImg from "@/assets/landing-dashboard-zoom.png";
+import automationsImg from "@/assets/landing-automations-zoom.png";
+import eventsImg from "@/assets/landing-events-zoom.png";
+import integrationsImg from "@/assets/landing-integrations-zoom.png";
 
 const DotBackground = ({ opacity = 0.1 }: { opacity?: number }) => (
   <div
