@@ -322,7 +322,7 @@ const Landing = () => {
 
               <div className="mt-5 grid grid-cols-1 sm:grid-cols-[1fr_auto_1fr_auto_1fr] items-stretch gap-3">
                 {[
-                  { label: "Trigger", text: "Document uploaded" },
+                  { label: "Example Trigger", text: "Document uploaded" },
                   { label: "Action", text: "Run automation" },
                 ].map((step) => (
                   <div key={step.label} className="contents">
