@@ -255,8 +255,24 @@ const Landing = () => {
       {/* STATS - contained dark card */}
       <section className="bg-background">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 my-16 sm:my-20">
-          <div className="rounded-2xl border border-white/5 bg-[#0F172A] px-6 sm:px-10 py-12 sm:py-14">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-4 text-center">
+          <div
+            className="relative overflow-hidden rounded-2xl border px-6 sm:px-10 py-16 sm:py-20"
+            style={{
+              backgroundImage: "linear-gradient(135deg, #0F172A 0%, #111827 100%)",
+              borderColor: "rgba(255,255,255,0.06)",
+            }}
+          >
+            {/* subtle dot texture */}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-0"
+              style={{
+                backgroundImage:
+                  "radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px)",
+                backgroundSize: "18px 18px",
+              }}
+            />
+            <div className="relative grid grid-cols-1 sm:grid-cols-3 gap-10 sm:gap-6 text-center">
               {[
                 { value: "12K+", label: "Projects managed" },
                 { value: "48K+", label: "Automations active" },
@@ -266,7 +282,7 @@ const Landing = () => {
                   <p className="text-3xl sm:text-4xl font-bold text-white tracking-tight tabular-nums">
                     {s.value}
                   </p>
-                  <p className="mt-2 text-sm text-white/70">{s.label}</p>
+                  <p className="mt-4 text-sm text-white/70">{s.label}</p>
                 </div>
               ))}
             </div>
