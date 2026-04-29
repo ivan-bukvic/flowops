@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Menu, X } from "lucide-react";
+import { ArrowRight, Menu, X, Zap, Plug, Activity } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -108,6 +108,7 @@ const ProductSection = ({
 };
 
 const NAV_ITEMS = [
+  { id: "overview", label: "Overview" },
   { id: "product", label: "Product" },
   { id: "automations", label: "Automations" },
   { id: "activity", label: "Activity" },
