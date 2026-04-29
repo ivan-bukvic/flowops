@@ -138,20 +138,20 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* STATS - plain bg (#F9FAFB) */}
-      <section className="border-b border-border/80 bg-background">
+      {/* STATS - dark highlight strip */}
+      <section className="bg-[#111827]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-14 sm:py-16">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-4 text-center sm:text-left">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-4 text-center">
             {[
               { value: "12K+", label: "Projects managed" },
               { value: "48K+", label: "Automations active" },
               { value: "<200ms", label: "Real-time execution" },
             ].map((s) => (
               <div key={s.label}>
-                <p className="text-3xl sm:text-4xl font-bold text-foreground tracking-tight tabular-nums">
+                <p className="text-3xl sm:text-4xl font-bold text-white tracking-tight tabular-nums">
                   {s.value}
                 </p>
-                <p className="mt-2 text-sm text-muted-foreground">{s.label}</p>
+                <p className="mt-2 text-sm text-white/70">{s.label}</p>
               </div>
             ))}
           </div>
