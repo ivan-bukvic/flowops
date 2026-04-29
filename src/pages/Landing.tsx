@@ -62,7 +62,7 @@ const ProductSection = ({
   reverse?: boolean;
 }) => {
   const textBlock = (
-    <div className="relative px-2 sm:px-4 py-2">
+    <div className="relative -mx-6 sm:-mx-8 -my-8 sm:-my-10 px-6 sm:px-8 py-8 sm:py-10">
       <DotBackground />
       <div className="relative z-10">
         <h3 className="text-2xl sm:text-[28px] font-semibold text-foreground tracking-tight">
