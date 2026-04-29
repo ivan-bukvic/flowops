@@ -53,12 +53,8 @@ const ProductSection = ({
   image: string;
   alt: string;
   reverse?: boolean;
-}) => (
-  <div
-    className={`grid grid-cols-1 lg:grid-cols-[4fr_8fr] gap-12 lg:gap-20 items-center ${
-      reverse ? "lg:[&>div:first-child]:order-2" : ""
-    }`}
-  >
+}) => {
+  const textBlock = (
     <div>
       <h3 className="text-2xl sm:text-[28px] font-semibold text-foreground tracking-tight">
         {title}
@@ -67,9 +63,29 @@ const ProductSection = ({
         {text}
       </p>
     </div>
-    <ImageFrame src={image} alt={alt} />
-  </div>
-);
+  );
+  const imageBlock = <ImageFrame src={image} alt={alt} />;
+
+  return (
+    <div
+      className={`grid grid-cols-1 gap-12 lg:gap-20 items-center ${
+        reverse ? "lg:grid-cols-[8fr_4fr]" : "lg:grid-cols-[4fr_8fr]"
+      }`}
+    >
+      {reverse ? (
+        <>
+          {imageBlock}
+          {textBlock}
+        </>
+      ) : (
+        <>
+          {textBlock}
+          {imageBlock}
+        </>
+      )}
+    </div>
+  );
+};
 
 const Landing = () => {
   return (
