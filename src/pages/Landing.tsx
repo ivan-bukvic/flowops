@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Menu, X } from "lucide-react";
 import dashboardImg from "@/assets/landing-dashboard-zoom.png";
 import heroAutomationImg from "@/assets/landing-hero-automation.png";
 import automationsImg from "@/assets/landing-automations-zoom.png";
