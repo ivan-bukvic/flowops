@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Menu, X } from "lucide-react";
 import dashboardImg from "@/assets/landing-dashboard-zoom.png";
 import heroAutomationImg from "@/assets/landing-hero-automation.png";
 import automationsImg from "@/assets/landing-automations-zoom.png";
@@ -49,12 +50,14 @@ const ImageFrame = ({ src, alt }: { src: string; alt: string }) => (
 );
 
 const ProductSection = ({
+  id,
   title,
   text,
   image,
   alt,
   reverse = false,
 }: {
+  id?: string;
   title: string;
   text: string;
   image: string;
@@ -78,7 +81,8 @@ const ProductSection = ({
 
   return (
     <div
-      className={`grid grid-cols-1 gap-12 lg:gap-20 items-center ${
+      id={id}
+      className={`scroll-mt-24 grid grid-cols-1 gap-12 lg:gap-20 items-center ${
         reverse ? "lg:grid-cols-[8fr_4fr]" : "lg:grid-cols-[4fr_8fr]"
       }`}
     >
@@ -97,27 +101,120 @@ const ProductSection = ({
   );
 };
 
+const NAV_ITEMS = [
+  { id: "product", label: "Product" },
+  { id: "automations", label: "Automations" },
+  { id: "activity", label: "Activity" },
+  { id: "integrations", label: "Integrations" },
+  { id: "how-it-works", label: "How it works" },
+];
+
 const Landing = () => {
+  const [activeId, setActiveId] = useState<string>("product");
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  useEffect(() => {
+    const handler = () => {
+      const offset = 120;
+      const scrollY = window.scrollY + offset;
+      let current = NAV_ITEMS[0].id;
+      for (const item of NAV_ITEMS) {
+        const el = document.getElementById(item.id);
+        if (el && el.offsetTop <= scrollY) current = item.id;
+      }
+      setActiveId(current);
+    };
+    handler();
+    window.addEventListener("scroll", handler, { passive: true });
+    return () => window.removeEventListener("scroll", handler);
+  }, []);
+
+  const handleNavClick = (e: React.MouseEvent, id: string) => {
+    e.preventDefault();
+    setMobileOpen(false);
+    const el = document.getElementById(id);
+    if (!el) return;
+    const top = el.getBoundingClientRect().top + window.scrollY - 72;
+    window.scrollTo({ top, behavior: "smooth" });
+  };
+
   return (
     <main className="min-h-screen bg-background text-foreground">
       {/* TOP NAV */}
-      <header className="border-b border-border/80 bg-card">
+      <header className="sticky top-0 z-50 border-b border-border/80 bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
         <div className="max-w-6xl mx-auto flex items-center justify-between h-14 px-4 sm:px-6">
           <Link to="/" className="flex items-center gap-2">
             <img src="/logo.svg" alt="FlowOps" className="h-[2.1rem]" />
           </Link>
-          <nav className="flex items-center gap-2 sm:gap-3">
+
+          {/* Desktop nav */}
+          <nav className="hidden md:flex items-center gap-1">
+            {NAV_ITEMS.map((item) => (
+              <a
+                key={item.id}
+                href={`#${item.id}`}
+                onClick={(e) => handleNavClick(e, item.id)}
+                className={`text-sm font-medium px-3 py-2 rounded-md transition-colors ${
+                  activeId === item.id
+                    ? "text-foreground bg-secondary"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {item.label}
+              </a>
+            ))}
+          </nav>
+
+          <div className="flex items-center gap-2 sm:gap-3">
             <Link
               to="/login"
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors px-3 py-2"
+              className="hidden sm:inline-block text-sm font-medium text-muted-foreground hover:text-foreground transition-colors px-3 py-2"
             >
               Login
             </Link>
-            <Button asChild size="sm" className="h-9 px-4">
+            <Button asChild size="sm" className="h-9 px-4 hidden sm:inline-flex">
               <Link to="/signup">Create Workspace</Link>
             </Button>
-          </nav>
+            <button
+              type="button"
+              aria-label="Toggle menu"
+              className="md:hidden inline-flex items-center justify-center h-9 w-9 rounded-md text-foreground hover:bg-secondary"
+              onClick={() => setMobileOpen((v) => !v)}
+            >
+              {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
+          </div>
         </div>
+
+        {/* Mobile menu */}
+        {mobileOpen && (
+          <div className="md:hidden border-t border-border/80 bg-card">
+            <nav className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex flex-col">
+              {NAV_ITEMS.map((item) => (
+                <a
+                  key={item.id}
+                  href={`#${item.id}`}
+                  onClick={(e) => handleNavClick(e, item.id)}
+                  className={`text-sm font-medium px-3 py-2.5 rounded-md transition-colors ${
+                    activeId === item.id
+                      ? "text-foreground bg-secondary"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {item.label}
+                </a>
+              ))}
+              <div className="mt-2 pt-2 border-t border-border/80 flex items-center gap-2">
+                <Button asChild variant="ghost" size="sm" className="flex-1">
+                  <Link to="/login">Login</Link>
+                </Button>
+                <Button asChild size="sm" className="flex-1">
+                  <Link to="/signup">Create Workspace</Link>
+                </Button>
+              </div>
+            </nav>
+          </div>
+        )}
       </header>
 
       {/* HERO - dotted bg */}
@@ -181,12 +278,14 @@ const Landing = () => {
       <section className="border-b border-border/80 bg-card">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-20 sm:py-28 space-y-24 sm:space-y-32">
           <ProductSection
+            id="product"
             title="Centralized dashboard"
             text="See every project, document, and automation across your workspace in a single, structured overview."
             image={dashboardImg}
             alt="Dashboard overview"
           />
           <ProductSection
+            id="automations"
             title="Event-driven automations"
             text="Build rules that listen for workspace events and trigger actions across email, Slack, Calendar, or webhooks."
             image={automationsImg}
@@ -194,12 +293,14 @@ const Landing = () => {
             reverse
           />
           <ProductSection
+            id="activity"
             title="Full activity visibility"
             text="Every event in your workspace is logged in a clean, filterable timeline - no more guessing what happened."
             image={eventsImg}
             alt="Events timeline"
           />
           <ProductSection
+            id="integrations"
             title="Connect your tools"
             text="Plug FlowOps into the services you already use. One click to connect, manage, or disconnect."
             image={integrationsImg}
@@ -210,7 +311,7 @@ const Landing = () => {
       </section>
 
       {/* HOW IT WORKS - contained dark card */}
-      <section className="bg-background">
+      <section id="how-it-works" className="scroll-mt-24 bg-background">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 my-16 sm:my-20">
           <div className="rounded-2xl border border-white/5 bg-[#0F172A] px-6 sm:px-10 py-20 sm:py-24">
             <div className="text-center mb-14">
