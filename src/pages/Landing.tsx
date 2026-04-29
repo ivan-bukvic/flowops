@@ -365,6 +365,9 @@ const Landing = () => {
                 </div>
               </div>
             </div>
+            <p className="mt-3 text-xs text-muted-foreground text-center">
+              Create workflows for any event — this is just one example.
+            </p>
           </div>
         </div>
       </section>
