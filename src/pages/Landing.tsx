@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Menu, X, Zap, Plug, Activity } from "lucide-react";
+import { ArrowRight, Menu, X, Zap, Plug, Activity, Mail, MessageSquare, Calendar, Webhook } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -308,34 +308,61 @@ const Landing = () => {
               </div>
             </div>
 
-            {/* Visual hint - simplified flow card */}
-            <div className="rounded-xl border border-border/80 bg-card p-5 sm:p-6">
-              <p className="text-[11px] font-semibold text-muted-foreground tracking-[0.18em] uppercase">
-                Workflow
-              </p>
-              <div className="mt-4 grid grid-cols-1 sm:grid-cols-[1fr_auto_1fr_auto_1fr] items-stretch gap-3">
+            {/* Visual hint - workflow flow card */}
+            <div className="rounded-2xl border border-border/80 bg-card shadow-sm p-6 sm:p-7 bg-gradient-to-b from-white to-[hsl(var(--secondary)/0.35)]">
+              <div className="flex items-center justify-between">
+                <p className="text-[10px] font-semibold text-muted-foreground/80 tracking-[0.22em] uppercase">
+                  Workflow
+                </p>
+                <span className="inline-flex items-center gap-1.5 text-[10px] font-medium text-muted-foreground">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  Live
+                </span>
+              </div>
+
+              <div className="mt-5 grid grid-cols-1 sm:grid-cols-[1fr_auto_1fr_auto_1fr] items-stretch gap-3">
                 {[
                   { label: "Trigger", text: "Document uploaded" },
                   { label: "Action", text: "Run automation" },
-                  { label: "Result", text: "Email sent" },
-                ].map((step, i, arr) => (
+                ].map((step) => (
                   <div key={step.label} className="contents">
-                    <div className="rounded-lg border border-border/80 bg-secondary/40 px-4 py-4">
-                      <p className="text-[10px] font-semibold text-primary tracking-[0.14em] uppercase">
+                    <div className="rounded-xl border border-border/80 bg-[hsl(var(--secondary)/0.5)] px-5 py-4">
+                      <p className="text-[10px] font-semibold text-muted-foreground tracking-[0.16em] uppercase">
                         {step.label}
                       </p>
-                      <p className="mt-1.5 text-sm font-medium text-foreground">
+                      <p className="mt-1.5 text-sm font-semibold text-foreground">
                         {step.text}
                       </p>
                     </div>
-                    {i < arr.length - 1 && (
-                      <div className="flex items-center justify-center">
-                        <ArrowRight className="h-4 w-4 text-muted-foreground hidden sm:block" />
-                        <div className="h-3 w-px bg-border sm:hidden" />
-                      </div>
-                    )}
+                    <div className="flex items-center justify-center">
+                      <ArrowRight className="h-4 w-4 text-muted-foreground/70 hidden sm:block" strokeWidth={2.25} />
+                      <div className="h-3 w-px bg-border sm:hidden" />
+                    </div>
                   </div>
                 ))}
+
+                {/* Result - multi output */}
+                <div className="rounded-xl border border-border/80 bg-[hsl(var(--secondary)/0.5)] px-5 py-4">
+                  <p className="text-[10px] font-semibold text-muted-foreground tracking-[0.16em] uppercase">
+                    Result
+                  </p>
+                  <div className="mt-2.5 flex flex-wrap gap-1.5">
+                    {[
+                      { icon: Mail, label: "Email", cls: "bg-orange-50 text-orange-600" },
+                      { icon: MessageSquare, label: "Slack", cls: "bg-purple-50 text-purple-700" },
+                      { icon: Calendar, label: "Calendar", cls: "bg-blue-50 text-blue-600" },
+                      { icon: Webhook, label: "Webhook", cls: "bg-violet-50 text-violet-600" },
+                    ].map(({ icon: Icon, label, cls }) => (
+                      <span
+                        key={label}
+                        className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium ${cls}`}
+                      >
+                        <Icon className="h-3 w-3" strokeWidth={2.25} />
+                        {label}
+                      </span>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
