@@ -53,7 +53,7 @@ const ProductSection = ({
   reverse?: boolean;
 }) => (
   <div
-    className={`grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center ${
+    className={`grid grid-cols-1 lg:grid-cols-[5fr_7fr] gap-12 lg:gap-20 items-center ${
       reverse ? "lg:[&>div:first-child]:order-2" : ""
     }`}
   >
@@ -113,7 +113,7 @@ const Landing = () => {
                 </Button>
               </div>
             </div>
-            <div className="lg:max-w-[520px] lg:ml-auto w-full">
+            <div className="lg:max-w-[624px] lg:ml-auto w-full">
               <ImageFrame src={dashboardImg} alt="FlowOps dashboard" />
             </div>
           </div>
