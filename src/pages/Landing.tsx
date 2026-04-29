@@ -61,13 +61,16 @@ const ProductSection = ({
   reverse?: boolean;
 }) => {
   const textBlock = (
-    <div>
-      <h3 className="text-2xl sm:text-[28px] font-semibold text-foreground tracking-tight">
-        {title}
-      </h3>
-      <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground max-w-md">
-        {text}
-      </p>
+    <div className="relative px-2 sm:px-4 py-2">
+      <DotBackground />
+      <div className="relative z-10">
+        <h3 className="text-2xl sm:text-[28px] font-semibold text-foreground tracking-tight">
+          {title}
+        </h3>
+        <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground max-w-md">
+          {text}
+        </p>
+      </div>
     </div>
   );
   const imageBlock = <ImageFrame src={image} alt={alt} />;
