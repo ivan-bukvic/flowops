@@ -55,7 +55,7 @@ const ProductSection = ({
   reverse?: boolean;
 }) => (
   <div
-    className={`grid grid-cols-1 lg:grid-cols-[5fr_7fr] gap-12 lg:gap-20 items-center ${
+    className={`grid grid-cols-1 lg:grid-cols-[4fr_8fr] gap-12 lg:gap-20 items-center ${
       reverse ? "lg:[&>div:first-child]:order-2" : ""
     }`}
   >
