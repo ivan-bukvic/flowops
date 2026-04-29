@@ -265,7 +265,18 @@ const Landing = () => {
           <div className="grid grid-cols-1 lg:grid-cols-[5fr_7fr] gap-12 lg:gap-20 items-center">
             {/* Text */}
             <div className="relative -mx-6 sm:-mx-8 -my-8 sm:-my-10 px-6 sm:px-8 py-8 sm:py-10">
-              <DotBackground />
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-0 z-0"
+                style={{
+                  backgroundImage: `radial-gradient(circle, hsl(var(--primary) / 0.28) 1px, transparent 1px)`,
+                  backgroundSize: "16px 16px",
+                  maskImage:
+                    "linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,0.45) 30%, rgba(0,0,0,0.12) 60%, rgba(0,0,0,0) 100%)",
+                  WebkitMaskImage:
+                    "linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,0.45) 30%, rgba(0,0,0,0.12) 60%, rgba(0,0,0,0) 100%)",
+                }}
+              />
               <div className="relative z-10">
                 <p className="text-[11px] font-semibold text-primary tracking-[0.18em] uppercase">
                   Overview
