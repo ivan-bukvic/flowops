@@ -50,12 +50,14 @@ const ImageFrame = ({ src, alt }: { src: string; alt: string }) => (
 );
 
 const ProductSection = ({
+  id,
   title,
   text,
   image,
   alt,
   reverse = false,
 }: {
+  id?: string;
   title: string;
   text: string;
   image: string;
@@ -79,7 +81,8 @@ const ProductSection = ({
 
   return (
     <div
-      className={`grid grid-cols-1 gap-12 lg:gap-20 items-center ${
+      id={id}
+      className={`scroll-mt-24 grid grid-cols-1 gap-12 lg:gap-20 items-center ${
         reverse ? "lg:grid-cols-[8fr_4fr]" : "lg:grid-cols-[4fr_8fr]"
       }`}
     >
@@ -98,7 +101,43 @@ const ProductSection = ({
   );
 };
 
+const NAV_ITEMS = [
+  { id: "product", label: "Product" },
+  { id: "automations", label: "Automations" },
+  { id: "activity", label: "Activity" },
+  { id: "integrations", label: "Integrations" },
+  { id: "how-it-works", label: "How it works" },
+];
+
 const Landing = () => {
+  const [activeId, setActiveId] = useState<string>("product");
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  useEffect(() => {
+    const handler = () => {
+      const offset = 120;
+      const scrollY = window.scrollY + offset;
+      let current = NAV_ITEMS[0].id;
+      for (const item of NAV_ITEMS) {
+        const el = document.getElementById(item.id);
+        if (el && el.offsetTop <= scrollY) current = item.id;
+      }
+      setActiveId(current);
+    };
+    handler();
+    window.addEventListener("scroll", handler, { passive: true });
+    return () => window.removeEventListener("scroll", handler);
+  }, []);
+
+  const handleNavClick = (e: React.MouseEvent, id: string) => {
+    e.preventDefault();
+    setMobileOpen(false);
+    const el = document.getElementById(id);
+    if (!el) return;
+    const top = el.getBoundingClientRect().top + window.scrollY - 72;
+    window.scrollTo({ top, behavior: "smooth" });
+  };
+
   return (
     <main className="min-h-screen bg-background text-foreground">
       {/* TOP NAV */}
