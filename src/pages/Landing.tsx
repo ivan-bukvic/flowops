@@ -2,6 +2,12 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Menu, X } from "lucide-react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import dashboardImg from "@/assets/landing-dashboard-zoom.png";
 import heroAutomationImg from "@/assets/landing-hero-automation.png";
 import automationsImg from "@/assets/landing-automations-zoom.png";
