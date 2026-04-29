@@ -278,12 +278,14 @@ const Landing = () => {
       <section className="border-b border-border/80 bg-card">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-20 sm:py-28 space-y-24 sm:space-y-32">
           <ProductSection
+            id="product"
             title="Centralized dashboard"
             text="See every project, document, and automation across your workspace in a single, structured overview."
             image={dashboardImg}
             alt="Dashboard overview"
           />
           <ProductSection
+            id="automations"
             title="Event-driven automations"
             text="Build rules that listen for workspace events and trigger actions across email, Slack, Calendar, or webhooks."
             image={automationsImg}
@@ -291,12 +293,14 @@ const Landing = () => {
             reverse
           />
           <ProductSection
+            id="activity"
             title="Full activity visibility"
             text="Every event in your workspace is logged in a clean, filterable timeline - no more guessing what happened."
             image={eventsImg}
             alt="Events timeline"
           />
           <ProductSection
+            id="integrations"
             title="Connect your tools"
             text="Plug FlowOps into the services you already use. One click to connect, manage, or disconnect."
             image={integrationsImg}
