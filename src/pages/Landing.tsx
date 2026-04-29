@@ -192,8 +192,6 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* HOW IT WORKS - dark featured block */}
-      <section className="relative overflow-hidden bg-[#111827]">
       {/* HOW IT WORKS - contained dark card */}
       <section className="bg-background">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 my-16 sm:my-20">
