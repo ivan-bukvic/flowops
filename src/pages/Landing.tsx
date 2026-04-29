@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import dashboardImg from "@/assets/landing-dashboard-zoom.png";
+import heroAutomationImg from "@/assets/landing-hero-automation.png";
 import automationsImg from "@/assets/landing-automations-zoom.png";
 import eventsImg from "@/assets/landing-events-zoom.png";
 import integrationsImg from "@/assets/landing-integrations-zoom.png";
@@ -123,7 +124,7 @@ const Landing = () => {
       <section className="relative overflow-hidden border-b border-border/80 bg-card">
         <DotBackground />
         <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 py-20 sm:py-28">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 lg:gap-24 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-[5fr_7fr] gap-14 lg:gap-16 items-center">
             <div>
               <h1 className="text-[44px] sm:text-[56px] font-bold tracking-tight text-foreground leading-[1.05]">
                 Automate your workflows without complexity
@@ -140,8 +141,15 @@ const Landing = () => {
                 </Button>
               </div>
             </div>
-            <div className="lg:max-w-[624px] lg:ml-auto w-full">
-              <ImageFrame src={dashboardImg} alt="FlowOps dashboard" />
+            <div className="w-full lg:-mr-8 xl:-mr-16">
+              <div className="rounded-xl border border-border/80 bg-card p-1.5 sm:p-2 w-full overflow-hidden">
+                <img
+                  src={heroAutomationImg}
+                  alt="FlowOps automation builder - configure triggers and actions"
+                  className="w-full h-auto block rounded-lg"
+                  loading="eager"
+                />
+              </div>
             </div>
           </div>
         </div>
