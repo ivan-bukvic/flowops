@@ -259,6 +259,78 @@ const Landing = () => {
         </div>
       </section>
 
+      {/* OVERVIEW - what is FlowOps */}
+      <section id="overview" className="scroll-mt-24 bg-background border-b border-border/80">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-20 sm:py-28">
+          <div className="grid grid-cols-1 lg:grid-cols-[5fr_7fr] gap-12 lg:gap-20 items-center">
+            {/* Text */}
+            <div className="relative -mx-6 sm:-mx-8 -my-8 sm:-my-10 px-6 sm:px-8 py-8 sm:py-10">
+              <DotBackground />
+              <div className="relative z-10">
+                <p className="text-[11px] font-semibold text-primary tracking-[0.18em] uppercase">
+                  Overview
+                </p>
+                <h2 className="mt-3 text-3xl sm:text-[34px] font-semibold text-foreground tracking-tight leading-tight">
+                  What is FlowOps?
+                </h2>
+                <p className="mt-4 text-[16px] leading-relaxed text-foreground/90 max-w-md">
+                  FlowOps is a unified workspace where you can manage projects, automate workflows, and connect your tools — all in one place.
+                </p>
+                <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground max-w-md">
+                  Instead of juggling multiple tools and manual processes, FlowOps lets you define events, trigger actions, and keep everything organized and visible in real time.
+                </p>
+
+                <ul className="mt-6 space-y-3 max-w-md">
+                  {[
+                    { icon: Zap, label: "Automate repetitive workflows" },
+                    { icon: Plug, label: "Keep all your tools connected" },
+                    { icon: Activity, label: "Track everything in real time" },
+                  ].map(({ icon: Icon, label }) => (
+                    <li key={label} className="flex items-center gap-3">
+                      <span className="flex h-7 w-7 items-center justify-center rounded-md bg-primary/10 text-primary">
+                        <Icon className="h-3.5 w-3.5" strokeWidth={2.25} />
+                      </span>
+                      <span className="text-sm text-foreground">{label}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            {/* Visual hint - simplified flow card */}
+            <div className="rounded-xl border border-border/80 bg-card p-5 sm:p-6">
+              <p className="text-[11px] font-semibold text-muted-foreground tracking-[0.18em] uppercase">
+                Workflow
+              </p>
+              <div className="mt-4 grid grid-cols-1 sm:grid-cols-[1fr_auto_1fr_auto_1fr] items-stretch gap-3">
+                {[
+                  { label: "Trigger", text: "Document uploaded" },
+                  { label: "Action", text: "Run automation" },
+                  { label: "Result", text: "Email sent" },
+                ].map((step, i, arr) => (
+                  <div key={step.label} className="contents">
+                    <div className="rounded-lg border border-border/80 bg-secondary/40 px-4 py-4">
+                      <p className="text-[10px] font-semibold text-primary tracking-[0.14em] uppercase">
+                        {step.label}
+                      </p>
+                      <p className="mt-1.5 text-sm font-medium text-foreground">
+                        {step.text}
+                      </p>
+                    </div>
+                    {i < arr.length - 1 && (
+                      <div className="flex items-center justify-center">
+                        <ArrowRight className="h-4 w-4 text-muted-foreground hidden sm:block" />
+                        <div className="h-3 w-px bg-border sm:hidden" />
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* STATS - contained dark card */}
       <section className="bg-background">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 my-16 sm:my-20">
