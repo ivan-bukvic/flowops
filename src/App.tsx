@@ -21,6 +21,7 @@ import Events from "./pages/Events";
 import Integrations from "./pages/Integrations";
 import Settings from "./pages/Settings";
 import Index from "./pages/Index";
+import Landing from "./pages/Landing";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -67,6 +68,7 @@ const App = () => (
             <Route path="/integrations" element={<OrgPage><Integrations /></OrgPage>} />
             <Route path="/settings" element={<OrgPage><Settings /></OrgPage>} />
             <Route path="/" element={<Index />} />
+            <Route path="/landing" element={<Landing />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
