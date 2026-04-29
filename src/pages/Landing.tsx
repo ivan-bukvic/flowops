@@ -141,23 +141,80 @@ const Landing = () => {
   return (
     <main className="min-h-screen bg-background text-foreground">
       {/* TOP NAV */}
-      <header className="border-b border-border/80 bg-card">
+      <header className="sticky top-0 z-50 border-b border-border/80 bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
         <div className="max-w-6xl mx-auto flex items-center justify-between h-14 px-4 sm:px-6">
           <Link to="/" className="flex items-center gap-2">
             <img src="/logo.svg" alt="FlowOps" className="h-[2.1rem]" />
           </Link>
-          <nav className="flex items-center gap-2 sm:gap-3">
+
+          {/* Desktop nav */}
+          <nav className="hidden md:flex items-center gap-1">
+            {NAV_ITEMS.map((item) => (
+              <a
+                key={item.id}
+                href={`#${item.id}`}
+                onClick={(e) => handleNavClick(e, item.id)}
+                className={`text-sm font-medium px-3 py-2 rounded-md transition-colors ${
+                  activeId === item.id
+                    ? "text-foreground bg-secondary"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {item.label}
+              </a>
+            ))}
+          </nav>
+
+          <div className="flex items-center gap-2 sm:gap-3">
             <Link
               to="/login"
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors px-3 py-2"
+              className="hidden sm:inline-block text-sm font-medium text-muted-foreground hover:text-foreground transition-colors px-3 py-2"
             >
               Login
             </Link>
-            <Button asChild size="sm" className="h-9 px-4">
+            <Button asChild size="sm" className="h-9 px-4 hidden sm:inline-flex">
               <Link to="/signup">Create Workspace</Link>
             </Button>
-          </nav>
+            <button
+              type="button"
+              aria-label="Toggle menu"
+              className="md:hidden inline-flex items-center justify-center h-9 w-9 rounded-md text-foreground hover:bg-secondary"
+              onClick={() => setMobileOpen((v) => !v)}
+            >
+              {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
+          </div>
         </div>
+
+        {/* Mobile menu */}
+        {mobileOpen && (
+          <div className="md:hidden border-t border-border/80 bg-card">
+            <nav className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex flex-col">
+              {NAV_ITEMS.map((item) => (
+                <a
+                  key={item.id}
+                  href={`#${item.id}`}
+                  onClick={(e) => handleNavClick(e, item.id)}
+                  className={`text-sm font-medium px-3 py-2.5 rounded-md transition-colors ${
+                    activeId === item.id
+                      ? "text-foreground bg-secondary"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {item.label}
+                </a>
+              ))}
+              <div className="mt-2 pt-2 border-t border-border/80 flex items-center gap-2">
+                <Button asChild variant="ghost" size="sm" className="flex-1">
+                  <Link to="/login">Login</Link>
+                </Button>
+                <Button asChild size="sm" className="flex-1">
+                  <Link to="/signup">Create Workspace</Link>
+                </Button>
+              </div>
+            </nav>
+          </div>
+        )}
       </header>
 
       {/* HERO - dotted bg */}
