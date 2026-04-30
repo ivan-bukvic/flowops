@@ -453,7 +453,21 @@ const Landing = () => {
       {/* HOW IT WORKS - contained dark card */}
       <section id="how-it-works" className="scroll-mt-24 bg-background">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 my-16 sm:my-20">
-          <div className="rounded-2xl border border-white/5 bg-[#0F172A] px-6 sm:px-10 py-20 sm:py-24">
+          <div className="relative overflow-hidden rounded-2xl border border-white/5 bg-[#0F172A] px-6 sm:px-10 py-20 sm:py-24">
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-0"
+              style={{
+                backgroundImage:
+                  "radial-gradient(circle, rgba(255,255,255,0.45) 1.2px, transparent 1.2px)",
+                backgroundSize: "18px 18px",
+                maskImage:
+                  "linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,0.5) 35%, rgba(0,0,0,0.15) 65%, rgba(0,0,0,0) 100%)",
+                WebkitMaskImage:
+                  "linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,0.5) 35%, rgba(0,0,0,0.15) 65%, rgba(0,0,0,0) 100%)",
+              }}
+            />
+            <div className="relative">
             <div className="text-center mb-14">
               <p className="text-[11px] font-semibold text-white/60 tracking-[0.18em] uppercase">
                 How it works
@@ -502,6 +516,7 @@ const Landing = () => {
                   )}
                 </div>
               ))}
+            </div>
             </div>
           </div>
         </div>
