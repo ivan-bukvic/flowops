@@ -510,8 +510,8 @@ const Landing = () => {
                   {/* Connector */}
                   {idx < arr.length - 1 && (
                     <div className="flex items-center justify-center px-2 py-2 lg:py-0 lg:px-3">
-                      <ArrowRight className="h-4 w-4 text-white/30 lg:block hidden" strokeWidth={2} />
-                      <div className="h-4 w-px bg-white/20 lg:hidden" />
+                      <ArrowRight className="h-5 w-5 text-white/70 lg:block hidden" strokeWidth={2.5} />
+                      <div className="h-4 w-px bg-white/50 lg:hidden" />
                     </div>
                   )}
                 </div>
