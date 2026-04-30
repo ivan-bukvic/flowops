@@ -116,6 +116,107 @@ const NAV_ITEMS = [
   { id: "how-it-works", label: "How it works" },
 ];
 
+/**
+ * Workflow card with staggered scroll-triggered fade-in animation.
+ * Uses IntersectionObserver to trigger once when entering viewport.
+ */
+const WorkflowCard = () => {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            setVisible(true);
+            obs.disconnect();
+          }
+        });
+      },
+      { threshold: 0.25 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  const stepStyle = (delay: number): React.CSSProperties => ({
+    opacity: visible ? 1 : 0,
+    transform: visible ? "translateY(0)" : "translateY(12px)",
+    transition: `opacity 400ms ease-out ${delay}ms, transform 400ms ease-out ${delay}ms`,
+  });
+
+  const arrowStyle = (delay: number): React.CSSProperties => ({
+    opacity: visible ? 1 : 0,
+    transition: `opacity 300ms ease-out ${delay}ms`,
+  });
+
+  return (
+    <div
+      ref={ref}
+      className="rounded-2xl border border-border/80 bg-card shadow-sm p-6 sm:p-7 bg-gradient-to-b from-white to-[hsl(var(--secondary)/0.35)]"
+    >
+      <div className="flex items-center justify-between">
+        <p className="text-[10px] font-semibold tracking-[0.22em] uppercase text-primary">
+          Example Workflow
+        </p>
+        <span className="inline-flex items-center gap-1.5 text-[10px] font-medium text-muted-foreground">
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+          Live
+        </span>
+      </div>
+
+      <div className="mt-5 grid grid-cols-1 sm:grid-cols-[1fr_auto_1fr_auto_1fr] items-stretch gap-3">
+        <div className="rounded-xl border border-border/60 bg-white px-5 py-4" style={stepStyle(0)}>
+          <p className="text-[10px] font-semibold text-muted-foreground tracking-[0.16em] uppercase">
+            Example Trigger
+          </p>
+          <p className="mt-1.5 text-sm font-semibold text-foreground">Document uploaded</p>
+        </div>
+        <div className="flex items-center justify-center" style={arrowStyle(220)}>
+          <ArrowRight className="h-4 w-4 text-muted-foreground/70 hidden sm:block" strokeWidth={2.25} />
+          <div className="h-3 w-px bg-border sm:hidden" />
+        </div>
+
+        <div className="rounded-xl border border-border/60 bg-white px-5 py-4" style={stepStyle(180)}>
+          <p className="text-[10px] font-semibold text-muted-foreground tracking-[0.16em] uppercase">
+            Action
+          </p>
+          <p className="mt-1.5 text-sm font-semibold text-foreground">Run automation</p>
+        </div>
+        <div className="flex items-center justify-center" style={arrowStyle(400)}>
+          <ArrowRight className="h-4 w-4 text-muted-foreground/70 hidden sm:block" strokeWidth={2.25} />
+          <div className="h-3 w-px bg-border sm:hidden" />
+        </div>
+
+        <div className="rounded-xl border border-border/60 bg-white px-5 py-4" style={stepStyle(360)}>
+          <p className="text-[10px] font-semibold text-muted-foreground tracking-[0.16em] uppercase">
+            Result
+          </p>
+          <div className="mt-2.5 flex flex-wrap gap-1.5">
+            {[
+              { icon: Mail, label: "Email", cls: "bg-orange-50 text-orange-600" },
+              { icon: MessageSquare, label: "Slack", cls: "bg-purple-50 text-purple-700" },
+              { icon: Calendar, label: "Calendar", cls: "bg-blue-50 text-blue-600" },
+              { icon: Webhook, label: "Webhook", cls: "bg-violet-50 text-violet-600" },
+            ].map(({ icon: Icon, label, cls }) => (
+              <span
+                key={label}
+                className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium ${cls}`}
+              >
+                <Icon className="h-3 w-3" strokeWidth={2.25} />
+                {label}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const Landing = () => {
   const [activeId, setActiveId] = useState<string>("product");
   const [mobileOpen, setMobileOpen] = useState(false);
