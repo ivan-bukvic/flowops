@@ -326,7 +326,7 @@ const Landing = () => {
                   { label: "Action", text: "Run automation" },
                 ].map((step) => (
                   <div key={step.label} className="contents">
-                    <div className="rounded-xl border border-border/80 bg-[hsl(var(--secondary)/0.5)] px-5 py-4">
+                    <div className="rounded-xl border border-border/60 bg-white px-5 py-4">
                       <p className="text-[10px] font-semibold text-muted-foreground tracking-[0.16em] uppercase">
                         {step.label}
                       </p>
