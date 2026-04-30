@@ -469,7 +469,7 @@ const Landing = () => {
             />
             <div className="relative">
             <div className="text-center mb-14">
-              <p className="text-[11px] font-semibold text-white/60 tracking-[0.18em] uppercase">
+              <p className="font-semibold text-white/60 tracking-[0.18em] uppercase text-lg">
                 How it works
               </p>
               <h2 className="mt-3 text-3xl sm:text-4xl font-semibold tracking-tight text-white">
