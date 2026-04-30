@@ -136,7 +136,8 @@ const WorkflowCard = () => {
           }
         });
       },
-      { threshold: 0.25 }
+      // Trigger only when the card is well into the viewport
+      { threshold: 0.6, rootMargin: "0px 0px -15% 0px" }
     );
     obs.observe(el);
     return () => obs.disconnect();
@@ -144,13 +145,13 @@ const WorkflowCard = () => {
 
   const stepStyle = (delay: number): React.CSSProperties => ({
     opacity: visible ? 1 : 0,
-    transform: visible ? "translateY(0)" : "translateY(12px)",
-    transition: `opacity 400ms ease-out ${delay}ms, transform 400ms ease-out ${delay}ms`,
+    transform: visible ? "translateY(0)" : "translateY(16px)",
+    transition: `opacity 700ms ease-out ${delay}ms, transform 700ms ease-out ${delay}ms`,
   });
 
   const arrowStyle = (delay: number): React.CSSProperties => ({
     opacity: visible ? 1 : 0,
-    transition: `opacity 300ms ease-out ${delay}ms`,
+    transition: `opacity 500ms ease-out ${delay}ms`,
   });
 
   return (
