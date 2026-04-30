@@ -398,8 +398,8 @@ const Landing = () => {
             />
             <div className="relative grid grid-cols-1 sm:grid-cols-3 gap-10 sm:gap-6 text-center">
               {[
-                { value: "12K+", label: "Projects managed" },
-                { value: "48K+", label: "Automations active" },
+                { value: "4K+", label: "Projects managed" },
+                { value: "16K+", label: "Automations active" },
                 { value: "<200ms", label: "Real-time execution" },
               ].map((s) => (
                 <div key={s.label}>
