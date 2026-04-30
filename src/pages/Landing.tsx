@@ -311,7 +311,7 @@ const Landing = () => {
             {/* Visual hint - workflow flow card */}
             <div className="rounded-2xl border border-border/80 bg-card shadow-sm p-6 sm:p-7 bg-gradient-to-b from-white to-[hsl(var(--secondary)/0.35)]">
               <div className="flex items-center justify-between">
-                <p className="text-[10px] font-semibold text-muted-foreground/80 tracking-[0.22em] uppercase">
+                <p className="text-[10px] font-semibold tracking-[0.22em] uppercase text-primary">
                   Example Workflow
                 </p>
                 <span className="inline-flex items-center gap-1.5 text-[10px] font-medium text-muted-foreground">
