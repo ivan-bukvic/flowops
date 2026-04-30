@@ -388,8 +388,12 @@ const Landing = () => {
               className="pointer-events-none absolute inset-0"
               style={{
                 backgroundImage:
-                  "radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px)",
+                  "radial-gradient(circle, rgba(255,255,255,0.18) 1px, transparent 1px)",
                 backgroundSize: "18px 18px",
+                maskImage:
+                  "linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,0.5) 35%, rgba(0,0,0,0.15) 65%, rgba(0,0,0,0) 100%)",
+                WebkitMaskImage:
+                  "linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,0.5) 35%, rgba(0,0,0,0.15) 65%, rgba(0,0,0,0) 100%)",
               }}
             />
             <div className="relative grid grid-cols-1 sm:grid-cols-3 gap-10 sm:gap-6 text-center">
