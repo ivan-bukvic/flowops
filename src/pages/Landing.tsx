@@ -176,23 +176,23 @@ const WorkflowCard = () => {
           </p>
           <p className="mt-1.5 text-sm font-semibold text-foreground">Document uploaded</p>
         </div>
-        <div className="flex items-center justify-center" style={arrowStyle(220)}>
-          <ArrowRight className="h-4 w-4 text-muted-foreground/70 hidden sm:block" strokeWidth={2.25} />
-          <div className="h-3 w-px bg-border sm:hidden" />
-        </div>
-
-        <div className="rounded-xl border border-border/60 bg-white px-5 py-4" style={stepStyle(180)}>
-          <p className="text-[10px] font-semibold text-muted-foreground tracking-[0.16em] uppercase">
-            Action
-          </p>
-          <p className="mt-1.5 text-sm font-semibold text-foreground">Run automation</p>
-        </div>
         <div className="flex items-center justify-center" style={arrowStyle(400)}>
           <ArrowRight className="h-4 w-4 text-muted-foreground/70 hidden sm:block" strokeWidth={2.25} />
           <div className="h-3 w-px bg-border sm:hidden" />
         </div>
 
-        <div className="rounded-xl border border-border/60 bg-white px-5 py-4" style={stepStyle(360)}>
+        <div className="rounded-xl border border-border/60 bg-white px-5 py-4" style={stepStyle(350)}>
+          <p className="text-[10px] font-semibold text-muted-foreground tracking-[0.16em] uppercase">
+            Action
+          </p>
+          <p className="mt-1.5 text-sm font-semibold text-foreground">Run automation</p>
+        </div>
+        <div className="flex items-center justify-center" style={arrowStyle(750)}>
+          <ArrowRight className="h-4 w-4 text-muted-foreground/70 hidden sm:block" strokeWidth={2.25} />
+          <div className="h-3 w-px bg-border sm:hidden" />
+        </div>
+
+        <div className="rounded-xl border border-border/60 bg-white px-5 py-4" style={stepStyle(700)}>
           <p className="text-[10px] font-semibold text-muted-foreground tracking-[0.16em] uppercase">
             Result
           </p>
