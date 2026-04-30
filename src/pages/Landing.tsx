@@ -475,7 +475,7 @@ const Landing = () => {
               <h2 className="mt-3 text-3xl sm:text-4xl font-semibold tracking-tight text-white">
                 From setup to automated execution
               </h2>
-              <p className="mt-3 text-sm text-white/70">
+              <p className="mt-3 text-white/70 text-lg">
                 Four simple steps from setup to automated execution.
               </p>
             </div>
