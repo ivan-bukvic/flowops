@@ -136,7 +136,8 @@ const WorkflowCard = () => {
           }
         });
       },
-      { threshold: 0.25 }
+      // Trigger only when the card is well into the viewport
+      { threshold: 0.6, rootMargin: "0px 0px -15% 0px" }
     );
     obs.observe(el);
     return () => obs.disconnect();
@@ -144,13 +145,13 @@ const WorkflowCard = () => {
 
   const stepStyle = (delay: number): React.CSSProperties => ({
     opacity: visible ? 1 : 0,
-    transform: visible ? "translateY(0)" : "translateY(12px)",
-    transition: `opacity 400ms ease-out ${delay}ms, transform 400ms ease-out ${delay}ms`,
+    transform: visible ? "translateY(0)" : "translateY(16px)",
+    transition: `opacity 700ms ease-out ${delay}ms, transform 700ms ease-out ${delay}ms`,
   });
 
   const arrowStyle = (delay: number): React.CSSProperties => ({
     opacity: visible ? 1 : 0,
-    transition: `opacity 300ms ease-out ${delay}ms`,
+    transition: `opacity 500ms ease-out ${delay}ms`,
   });
 
   return (
@@ -175,23 +176,23 @@ const WorkflowCard = () => {
           </p>
           <p className="mt-1.5 text-sm font-semibold text-foreground">Document uploaded</p>
         </div>
-        <div className="flex items-center justify-center" style={arrowStyle(220)}>
-          <ArrowRight className="h-4 w-4 text-muted-foreground/70 hidden sm:block" strokeWidth={2.25} />
-          <div className="h-3 w-px bg-border sm:hidden" />
-        </div>
-
-        <div className="rounded-xl border border-border/60 bg-white px-5 py-4" style={stepStyle(180)}>
-          <p className="text-[10px] font-semibold text-muted-foreground tracking-[0.16em] uppercase">
-            Action
-          </p>
-          <p className="mt-1.5 text-sm font-semibold text-foreground">Run automation</p>
-        </div>
         <div className="flex items-center justify-center" style={arrowStyle(400)}>
           <ArrowRight className="h-4 w-4 text-muted-foreground/70 hidden sm:block" strokeWidth={2.25} />
           <div className="h-3 w-px bg-border sm:hidden" />
         </div>
 
-        <div className="rounded-xl border border-border/60 bg-white px-5 py-4" style={stepStyle(360)}>
+        <div className="rounded-xl border border-border/60 bg-white px-5 py-4" style={stepStyle(350)}>
+          <p className="text-[10px] font-semibold text-muted-foreground tracking-[0.16em] uppercase">
+            Action
+          </p>
+          <p className="mt-1.5 text-sm font-semibold text-foreground">Run automation</p>
+        </div>
+        <div className="flex items-center justify-center" style={arrowStyle(750)}>
+          <ArrowRight className="h-4 w-4 text-muted-foreground/70 hidden sm:block" strokeWidth={2.25} />
+          <div className="h-3 w-px bg-border sm:hidden" />
+        </div>
+
+        <div className="rounded-xl border border-border/60 bg-white px-5 py-4" style={stepStyle(700)}>
           <p className="text-[10px] font-semibold text-muted-foreground tracking-[0.16em] uppercase">
             Result
           </p>
