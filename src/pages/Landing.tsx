@@ -231,7 +231,7 @@ const Landing = () => {
           <div className="grid grid-cols-1 lg:grid-cols-[5fr_7fr] gap-14 lg:gap-16 items-center">
             <div>
               <h1 className="text-[44px] sm:text-[56px] font-bold tracking-tight text-foreground leading-[1.05]">
-                Automate your workflows without complexity
+                <span className="text-primary">Automate</span> your workflows without complexity
               </h1>
               <p className="mt-6 text-[17px] leading-relaxed max-w-lg text-secondary-foreground">
                 Manage projects, trigger automations, and connect your tools - all in one place.
