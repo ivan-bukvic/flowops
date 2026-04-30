@@ -218,6 +218,85 @@ const WorkflowCard = () => {
   );
 };
 
+/**
+ * "How it works" flow strip with staggered scroll-triggered fade-in.
+ */
+const HowItWorksFlow = () => {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            setVisible(true);
+            obs.disconnect();
+          }
+        });
+      },
+      { threshold: 0.4, rootMargin: "0px 0px -15% 0px" }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  const stepStyle = (delay: number): React.CSSProperties => ({
+    opacity: visible ? 1 : 0,
+    transform: visible ? "translateY(0)" : "translateY(16px)",
+    transition: `opacity 700ms ease-out ${delay}ms, transform 700ms ease-out ${delay}ms`,
+  });
+
+  const arrowStyle = (delay: number): React.CSSProperties => ({
+    opacity: visible ? 1 : 0,
+    transition: `opacity 500ms ease-out ${delay}ms`,
+  });
+
+  const steps = [
+    { n: "01", title: "Create Project", text: "Spin up a workspace project in seconds." },
+    { n: "02", title: "Trigger Event", text: "Workspace activity emits structured events." },
+    { n: "03", title: "Automations Run", text: "Matching rules execute the configured actions.", emphasized: true },
+    { n: "04", title: "Results Delivered", text: "Outcomes are logged and visible in real time." },
+  ];
+
+  return (
+    <div ref={ref} className="flex flex-col lg:flex-row lg:items-stretch gap-5 lg:gap-0">
+      {steps.map((step, idx, arr) => {
+        const cardDelay = idx * 350;
+        const arrowDelay = cardDelay + 400;
+        return (
+          <div key={step.n} className="flex-1 flex flex-col lg:flex-row items-stretch">
+            <div
+              className={`flex-1 rounded-lg bg-white p-6 min-h-[190px] flex flex-col ${
+                step.emphasized ? "border-2 border-primary/50" : "border border-[#E5E7EB]"
+              }`}
+              style={stepStyle(cardDelay)}
+            >
+              <p className="text-[11px] font-semibold text-primary tracking-[0.12em]">
+                STEP {step.n}
+              </p>
+              <p className="mt-3 text-[15px] font-semibold text-[#111827]">{step.title}</p>
+              <p className="mt-1.5 text-sm text-muted-foreground leading-relaxed">{step.text}</p>
+            </div>
+
+            {idx < arr.length - 1 && (
+              <div
+                className="flex items-center justify-center px-2 py-2 lg:py-0 lg:px-3"
+                style={arrowStyle(arrowDelay)}
+              >
+                <ArrowRight className="h-5 w-5 text-white/70 lg:block hidden" strokeWidth={2.5} />
+                <div className="h-4 w-px bg-white/50 lg:hidden" />
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
 const Landing = () => {
   const [activeId, setActiveId] = useState<string>("product");
   const [mobileOpen, setMobileOpen] = useState(false);
