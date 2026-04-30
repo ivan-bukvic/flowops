@@ -608,7 +608,7 @@ const Landing = () => {
             </div>
 
             {/* Flow strip */}
-            <HowItWorksFlow>
+            <HowItWorksFlow />
             </div>
           </div>
         </div>
