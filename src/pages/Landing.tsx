@@ -70,8 +70,45 @@ const ProductSection = ({
   alt: string;
   reverse?: boolean;
 }) => {
+  // Alternating entrance direction:
+  // - reverse=false (image on right) → enters from RIGHT
+  // - reverse=true  (image on left)  → enters from LEFT
+  const fromRight = !reverse;
+  const offset = fromRight ? 50 : -50;
+
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            setVisible(true);
+            obs.disconnect();
+          }
+        });
+      },
+      { threshold: 0.2, rootMargin: "0px 0px -10% 0px" }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  const animStyle = (delay: number): React.CSSProperties => ({
+    opacity: visible ? 1 : 0,
+    transform: visible ? "translateX(0)" : `translateX(${offset}px)`,
+    transition: `opacity 550ms ease-out ${delay}ms, transform 550ms ease-out ${delay}ms`,
+    willChange: "opacity, transform",
+  });
+
   const textBlock = (
-    <div className="relative -mx-6 sm:-mx-8 -my-8 sm:-my-10 px-6 sm:px-8 py-8 sm:py-10">
+    <div
+      className="relative -mx-6 sm:-mx-8 -my-8 sm:-my-10 px-6 sm:px-8 py-8 sm:py-10"
+      style={animStyle(0)}
+    >
       <DotBackground />
       <div className="relative z-10">
         <h3 className="text-2xl sm:text-[28px] font-semibold text-foreground tracking-tight">
@@ -83,12 +120,17 @@ const ProductSection = ({
       </div>
     </div>
   );
-  const imageBlock = <ImageFrame src={image} alt={alt} />;
+  const imageBlock = (
+    <div style={animStyle(130)}>
+      <ImageFrame src={image} alt={alt} />
+    </div>
+  );
 
   return (
     <div
       id={id}
-      className={`scroll-mt-24 grid grid-cols-1 gap-12 lg:gap-20 items-center ${
+      ref={ref}
+      className={`scroll-mt-24 grid grid-cols-1 gap-12 lg:gap-20 items-center overflow-hidden ${
         reverse ? "lg:grid-cols-[8fr_4fr]" : "lg:grid-cols-[4fr_8fr]"
       }`}
     >
