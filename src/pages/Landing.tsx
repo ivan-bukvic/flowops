@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Menu, X, Zap, Plug, Activity, Mail, MessageSquare, Calendar, Webhook } from "lucide-react";
 import {
