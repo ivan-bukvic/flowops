@@ -10,7 +10,7 @@ const Index = () => {
     if (isLoading) return;
 
     if (!user) {
-      navigate("/login", { replace: true });
+      navigate("/landing", { replace: true });
     } else {
       navigate("/dashboard", { replace: true });
     }
