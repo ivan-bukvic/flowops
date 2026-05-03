@@ -508,7 +508,7 @@ const Landing = () => {
                   What is FlowOps?
                 </h2>
                 <p className="mt-4 text-[16px] leading-relaxed text-foreground/90 max-w-md">
-                  FlowOps is a unified workspace where you can manage projects, automate workflows, and connect your tools — all in one place.
+                  FlowOps is a unified workspace where you can manage projects, automate workflows, and connect your tools - all in one place.
                 </p>
                 <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground max-w-md">
                   Instead of juggling multiple tools and manual processes, FlowOps lets you define events, trigger actions, and keep everything organized and visible in real time.
@@ -535,7 +535,7 @@ const Landing = () => {
             <WorkflowCard />
 
             <p className="mt-3 text-muted-foreground text-center text-base">
-              Create workflows for any event — this is just one example.
+              Create workflows for any event - this is just one example.
             </p>
           </div>
         </div>
@@ -672,7 +672,7 @@ const Landing = () => {
             {[
               {
                 q: "What is FlowOps?",
-                a: "FlowOps is a workspace platform that combines projects, documents, and event-driven automations in one place — so your team can ship work without juggling tools.",
+                a: "FlowOps is a workspace platform that combines projects, documents, and event-driven automations in one place - so your team can ship work without juggling tools.",
               },
               {
                 q: "How do automations work?",
@@ -684,7 +684,7 @@ const Landing = () => {
               },
               {
                 q: "Which tools can I integrate?",
-                a: "FlowOps connects to common tools like Email, Slack, Google Calendar, and generic webhooks — so you can plug it into the stack you already use.",
+                a: "FlowOps connects to common tools like Email, Slack, Google Calendar, and generic webhooks - so you can plug it into the stack you already use.",
               },
               {
                 q: "Can I track activity and logs?",
