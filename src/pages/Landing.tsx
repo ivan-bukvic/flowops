@@ -395,16 +395,19 @@ const Landing = () => {
             ))}
           </nav>
 
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-3">
             <Link
               to="/login"
-              className="hidden sm:inline-block text-sm font-medium text-muted-foreground hover:text-foreground transition-colors px-3 py-2"
+              className="hidden sm:inline-flex items-center h-10 px-5 py-2.5 rounded-[10px] text-sm font-medium text-gray-900 bg-white/80 backdrop-blur-sm border border-[rgba(17,24,39,0.08)] hover:bg-white hover:border-[rgba(17,24,39,0.15)] hover:shadow-sm hover:-translate-y-px transition-all duration-200"
             >
-              Login
+              Sign in
             </Link>
-            <Button asChild size="sm" className="h-9 px-4 hidden sm:inline-flex">
-              <Link to="/signup">Create Workspace</Link>
-            </Button>
+            <Link
+              to="/signup"
+              className="hidden sm:inline-flex items-center h-10 px-5 py-2.5 rounded-[10px] text-sm font-semibold text-white bg-primary shadow-sm hover:bg-primary/90 hover:shadow-md hover:-translate-y-px transition-all duration-200"
+            >
+              Create Workspace
+            </Link>
             <button
               type="button"
               aria-label="Toggle menu"
