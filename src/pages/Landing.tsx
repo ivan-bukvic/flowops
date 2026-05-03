@@ -379,8 +379,18 @@ const Landing = () => {
   return (
     <main className="min-h-screen bg-background text-foreground">
       {/* TOP NAV */}
-      <header className="sticky top-0 z-50 border-b border-border/80 bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
-        <div className="max-w-6xl mx-auto flex items-center justify-between h-14 px-4 sm:px-6">
+      <header
+        className={`sticky top-0 z-50 transition-all duration-300 ease-in-out ${
+          scrolled
+            ? "bg-white/70 backdrop-blur-md border-b border-[rgba(17,24,39,0.06)] shadow-sm"
+            : "bg-transparent border-b border-transparent"
+        }`}
+      >
+        <div
+          className={`max-w-6xl mx-auto flex items-center justify-between px-4 sm:px-6 transition-all duration-300 ease-in-out ${
+            scrolled ? "h-14 py-3" : "h-16 py-4"
+          }`}
+        >
           <Link to="/" className="flex items-center gap-2">
             <img src="/logo.svg" alt="FlowOps" className="h-[2.1rem]" />
           </Link>
