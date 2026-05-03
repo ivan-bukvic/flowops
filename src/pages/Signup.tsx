@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
@@ -91,7 +91,10 @@ const Signup = () => {
               "linear-gradient(to left, black 0%, rgba(0,0,0,0.55) 55%, rgba(0,0,0,0.05) 80%, transparent 100%)",
           }}
         />
-        <form onSubmit={handleSubmit} className="relative z-10 w-full max-w-[420px] space-y-6">
+        <form onSubmit={handleSubmit} autoComplete="off" className="relative z-10 w-full max-w-[420px] space-y-6">
+          {/* Decoy inputs to prevent Chrome autofill */}
+          <input type="text" name="fakeusernameremembered" autoComplete="username" tabIndex={-1} aria-hidden="true" style={{ position: "absolute", opacity: 0, height: 0, width: 0, pointerEvents: "none" }} />
+          <input type="password" name="fakepasswordremembered" autoComplete="new-password" tabIndex={-1} aria-hidden="true" style={{ position: "absolute", opacity: 0, height: 0, width: 0, pointerEvents: "none" }} />
           <div className="space-y-1.5">
             <h1 className="text-3xl font-bold text-foreground">Create Account</h1>
             <p className="text-sm text-muted-foreground">
@@ -101,17 +104,17 @@ const Signup = () => {
 
           <div className="space-y-2">
             <Label htmlFor="name">Full Name</Label>
-            <Input id="name" type="text" value={name} onChange={(e) => setName(e.target.value)} required />
+            <Input id="name" name="signup-name" type="text" autoComplete="off" value={name} onChange={(e) => setName(e.target.value)} required />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+            <Input id="email" name="signup-email" type="email" autoComplete="off" value={email} onChange={(e) => setEmail(e.target.value)} required />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
-            <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+            <Input id="password" name="signup-password" type="password" autoComplete="new-password" value={password} onChange={(e) => setPassword(e.target.value)} required />
           </div>
 
           {error && <p className="text-sm text-destructive">{error}</p>}
