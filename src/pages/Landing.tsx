@@ -65,19 +65,19 @@ const ImageFrame = ({ src, alt }: { src: string; alt: string }) => {
   return (
     <div
       ref={ref}
-      className={`group rounded-xl border bg-white p-2 sm:p-3 w-full shadow-sm transition-all duration-300 ease-out hover:border-blue-600 hover:ring-2 hover:ring-blue-500/20 hover:shadow-md ${
-        inView ? "border-blue-600/40 ring-2 ring-blue-500/10" : "border-gray-200"
-      }`}
+      className={`group rounded-xl bg-white p-2 sm:p-3 w-full transition-all duration-300 ease-out border-2 ${
+        inView
+          ? "border-blue-500 ring-2 ring-blue-500/30 shadow-md"
+          : "border-gray-200 shadow-sm"
+      } hover:border-blue-500 hover:ring-2 hover:ring-blue-500/30 hover:shadow-md`}
     >
-      <div className="rounded-lg border border-border/60 bg-card p-2 sm:p-3">
-        <div className="aspect-[16/10] w-full overflow-hidden rounded-md">
-          <img
-            src={src}
-            alt={alt}
-            className="w-full h-full object-cover block"
-            loading="lazy"
-          />
-        </div>
+      <div className="aspect-[16/10] w-full overflow-hidden rounded-md">
+        <img
+          src={src}
+          alt={alt}
+          className="w-full h-full object-cover block"
+          loading="lazy"
+        />
       </div>
     </div>
   );
