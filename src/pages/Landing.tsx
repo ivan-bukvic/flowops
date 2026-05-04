@@ -40,20 +40,48 @@ const DotBackground = () => (
  * - outer wrapper sits on the section bg and creates a subtle "lifted object" feel
  * - inner card is white with a thin border + padding so the image reads as an object
  */
-const ImageFrame = ({ src, alt }: { src: string; alt: string }) => (
-  <div className="rounded-xl border border-border/80 bg-secondary/60 p-2 sm:p-3 w-full">
-    <div className="rounded-lg border border-border/80 bg-card p-2 sm:p-3">
-      <div className="aspect-[16/10] w-full overflow-hidden rounded-md">
-        <img
-          src={src}
-          alt={alt}
-          className="w-full h-full object-cover block"
-          loading="lazy"
-        />
+const ImageFrame = ({ src, alt }: { src: string; alt: string }) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const [inView, setInView] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            setInView(true);
+            obs.disconnect();
+          }
+        });
+      },
+      { threshold: 0.25 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  return (
+    <div
+      ref={ref}
+      className={`group rounded-xl border bg-white p-2 sm:p-3 w-full shadow-sm transition-all duration-300 ease-out hover:border-blue-600 hover:ring-2 hover:ring-blue-500/20 hover:shadow-md ${
+        inView ? "border-blue-600/40 ring-2 ring-blue-500/10" : "border-gray-200"
+      }`}
+    >
+      <div className="rounded-lg border border-border/60 bg-card p-2 sm:p-3">
+        <div className="aspect-[16/10] w-full overflow-hidden rounded-md">
+          <img
+            src={src}
+            alt={alt}
+            className="w-full h-full object-cover block"
+            loading="lazy"
+          />
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 const ProductSection = ({
   id,
