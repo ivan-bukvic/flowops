@@ -416,7 +416,7 @@ const Landing = () => {
           <div className="flex items-center gap-3">
             <Link
               to="/login"
-              className="hidden sm:inline-flex items-center h-10 px-5 py-2.5 rounded-[10px] text-sm font-medium text-gray-900 bg-white/80 backdrop-blur-sm border border-[rgba(17,24,39,0.08)] hover:bg-white hover:border-[rgba(17,24,39,0.15)] hover:shadow-sm hover:-translate-y-px transition-all duration-200"
+              className="hidden sm:inline-flex items-center h-10 px-5 py-2.5 rounded-[10px] text-sm font-medium !bg-white !text-gray-900 !border !border-gray-300 shadow-sm hover:!bg-gray-50 hover:!border-gray-400 hover:shadow-md hover:-translate-y-px focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/20 transition-all duration-200"
             >
               Sign in
             </Link>
