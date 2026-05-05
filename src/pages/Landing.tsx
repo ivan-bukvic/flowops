@@ -468,7 +468,7 @@ const Landing = () => {
         {/* Mobile menu */}
         {mobileOpen && (
           <div className="md:hidden border-t border-border/80 bg-card">
-            <nav className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex flex-col">
+            <nav className="max-w-7xl mx-auto px-4 sm:px-4 py-3 flex flex-col">
               {NAV_ITEMS.map((item) => (
                 <a
                   key={item.id}
@@ -499,7 +499,7 @@ const Landing = () => {
       {/* HERO - dotted bg */}
       <section className="relative overflow-hidden border-b border-border/80 bg-card">
         <DotBackground />
-        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 py-20 sm:py-28">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-4 py-20 sm:py-28">
           <div className="grid grid-cols-1 lg:grid-cols-[5fr_7fr] gap-14 lg:gap-16 items-center">
             <div>
               <h1 className="text-[44px] sm:text-[56px] font-bold tracking-tight text-foreground leading-[1.05]">
@@ -533,7 +533,7 @@ const Landing = () => {
 
       {/* OVERVIEW - what is FlowOps */}
       <section id="overview" className="scroll-mt-24 bg-background border-b border-border/80">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-20 sm:py-28">
+        <div className="max-w-7xl mx-auto px-4 sm:px-4 py-20 sm:py-28">
           <div className="grid grid-cols-1 lg:grid-cols-[5fr_7fr] gap-12 lg:gap-20 items-center">
             {/* Text */}
             <div className="relative -mx-6 sm:-mx-8 -my-8 sm:-my-10 px-6 sm:px-8 py-8 sm:py-10">
@@ -592,7 +592,7 @@ const Landing = () => {
 
       {/* STATS - contained dark card */}
       <section className="bg-background">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 my-16 sm:my-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-4 my-16 sm:my-20">
           <div
             className="relative overflow-hidden rounded-2xl border px-6 sm:px-10 py-16 sm:py-20"
             style={{
@@ -634,7 +634,7 @@ const Landing = () => {
 
       {/* PRODUCT SECTIONS - white surface for contrast vs background */}
       <section className="border-b border-border/80 bg-card">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-20 sm:py-28 space-y-24 sm:space-y-32">
+        <div className="max-w-7xl mx-auto px-4 sm:px-4 py-20 sm:py-28 space-y-24 sm:space-y-32">
           <ProductSection
             id="product"
             title="Centralized dashboard"
@@ -670,7 +670,7 @@ const Landing = () => {
 
       {/* HOW IT WORKS - contained dark card */}
       <section id="how-it-works" className="scroll-mt-24 bg-background">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 my-16 sm:my-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-4 my-16 sm:my-20">
           <div className="relative overflow-hidden rounded-2xl border border-white/5 bg-[#0F172A] px-6 sm:px-10 py-20 sm:py-24">
             <div
               aria-hidden
@@ -785,7 +785,7 @@ const Landing = () => {
 
       {/* FOOTER */}
       <footer className="border-t border-border/80 bg-card">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-4 h-14 flex items-center justify-between">
           <p className="text-xs text-muted-foreground">© FlowOps AI</p>
           <div className="flex items-center gap-4">
             <Link to="/login" className="text-xs text-muted-foreground hover:text-foreground">
