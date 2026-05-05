@@ -175,6 +175,57 @@ const ProductSection = ({
   );
 };
 
+const CountUp = ({
+  from,
+  to,
+  prefix = "",
+  suffix = "",
+  duration = 1600,
+}: {
+  from: number;
+  to: number;
+  prefix?: string;
+  suffix?: string;
+  duration?: number;
+}) => {
+  const ref = useRef<HTMLSpanElement>(null);
+  const [value, setValue] = useState(from);
+  const startedRef = useRef(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting && !startedRef.current) {
+            startedRef.current = true;
+            const start = performance.now();
+            const tick = (now: number) => {
+              const t = Math.min(1, (now - start) / duration);
+              const eased = 1 - Math.pow(1 - t, 3);
+              setValue(Math.round(from + (to - from) * eased));
+              if (t < 1) requestAnimationFrame(tick);
+            };
+            requestAnimationFrame(tick);
+            obs.disconnect();
+          }
+        });
+      },
+      { threshold: 0.4 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [from, to, duration]);
+
+  return (
+    <span ref={ref}>
+      {prefix}
+      {value}
+      {suffix}
+    </span>
+  );
+};
 
 
 const NAV_ITEMS = [
@@ -616,13 +667,13 @@ const Landing = () => {
             />
             <div className="relative grid grid-cols-1 sm:grid-cols-3 gap-10 sm:gap-6 text-center">
               {[
-                { value: "4K+", label: "Projects managed" },
-                { value: "16K+", label: "Automations active" },
-                { value: "<200ms", label: "Real-time execution" },
+                { from: 0, to: 4, suffix: "K+", label: "Projects managed" },
+                { from: 0, to: 16, suffix: "K+", label: "Automations active" },
+                { from: 800, to: 200, prefix: "<", suffix: "ms", label: "Real-time execution" },
               ].map((s) => (
                 <div key={s.label}>
                   <p className="text-3xl sm:text-4xl font-bold text-white tracking-tight tabular-nums">
-                    {s.value}
+                    <CountUp from={s.from} to={s.to} prefix={s.prefix} suffix={s.suffix} />
                   </p>
                   <p className="mt-4 text-sm text-white/70">{s.label}</p>
                 </div>
