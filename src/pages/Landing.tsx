@@ -616,13 +616,13 @@ const Landing = () => {
             />
             <div className="relative grid grid-cols-1 sm:grid-cols-3 gap-10 sm:gap-6 text-center">
               {[
-                { value: "4K+", label: "Projects managed" },
-                { value: "16K+", label: "Automations active" },
-                { value: "<200ms", label: "Real-time execution" },
+                { from: 0, to: 4, suffix: "K+", label: "Projects managed" },
+                { from: 0, to: 16, suffix: "K+", label: "Automations active" },
+                { from: 800, to: 200, prefix: "<", suffix: "ms", label: "Real-time execution" },
               ].map((s) => (
                 <div key={s.label}>
                   <p className="text-3xl sm:text-4xl font-bold text-white tracking-tight tabular-nums">
-                    {s.value}
+                    <CountUp from={s.from} to={s.to} prefix={s.prefix} suffix={s.suffix} />
                   </p>
                   <p className="mt-4 text-sm text-white/70">{s.label}</p>
                 </div>
