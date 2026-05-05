@@ -415,7 +415,7 @@ const Landing = () => {
         }`}
       >
         <div
-          className={`max-w-6xl mx-auto flex items-center justify-between px-4 sm:px-6 transition-all duration-300 ease-in-out ${
+          className={`max-w-7xl mx-auto flex items-center justify-between px-4 sm:px-4 transition-all duration-300 ease-in-out ${
             scrolled ? "h-14 py-3" : "h-16 py-4"
           }`}
         >
