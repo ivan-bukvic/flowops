@@ -132,7 +132,7 @@ const ProductSection = ({
     transform: visible
       ? "translateX(0) scale(1)"
       : `translateX(${offset}) scale(0.98)`,
-    transition: `opacity 910ms cubic-bezier(0.22, 1, 0.36, 1) ${stagger}ms, transform 910ms cubic-bezier(0.22, 1, 0.36, 1) ${stagger}ms`,
+    transition: `opacity 1400ms cubic-bezier(0.22, 1, 0.36, 1) ${stagger}ms, transform 1400ms cubic-bezier(0.22, 1, 0.36, 1) ${stagger}ms`,
     willChange: "opacity, transform",
   };
 
