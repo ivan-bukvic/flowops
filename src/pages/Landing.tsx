@@ -90,6 +90,7 @@ const ProductSection = ({
   image,
   alt,
   reverse = false,
+  index = 0,
 }: {
   id?: string;
   title: string;
@@ -97,12 +98,13 @@ const ProductSection = ({
   image: string;
   alt: string;
   reverse?: boolean;
+  index?: number;
 }) => {
-  // Alternating entrance direction:
-  // - reverse=false (image on right) → enters from RIGHT
-  // - reverse=true  (image on left)  → enters from LEFT
-  const fromRight = !reverse;
-  const offset = fromRight ? 50 : -50;
+  // Alternating entrance direction from full viewport edges:
+  // Product (0) → RIGHT, Automations (1) → LEFT, Activity (2) → RIGHT, Integrations (3) → LEFT
+  const fromRight = index % 2 === 0;
+  const offset = fromRight ? "100vw" : "-100vw";
+  const stagger = index * 100;
 
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
@@ -125,18 +127,17 @@ const ProductSection = ({
     return () => obs.disconnect();
   }, []);
 
-  const animStyle = (delay: number): React.CSSProperties => ({
+  const wrapperStyle: React.CSSProperties = {
     opacity: visible ? 1 : 0,
-    transform: visible ? "translateX(0)" : `translateX(${offset}px)`,
-    transition: `opacity 550ms ease-out ${delay}ms, transform 550ms ease-out ${delay}ms`,
+    transform: visible
+      ? "translateX(0) scale(1)"
+      : `translateX(${offset}) scale(0.98)`,
+    transition: `opacity 700ms cubic-bezier(0.22, 1, 0.36, 1) ${stagger}ms, transform 700ms cubic-bezier(0.22, 1, 0.36, 1) ${stagger}ms`,
     willChange: "opacity, transform",
-  });
+  };
 
   const textBlock = (
-    <div
-      className="relative -mx-6 sm:-mx-8 -my-8 sm:-my-10 px-6 sm:px-8 py-8 sm:py-10"
-      style={animStyle(0)}
-    >
+    <div className="relative -mx-6 sm:-mx-8 -my-8 sm:-my-10 px-6 sm:px-8 py-8 sm:py-10">
       <DotBackground />
       <div className="relative z-10">
         <h3 className="text-2xl sm:text-[28px] font-semibold text-foreground tracking-tight">
@@ -148,17 +149,14 @@ const ProductSection = ({
       </div>
     </div>
   );
-  const imageBlock = (
-    <div style={animStyle(130)}>
-      <ImageFrame src={image} alt={alt} />
-    </div>
-  );
+  const imageBlock = <ImageFrame src={image} alt={alt} />;
 
   return (
     <div
       id={id}
       ref={ref}
-      className={`scroll-mt-24 grid grid-cols-1 gap-12 lg:gap-20 items-center overflow-hidden ${
+      style={wrapperStyle}
+      className={`scroll-mt-24 grid grid-cols-1 gap-12 lg:gap-20 items-center ${
         reverse ? "lg:grid-cols-[8fr_4fr]" : "lg:grid-cols-[4fr_8fr]"
       }`}
     >
@@ -176,6 +174,7 @@ const ProductSection = ({
     </div>
   );
 };
+
 
 const NAV_ITEMS = [
   { id: "overview", label: "Overview" },
