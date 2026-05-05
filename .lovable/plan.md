@@ -1,61 +1,26 @@
 ## Problem
 
-In `src/pages/Landing.tsx`, the `ProductSection` uses a fixed grid template `lg:grid-cols-[4fr_8fr]` (text = 4fr, image = 8fr). When `reverse={true}` is passed (for "Event-driven automations" and "Connect your tools"), only the DOM order is swapped via `lg:[&>div:first-child]:order-2`, but the grid columns themselves are NOT swapped.
+The four landing sections (Product, Automations, Activity, Integrations) are invisible because their initial state uses `translateX(100vw)` / `translateX(-100vw)` — moving the elements completely offscreen. The IntersectionObserver is attached to the same element being transformed, so it never reports as intersecting the viewport, and `visible` never flips to `true`.
 
-Result:
-- Reversed sections place the **image** into the **4fr (small)** column and the **text** into the **8fr (large)** column.
-- That's why those two screenshots render visibly smaller than the non-reversed ones.
+Also: `overflow-x: hidden` on the parent section combined with offscreen children silently clips them, hiding the issue visually.
 
 ## Fix
 
-Swap the grid template based on the `reverse` flag so the image column is always the wide one (8fr), regardless of left/right placement.
+In `src/pages/Landing.tsx`, split the `ProductSection` into two elements:
 
-In `ProductSection`:
+1. An **outer wrapper** (no transform) that holds the `ref` for the IntersectionObserver — this stays in normal layout flow so the observer can detect when it enters the viewport.
+2. An **inner animated child** that receives the `opacity` + `translateX` + `scale` styles.
 
-- Replace the fixed `lg:grid-cols-[4fr_8fr]` with a conditional:
-  - default: `lg:grid-cols-[4fr_8fr]` (text left / image right)
-  - reverse: `lg:grid-cols-[8fr_4fr]` (image left / text right)
-- Remove the `order-2` hack since column order now naturally matches DOM order.
-- Keep markup order as `<text>` then `<ImageFrame>` for both cases (works because the grid template defines which column is wide).
-
-Wait - to keep image visually on the left when `reverse`, we need image first in DOM. Cleaner approach: render `<ImageFrame>` first when reversed, and use `lg:grid-cols-[8fr_4fr]` so the first (image) column is the wide one.
-
-### Concrete change
+Concretely, change the return JSX from a single `<div>` carrying both `ref` and `style` into:
 
 ```tsx
-const ProductSection = ({ title, text, image, alt, reverse = false }) => {
-  const textBlock = (
-    <div>
-      <h3 className="...">{title}</h3>
-      <p className="...">{text}</p>
-    </div>
-  );
-  const imageBlock = <ImageFrame src={image} alt={alt} />;
-
-  return (
-    <div
-      className={`grid grid-cols-1 gap-12 lg:gap-20 items-center ${
-        reverse ? "lg:grid-cols-[8fr_4fr]" : "lg:grid-cols-[4fr_8fr]"
-      }`}
-    >
-      {reverse ? (
-        <>
-          {imageBlock}
-          {textBlock}
-        </>
-      ) : (
-        <>
-          {textBlock}
-          {imageBlock}
-        </>
-      )}
-    </div>
-  );
-};
+<div id={id} ref={ref} className="scroll-mt-24">
+  <div style={wrapperStyle} className="grid ...">
+    {/* text + image blocks */}
+  </div>
+</div>
 ```
 
-This guarantees the image column is always 8fr and all four product screenshots render at the same large size.
+This keeps the observer target on-screen while still animating the visible content from the viewport edges. The `overflow-x-hidden` already on the parent `<section>` will continue to prevent horizontal scrollbars from the off-screen starting position.
 
-## Files
-
-- `src/pages/Landing.tsx` - update `ProductSection` only.
+No other changes needed — direction alternation, 100ms stagger, 700ms cubic-bezier easing, and one-time trigger remain intact.

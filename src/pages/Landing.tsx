@@ -152,28 +152,29 @@ const ProductSection = ({
   const imageBlock = <ImageFrame src={image} alt={alt} />;
 
   return (
-    <div
-      id={id}
-      ref={ref}
-      style={wrapperStyle}
-      className={`scroll-mt-24 grid grid-cols-1 gap-12 lg:gap-20 items-center ${
-        reverse ? "lg:grid-cols-[8fr_4fr]" : "lg:grid-cols-[4fr_8fr]"
-      }`}
-    >
-      {reverse ? (
-        <>
-          {imageBlock}
-          {textBlock}
-        </>
-      ) : (
-        <>
-          {textBlock}
-          {imageBlock}
-        </>
-      )}
+    <div id={id} ref={ref} className="scroll-mt-24">
+      <div
+        style={wrapperStyle}
+        className={`grid grid-cols-1 gap-12 lg:gap-20 items-center ${
+          reverse ? "lg:grid-cols-[8fr_4fr]" : "lg:grid-cols-[4fr_8fr]"
+        }`}
+      >
+        {reverse ? (
+          <>
+            {imageBlock}
+            {textBlock}
+          </>
+        ) : (
+          <>
+            {textBlock}
+            {imageBlock}
+          </>
+        )}
+      </div>
     </div>
   );
 };
+
 
 
 const NAV_ITEMS = [
