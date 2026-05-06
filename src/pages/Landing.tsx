@@ -136,10 +136,29 @@ const ProductSection = ({
     willChange: "opacity, transform",
   };
 
+  // Inner stagger: text first, then image — starts after section slide begins
+  const innerBase = stagger + 300;
+  const textDelay = innerBase;
+  const imageDelay = innerBase + 160;
+
+  const textInnerStyle: React.CSSProperties = {
+    opacity: visible ? 1 : 0,
+    transform: visible ? "translateY(0)" : "translateY(20px)",
+    transition: `opacity 480ms cubic-bezier(0.22, 1, 0.36, 1) ${textDelay}ms, transform 480ms cubic-bezier(0.22, 1, 0.36, 1) ${textDelay}ms`,
+    willChange: "opacity, transform",
+  };
+
+  const imageInnerStyle: React.CSSProperties = {
+    opacity: visible ? 1 : 0,
+    transform: visible ? "translateY(0) scale(1)" : "translateY(24px) scale(0.98)",
+    transition: `opacity 560ms cubic-bezier(0.22, 1, 0.36, 1) ${imageDelay}ms, transform 560ms cubic-bezier(0.22, 1, 0.36, 1) ${imageDelay}ms`,
+    willChange: "opacity, transform",
+  };
+
   const textBlock = (
     <div className="relative -mx-6 sm:-mx-8 -my-8 sm:-my-10 px-6 sm:px-8 py-8 sm:py-10">
       <DotBackground />
-      <div className="relative z-10">
+      <div className="relative z-10" style={textInnerStyle}>
         <h3 className="text-2xl sm:text-[28px] font-semibold text-foreground tracking-tight">
           {title}
         </h3>
@@ -149,7 +168,11 @@ const ProductSection = ({
       </div>
     </div>
   );
-  const imageBlock = <ImageFrame src={image} alt={alt} />;
+  const imageBlock = (
+    <div style={imageInnerStyle}>
+      <ImageFrame src={image} alt={alt} />
+    </div>
+  );
 
   return (
     <div id={id} ref={ref} className="scroll-mt-24">
