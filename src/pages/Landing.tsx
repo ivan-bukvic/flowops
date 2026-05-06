@@ -265,8 +265,8 @@ const NAV_ITEMS = [
  * Uses IntersectionObserver to trigger once when entering viewport.
  */
 const WorkflowCard = () => {
+  const sentinelRef = useRef<HTMLDivElement>(null);
   const ref = useRef<HTMLDivElement>(null);
-  const outerRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
   const [outerVisible, setOuterVisible] = useState(false);
 
