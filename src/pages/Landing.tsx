@@ -203,7 +203,7 @@ const CountUp = ({
   to,
   prefix = "",
   suffix = "",
-  duration = 1600,
+  duration = 2800,
 }: {
   from: number;
   to: number;
