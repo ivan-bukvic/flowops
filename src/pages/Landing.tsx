@@ -266,7 +266,9 @@ const NAV_ITEMS = [
  */
 const WorkflowCard = () => {
   const ref = useRef<HTMLDivElement>(null);
+  const outerRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
+  const [outerVisible, setOuterVisible] = useState(false);
 
   useEffect(() => {
     const el = ref.current;
@@ -287,6 +289,24 @@ const WorkflowCard = () => {
     return () => obs.disconnect();
   }, []);
 
+  useEffect(() => {
+    const el = outerRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            setOuterVisible(true);
+            obs.disconnect();
+          }
+        });
+      },
+      { threshold: 0.2, rootMargin: "0px 0px -10% 0px" }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
   const stepStyle = (delay: number): React.CSSProperties => ({
     opacity: visible ? 1 : 0,
     transform: visible ? "translateY(0)" : "translateY(16px)",
@@ -298,7 +318,15 @@ const WorkflowCard = () => {
     transition: `opacity 500ms ease-out ${delay}ms`,
   });
 
+  const outerStyle: React.CSSProperties = {
+    opacity: outerVisible ? 1 : 0,
+    transform: outerVisible ? "translateX(0) scale(1)" : "translateX(100vw) scale(0.98)",
+    transition: "opacity 1400ms cubic-bezier(0.22, 1, 0.36, 1), transform 1400ms cubic-bezier(0.22, 1, 0.36, 1)",
+    willChange: "opacity, transform",
+  };
+
   return (
+    <div ref={outerRef} style={outerStyle}>
     <div
       ref={ref}
       className="rounded-2xl border border-border/80 bg-card shadow-sm p-6 sm:p-7 bg-gradient-to-b from-white to-[hsl(var(--secondary)/0.35)]"
@@ -358,6 +386,7 @@ const WorkflowCard = () => {
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 };
