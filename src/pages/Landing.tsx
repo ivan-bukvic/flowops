@@ -387,6 +387,7 @@ const WorkflowCard = () => {
         </div>
       </div>
     </div>
+    </div>
   );
 };
 
