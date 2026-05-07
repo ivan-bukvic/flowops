@@ -242,17 +242,17 @@ const RulesList = ({ rules, loading, onCreate }: Props) => {
               >
                 <div className="flex flex-col md:flex-row md:items-center gap-4 px-5 py-4">
                   {/* Trigger -> Action flow */}
-                  <div className="flex items-center gap-2.5 min-w-0 md:flex-[2]">
-                    <div className="inline-flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-primary/8 border border-primary/15 shrink-0">
-                      <TriggerIcon className="h-3.5 w-3.5 text-primary" />
-                      <span className="text-[11px] font-mono font-semibold uppercase tracking-wide text-primary">
-                        {rule.trigger_type}
+                  <div className="flex items-center gap-3 min-w-0 md:flex-[2]">
+                    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-background border border-border/80 shrink-0 transition-colors group-hover:border-primary/30 group-hover:bg-primary/[0.03]">
+                      <TriggerIcon className="h-3.5 w-3.5 text-primary/80" />
+                      <span className="text-[13px] font-medium text-foreground">
+                        {triggerLabels[rule.trigger_type] ?? rule.trigger_type}
                       </span>
                     </div>
-                    <ArrowRight className="h-4 w-4 text-muted-foreground/50 shrink-0" />
-                    <div className="inline-flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-muted/60 border border-border shrink-0">
-                      <ActionIcon className="h-3.5 w-3.5 text-foreground/70" />
-                      <span className="text-[12px] font-medium text-foreground/90">
+                    <ArrowRight className="h-3.5 w-3.5 text-muted-foreground/40 shrink-0 transition-all duration-200 group-hover:text-muted-foreground group-hover:translate-x-0.5" />
+                    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-background border border-border/80 shrink-0 transition-colors group-hover:border-foreground/20 group-hover:bg-muted/40">
+                      <ActionIcon className="h-3.5 w-3.5 text-foreground/60" />
+                      <span className="text-[13px] font-medium text-foreground">
                         {actionLabels[rule.action_type] ?? rule.action_type}
                       </span>
                     </div>
