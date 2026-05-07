@@ -3,10 +3,9 @@ import { triggerAutomations } from "@/lib/triggerAutomations";
 import { useOrg } from "@/contexts/OrgContext";
 import { supabase } from "@/integrations/supabase/client";
 import PageHeader from "@/components/shared/PageHeader";
-import DataTable, { Column } from "@/components/shared/DataTable";
-import StatusBadge from "@/components/shared/StatusBadge";
 import AutomationActivity from "@/components/automations/AutomationActivity";
 import AutomationRuleBuilder from "@/components/automations/AutomationRuleBuilder";
+import RulesList from "@/components/automations/RulesList";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Zap } from "lucide-react";
@@ -100,33 +99,6 @@ const Automations = () => {
   useEffect(() => {
     fetchRules();
   }, [selectedOrgId]);
-
-  const columns: Column<AutomationRow>[] = [
-    {
-      key: "trigger_type",
-      header: "Trigger",
-      render: (row) => <span className="text-sm font-medium font-mono">{row.trigger_type}</span>,
-    },
-    {
-      key: "action_type",
-      header: "Action",
-      render: (row) => <span className="text-sm font-mono">{row.action_type}</span>,
-    },
-    {
-      key: "last_run",
-      header: "Last Run",
-      render: (row) => (
-        <span className="text-sm text-muted-foreground">
-          {row.last_run ? formatTimeAgo(new Date(row.last_run)) : "Never"}
-        </span>
-      ),
-    },
-    {
-      key: "last_status",
-      header: "Status",
-      render: (row) => <StatusBadge status={row.last_status ?? "inactive"} />,
-    },
-  ];
 
   return (
     <main className="p-3 sm:p-6">
