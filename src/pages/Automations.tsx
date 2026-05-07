@@ -117,17 +117,7 @@ const Automations = () => {
           <AutomationRuleBuilder onCreated={handleRuleCreated} />
         </TabsContent>
         <TabsContent value="existing">
-          <DataTable
-            columns={columns}
-            data={rules}
-            loading={loading}
-            emptyIcon={Zap}
-            emptyTitle="No automations yet"
-            emptyDescription="Set up an automation to trigger actions from events."
-            emptyActionLabel="Create Automation"
-            emptyActionIcon={Zap}
-            onEmptyAction={() => setActiveTab("rules")}
-          />
+          <RulesList rules={rules} loading={loading} onCreate={() => setActiveTab("rules")} />
         </TabsContent>
         <TabsContent value="activity">
           <AutomationActivity />
