@@ -3,15 +3,23 @@ import { useOrg } from "@/contexts/OrgContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import ColoredIcon from "@/components/shared/ColoredIcon";
+import StatCard from "@/components/shared/StatCard";
 import ActivityTimeline from "@/components/dashboard/ActivityTimeline";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
-  FolderKanban, FileText, Zap, Bot, Plus, Upload, Sparkles,
+  FolderKanban, FileText, Zap, Bot, Plus, Upload, Sparkles, ArrowRight,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
+const getGreeting = () => {
+  const hour = new Date().getHours();
+  if (hour < 12) return "Good morning";
+  if (hour < 18) return "Good afternoon";
+  return "Good evening";
+};
+
 const Dashboard = () => {
-  const { selectedOrgId, organizations } = useOrg();
+  const { selectedOrgId } = useOrg();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [projectCount, setProjectCount] = useState(0);
@@ -63,8 +71,6 @@ const Dashboard = () => {
     user?.email?.split("@")[0] ||
     "there";
 
-  const currentWorkspace = organizations.find((o) => o.id === selectedOrgId)?.name;
-
   const metrics = [
     { label: "Projects", value: projectCount, suffix: "active", icon: FolderKanban, route: "/projects" },
     { label: "Documents", value: docCount, suffix: "uploaded", icon: FileText, route: "/documents" },
@@ -73,115 +79,76 @@ const Dashboard = () => {
   ];
 
   const quickActions = [
-    { label: "Create Project", icon: Plus, onClick: () => navigate("/projects"), bgClass: "bg-indigo-50", iconClass: "text-indigo-600" },
-    { label: "Upload Document", icon: Upload, onClick: () => navigate("/documents"), bgClass: "bg-sky-50", iconClass: "text-sky-500" },
-    { label: "Create Automation", icon: Zap, onClick: () => navigate("/automations"), bgClass: "bg-amber-50", iconClass: "text-amber-500" },
-    { label: "Ask AI", icon: Sparkles, onClick: () => navigate("/ai"), bgClass: "bg-violet-50", iconClass: "text-violet-600" },
+    { label: "Create Project", icon: Plus, onClick: () => navigate("/projects") },
+    { label: "Upload Document", icon: Upload, onClick: () => navigate("/documents") },
+    { label: "Create Automation", icon: Zap, onClick: () => navigate("/automations") },
+    { label: "Ask AI", icon: Sparkles, onClick: () => navigate("/ai") },
   ];
 
   return (
     <main className="p-3 sm:p-6 pt-3 sm:pt-4">
-      {/* Dotted background wrapper for Welcome + Quick Actions + Recent Activity */}
-      <div className="relative rounded-xl p-3 sm:p-6 mb-6 overflow-hidden">
-        {/* Background layer: dots + left→right fade (does NOT affect content) */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 z-0 opacity-60 sm:opacity-100"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle, hsl(var(--primary) / 0.20) 1px, transparent 1px)",
-            backgroundSize: "15px 15px",
-            WebkitMaskImage:
-              "linear-gradient(to right, black 0%, rgba(0,0,0,0.55) 55%, rgba(0,0,0,0.05) 85%, transparent 100%), linear-gradient(to bottom, black 0%, black 28%, rgba(0,0,0,0.30) 42%, rgba(0,0,0,0.05) 55%, transparent 65%)",
-            maskImage:
-              "linear-gradient(to right, black 0%, rgba(0,0,0,0.55) 55%, rgba(0,0,0,0.05) 85%, transparent 100%), linear-gradient(to bottom, black 0%, black 28%, rgba(0,0,0,0.30) 42%, rgba(0,0,0,0.05) 55%, transparent 65%)",
-            WebkitMaskComposite: "source-in",
-            maskComposite: "intersect",
-          }}
-        />
-        {/* Content layer */}
-        <div className="relative z-10">
+      {/* Welcome */}
+      <header className="mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+          {getGreeting()}, {userName}
+        </h1>
+        <p className="text-sm text-muted-foreground mt-1.5">
+          Here's what's happening in your workspace today.
+        </p>
+      </header>
 
-      {/* Welcome + System Overview Card */}
-      <section className="rounded-lg border border-border/80 bg-card p-4 sm:p-7 mb-8">
-        {/* Header */}
-        <div className="flex items-start justify-between gap-4 mb-6">
-          <div>
-            <h1 className="text-xl font-bold text-foreground">
-              Welcome back, {userName}
-            </h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              Here's what's happening in your workspace
-            </p>
-          </div>
-          {currentWorkspace && (
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-md border border-border/80 bg-background">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-              <span className="text-xs font-medium text-foreground/80">{currentWorkspace}</span>
-            </div>
-          )}
-        </div>
-
-        {/* Metrics Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-          {metrics.map((m) => (
-            <button
-              key={m.label}
-              onClick={() => navigate(m.route)}
-              className="relative overflow-hidden flex items-center gap-3.5 rounded-lg border border-border/80 bg-card p-4 pl-[18px] text-left border-l-2 border-l-primary/70 hover:border-l-primary hover:border-primary/40 hover:bg-accent/30 hover:shadow-[0_4px_12px_-4px_hsl(var(--primary)/0.18)] transition-all duration-150 cursor-pointer group"
-            >
-              <ColoredIcon
-                icon={m.icon}
-                bgClass="bg-primary/10 group-hover:bg-primary/15"
-                iconClass="text-primary group-hover:text-primary"
-                size="sm"
-              />
-              <div className="min-w-0">
-                <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                  {m.label}
-                </p>
-                {loading ? (
-                  <Skeleton className="h-5 w-20 mt-1" />
-                ) : (
-                  <p className="text-lg font-bold text-foreground tabular-nums leading-tight mt-0.5">
-                    <span className="text-primary">{m.value}</span>{` `}
-                    <span className="text-xs font-normal text-muted-foreground">
-                      {m.suffix}
-                    </span>
-                  </p>
-                )}
-              </div>
-            </button>
-          ))}
-        </div>
-      </section>
+      {/* Metrics Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+        {metrics.map((m) => (
+          <button
+            key={m.label}
+            onClick={() => navigate(m.route)}
+            className="text-left rounded-lg transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[0_8px_20px_-8px_hsl(var(--primary)/0.22)] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+          >
+            <StatCard
+              title={m.label}
+              value={loading ? <Skeleton className="h-8 w-14" /> : m.value}
+              suffix={loading ? undefined : m.suffix}
+              icon={m.icon}
+              iconBgClass="bg-transparent"
+              iconColorClass="text-muted-foreground/40"
+            />
+          </button>
+        ))}
+      </div>
 
       {/* Quick Actions */}
-      <h2 className="text-sm font-bold uppercase tracking-wide text-foreground/80 mb-5">Quick Actions</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
+      <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">Quick Actions</h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
         {quickActions.map((action) => (
           <button
             key={action.label}
             onClick={action.onClick}
             className="flex items-center gap-3.5 px-5 py-4 rounded-lg border border-border/80 bg-card text-foreground shadow-[0_1px_3px_0_rgba(0,0,0,0.04)] hover:shadow-[0_4px_12px_0_rgba(0,0,0,0.08)] hover:border-primary/40 hover:bg-accent/30 transition-all duration-150 cursor-pointer group"
           >
-            <ColoredIcon icon={action.icon} bgClass={`${action.bgClass} group-hover:bg-primary/10`} iconClass={`${action.iconClass} group-hover:text-primary`} size="sm" />
+            <ColoredIcon icon={action.icon} bgClass="bg-primary/10 group-hover:bg-primary/15" iconClass="text-primary" size="sm" />
             <span className="text-sm font-semibold text-foreground/90 group-hover:text-foreground transition-colors">{action.label}</span>
           </button>
         ))}
       </div>
 
       {/* Recent Activity Timeline */}
-      <div className="mb-2 mt-12">
-        <h2 className="text-sm font-bold uppercase tracking-wide text-foreground/80">Recent Activity</h2>
-        <p className="text-xs text-muted-foreground mt-1 mb-5">
-          Latest events and automation activity in your workspace
-        </p>
+      <div className="flex items-end justify-between gap-4 mb-5">
+        <div>
+          <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Recent Activity</h2>
+          <p className="text-xs text-muted-foreground mt-1">
+            Latest events and automation activity in your workspace
+          </p>
+        </div>
+        <button
+          onClick={() => navigate("/events")}
+          className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:text-primary/80 transition-colors shrink-0"
+        >
+          View all
+          <ArrowRight className="h-3.5 w-3.5" />
+        </button>
       </div>
       {selectedOrgId && <ActivityTimeline orgId={selectedOrgId} />}
-        </div>
-      </div>
-      {/* end dotted background wrapper */}
     </main>
   );
 };
