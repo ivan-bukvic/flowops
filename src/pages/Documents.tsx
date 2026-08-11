@@ -150,6 +150,7 @@ const Documents = () => {
       key: "original_name",
       header: "Document Name",
       width: "35%",
+      minWidth: 220,
       render: (row) => (
         <button
           className="inline-flex items-center gap-2 font-medium text-primary hover:underline text-sm text-left min-w-0 w-full"
@@ -167,8 +168,9 @@ const Documents = () => {
       key: "project_name",
       header: "Project",
       width: "20%",
+      minWidth: 140,
       render: (row) => (
-        <span className="text-sm text-muted-foreground">
+        <span className="text-sm text-muted-foreground whitespace-nowrap">
           {row.project_name || <span className="text-muted-foreground/50">—</span>}
         </span>
       ),
@@ -177,12 +179,14 @@ const Documents = () => {
       key: "processing_status",
       header: "Status",
       width: "15%",
+      minWidth: 120,
       render: (row) => <StatusBadge status={row.processing_status} />,
     },
     {
       key: "summary",
       header: "Summary",
       width: "15%",
+      minWidth: 160,
       render: (row) => (
         <span className="block min-w-0 truncate text-sm text-muted-foreground">
           {row.summary || <span className="text-muted-foreground/50">—</span>}
@@ -193,8 +197,9 @@ const Documents = () => {
       key: "created_at",
       header: "Created",
       width: "15%",
+      minWidth: 120,
       render: (row) => (
-        <span className="text-sm text-muted-foreground">
+        <span className="text-sm text-muted-foreground whitespace-nowrap">
           {new Date(row.created_at).toLocaleDateString("en-US", {
             month: "short",
             day: "numeric",
