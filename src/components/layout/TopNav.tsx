@@ -10,7 +10,6 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from "@/components/ui/select";
 import {
   DropdownMenu,
@@ -37,6 +36,8 @@ const TopNav = () => {
   const displayName =
     meta.full_name?.trim() || user?.email?.split("@")[0] || "User";
   const avatarUrl = meta.avatar_url;
+  const selectedOrgName =
+    organizations.find((org) => org.id === selectedOrgId)?.name ?? "";
   const initials = (() => {
     const source = (meta.full_name?.trim() || user?.email || "U").trim();
     const parts = source.split(/[\s@._-]+/).filter(Boolean);
@@ -47,13 +48,21 @@ const TopNav = () => {
   return (
     <header className="bg-card border-b border-border/70">
       <div className="flex h-14 items-center justify-between gap-2 sm:gap-4 px-3 sm:px-4">
-        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-          <SidebarTrigger className="lg:hidden" />
+        <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3 sm:flex-none">
+          <SidebarTrigger className="shrink-0 lg:hidden" />
 
           {organizations.length > 0 && (
             <Select value={selectedOrgId ?? ""} onValueChange={setSelectedOrgId}>
-              <SelectTrigger className="w-[150px] sm:w-[190px] h-9 text-sm font-medium [&>span]:flex [&>span]:items-center [&>span]:gap-2 before:content-[''] before:h-1.5 before:w-1.5 before:rounded-full before:bg-success before:shrink-0">
-                <SelectValue placeholder="Workspace" />
+              <SelectTrigger
+                aria-label={selectedOrgName || "Workspace"}
+                className="h-9 w-[150px] max-w-full shrink overflow-hidden px-2.5 text-sm font-medium sm:w-[190px]"
+              >
+                <span className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden">
+                  <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-success" aria-hidden />
+                  <span className="min-w-0 flex-1 truncate text-left">
+                    {selectedOrgName || "Workspace"}
+                  </span>
+                </span>
               </SelectTrigger>
               <SelectContent>
                 {organizations.map((org) => (
