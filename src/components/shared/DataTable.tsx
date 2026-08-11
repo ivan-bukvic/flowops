@@ -49,11 +49,11 @@ function DataTable<T extends Record<string, any>>({
 }: DataTableProps<T>) {
   const renderHeader = () => (
     <TableHeader>
-      <TableRow className="bg-muted/40 hover:bg-muted/40 border-b border-border/80">
+      <TableRow className="bg-transparent hover:bg-transparent border-b border-border/70">
         {columns.map((col) => (
           <TableHead
             key={col.key}
-            className={`h-auto px-6 py-4 text-left align-middle text-sm font-medium text-muted-foreground ${col.className ?? ""}`}
+            className={`h-auto px-6 py-3.5 text-left align-middle text-[11px] font-semibold uppercase tracking-wider text-muted-foreground ${col.className ?? ""}`}
           >
             {col.header}
           </TableHead>
@@ -64,7 +64,7 @@ function DataTable<T extends Record<string, any>>({
 
   if (loading) {
     return (
-      <div className="border border-border/80 rounded-lg overflow-hidden overflow-x-auto bg-card shadow-[0_1px_3px_0_rgba(0,0,0,0.04)]">
+      <div className="rounded-2xl overflow-hidden overflow-x-auto bg-card shadow-card">
         <Table className="w-full table-fixed">
           {columns.some((col) => col.width) && (
             <colgroup>

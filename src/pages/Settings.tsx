@@ -10,12 +10,30 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import EmptyState from "@/components/shared/EmptyState";
 import { toast } from "sonner";
-import { Pencil, UserPlus, Trash2, ArrowRightLeft, X, Check } from "lucide-react";
+import { AlertTriangle, Pencil, UserPlus, Trash2, ArrowRightLeft, X, Check, Users } from "lucide-react";
 import InviteMemberModal from "@/components/settings/InviteMemberModal";
 import RemoveMemberDialog from "@/components/settings/RemoveMemberDialog";
 import TransferOwnershipDialog from "@/components/settings/TransferOwnershipDialog";
 import type { Database } from "@/integrations/supabase/types";
+
+const roleBadgeStyles: Record<string, string> = {
+  owner: "bg-automation/15 text-automation",
+  admin: "bg-primary/10 text-primary",
+  member: "bg-muted text-muted-foreground",
+};
 
 type OrgRole = Database["public"]["Enums"]["org_role"];
 
@@ -196,7 +214,12 @@ const Settings = () => {
             {loading ? (
               <p className="text-sm text-muted-foreground">Loading members…</p>
             ) : members.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No members found.</p>
+              <EmptyState
+                variant="person"
+                icon={Users}
+                title="No members found"
+                description="Invite teammates to give them access to this workspace."
+              />
             ) : (
               <div className="divide-y divide-border">
                 {members.map((member) => (
@@ -225,7 +248,7 @@ const Settings = () => {
                       ) : (
                         <Badge
                           variant="outline"
-                          className={`text-xs capitalize ${canManage && member.role !== "owner" ? "cursor-pointer hover:bg-accent" : ""}`}
+                          className={`text-xs font-semibold capitalize border-0 rounded-full ${roleBadgeStyles[member.role] ?? roleBadgeStyles.member} ${canManage && member.role !== "owner" ? "cursor-pointer hover:brightness-95" : ""}`}
                           onClick={() => {
                             if (canManage && member.role !== "owner") {
                               setEditingRoleUserId(member.user_id);
@@ -272,7 +295,12 @@ const Settings = () => {
                       {role === "member" && "Can view and contribute to projects"}
                     </p>
                   </div>
-                  <Badge variant="outline" className="text-xs">{role}</Badge>
+                  <Badge
+                    variant="outline"
+                    className={`text-[11px] font-bold uppercase tracking-wide border-0 rounded-full px-3 ${roleBadgeStyles[role]}`}
+                  >
+                    {role}
+                  </Badge>
                 </div>
               ))}
             </div>
@@ -281,27 +309,53 @@ const Settings = () => {
 
         {/* Danger Zone */}
         {isOwner && (
-          <Card className="border-destructive/50">
+          <Card className="border border-destructive/25 bg-destructive/[0.04]">
             <CardHeader>
-              <CardTitle className="text-base text-destructive">Danger Zone</CardTitle>
+              <CardTitle className="flex items-center gap-2 text-base text-destructive">
+                <AlertTriangle className="h-4 w-4" />
+                Danger Zone
+              </CardTitle>
               <CardDescription>Irreversible actions for this workspace</CardDescription>
             </CardHeader>
-            <CardContent className="flex items-center gap-3">
+            <CardContent className="flex flex-wrap items-center gap-3">
               <Button
                 variant="outline"
                 size="sm"
+                className="border-destructive/30 text-foreground/80"
                 onClick={() => setTransferOpen(true)}
               >
-                <ArrowRightLeft className="h-4 w-4 mr-1" />
+                <ArrowRightLeft className="h-4 w-4 mr-1.5" />
                 Transfer Ownership
               </Button>
-              <Button
-                variant="destructive"
-                size="sm"
-                onClick={() => toast.error("This action is not yet implemented")}
-              >
-                Delete Workspace
-              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="destructive" size="sm">
+                    <Trash2 className="h-4 w-4 mr-1.5" />
+                    Delete Workspace
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle className="flex items-center gap-2">
+                      <AlertTriangle className="h-5 w-5 text-destructive" />
+                      Delete workspace?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This permanently deletes {currentOrg?.name ? `"${currentOrg.name}"` : "this workspace"}, including
+                      all projects, documents, automations and event history. This cannot be undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={() => toast.error("This action is not yet implemented")}
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    >
+                      Delete Workspace
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </CardContent>
           </Card>
         )}

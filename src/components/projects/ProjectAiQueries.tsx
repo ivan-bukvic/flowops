@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { MessageSquare, Sparkles } from "lucide-react";
-import ReactMarkdown from "react-markdown";
 
 interface AiQuery {
   id: string;
@@ -29,7 +28,6 @@ function timeAgo(dateStr: string): string {
 const ProjectAiQueries = ({ projectId }: Props) => {
   const [queries, setQueries] = useState<AiQuery[]>([]);
   const [loading, setLoading] = useState(true);
-  const [expanded, setExpanded] = useState<string | null>(null);
 
   useEffect(() => {
     if (!projectId) return;
@@ -51,7 +49,7 @@ const ProjectAiQueries = ({ projectId }: Props) => {
     return (
       <div className="mt-4 space-y-3">
         {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="rounded-lg border border-border bg-card p-5 animate-pulse">
+          <div key={i} className="rounded-2xl bg-card p-5 shadow-card animate-pulse">
             <div className="h-4 w-64 bg-muted rounded mb-3" />
             <div className="h-3 w-96 bg-muted/70 rounded" />
           </div>
@@ -62,7 +60,7 @@ const ProjectAiQueries = ({ projectId }: Props) => {
 
   if (queries.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 mt-4 rounded-lg border border-border bg-card">
+      <div className="flex flex-col items-center justify-center py-16 mt-4 rounded-2xl bg-card shadow-card">
         <div className="h-11 w-11 rounded-full bg-muted/60 flex items-center justify-center mb-3">
           <MessageSquare className="h-5 w-5 text-muted-foreground/50" />
         </div>
@@ -75,36 +73,29 @@ const ProjectAiQueries = ({ projectId }: Props) => {
   }
 
   return (
-    <div className="mt-4 space-y-3">
+    <div className="mt-5 space-y-6">
       {queries.map((q) => (
-        <div
-          key={q.id}
-          className="rounded-lg border border-border bg-card p-5 hover:border-primary/20 transition-all cursor-pointer"
-          onClick={() => setExpanded(expanded === q.id ? null : q.id)}
-        >
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-foreground leading-snug">
-                {q.question || "—"}
-              </p>
-              {expanded === q.id && q.answer ? (
-                <div className="mt-3 rounded-md bg-primary/5 border border-primary/10 p-4">
-                  <div className="flex items-center gap-1.5 mb-2">
-                    <Sparkles className="h-3.5 w-3.5 text-primary" />
-                    <span className="text-xs font-medium text-primary">AI Response</span>
-                  </div>
-                  <div className="prose prose-sm max-w-none text-foreground/90">
-                    <ReactMarkdown>{q.answer}</ReactMarkdown>
-                  </div>
-                </div>
-              ) : q.answer ? (
-                <p className="text-sm text-muted-foreground mt-1.5 line-clamp-2">{q.answer}</p>
-              ) : null}
+        <div key={q.id} className="space-y-2">
+          {/* Question — right bubble */}
+          <div className="flex justify-end">
+            <div className="max-w-[680px] rounded-2xl rounded-br-sm bg-muted px-4 py-2.5">
+              <p className="text-[13.5px] font-semibold text-foreground">{q.question || "—"}</p>
+              {q.created_at && (
+                <p className="mt-0.5 text-[10.5px] text-muted-foreground tabular-nums">{timeAgo(q.created_at)}</p>
+              )}
             </div>
-            <span className="text-[11px] text-muted-foreground/50 whitespace-nowrap shrink-0 mt-0.5 tabular-nums">
-              {q.created_at ? timeAgo(q.created_at) : "—"}
-            </span>
           </div>
+          {/* Answer — left bubble with AI avatar */}
+          {q.answer && (
+            <div className="flex items-start gap-2.5">
+              <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-slack/10 text-slack">
+                <Sparkles className="h-3.5 w-3.5" />
+              </span>
+              <div className="max-w-[680px] rounded-2xl rounded-tl-sm bg-slack/[0.06] px-4 py-3">
+                <p className="whitespace-pre-wrap text-[13.5px] leading-relaxed text-foreground/85">{q.answer}</p>
+              </div>
+            </div>
+          )}
         </div>
       ))}
     </div>

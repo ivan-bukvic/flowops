@@ -8,46 +8,60 @@
 
 @layer base {
   :root {
-    --background: 210 20% 98%;       /* #F9FAFB */
-    --foreground: 221 39% 11%;       /* #111827 */
+    --background: 220 20% 98%;       /* subtle cool off-white */
+    --foreground: 224 24% 16%;       /* near-black ink */
 
     --card: 0 0% 100%;               /* #FFFFFF */
-    --card-foreground: 221 39% 11%;  /* #111827 */
+    --card-foreground: 224 24% 16%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 221 39% 11%;
+    --popover-foreground: 224 24% 16%;
 
-    --primary: 224 76% 48%;          /* #1D4ED8 */
+    --primary: 226 71% 53%;          /* vivid indigo-blue */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 14% 96%;        /* ~#F3F4F6 */
-    --secondary-foreground: 221 39% 11%;
+    --secondary: 220 16% 96%;        /* soft neutral */
+    --secondary-foreground: 224 24% 16%;
 
-    --muted: 220 14% 96%;
-    --muted-foreground: 218 11% 45%; /* ~#6B7280 */
+    --muted: 220 16% 96%;
+    --muted-foreground: 220 9% 46%;
 
-    --accent: 220 14% 96%;
-    --accent-foreground: 221 39% 11%;
+    --accent: 220 16% 96%;
+    --accent-foreground: 224 24% 16%;
 
-    --destructive: 0 84% 60%;        /* #EF4444 */
+    --destructive: 2 74% 54%;        /* danger red */
     --destructive-foreground: 0 0% 100%;
 
-    --success: 160 84% 39%;          /* #10B981 */
+    /* Semantic status tokens */
+    --success: 150 58% 40%;
+    --success-foreground: 0 0% 100%;
+    --warning: 40 88% 47%;
+    --warning-foreground: 40 60% 15%;
+    --info: 210 80% 52%;
+    --info-foreground: 0 0% 100%;
 
-    --border: 220 13% 91%;           /* #E5E7EB */
-    --input: 220 13% 91%;
-    --ring: 224 76% 48%;
+    /* Per-integration brand hues (used app-wide) */
+    --c-email: 206 76% 47%;          /* Email = blue */
+    --c-slack: 291 50% 54%;          /* Slack = purple */
+    --c-calendar: 152 55% 39%;       /* Google Calendar = green */
+    --c-webhook: 30 86% 52%;         /* Webhook = orange */
+    --c-automation: 40 88% 50%;      /* Automation = amber */
 
-    --radius: 0.625rem;
+    --border: 220 16% 90%;
+    --input: 220 16% 90%;
+    --ring: 226 71% 53%;
 
-    --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 221 39% 11%;
-    --sidebar-primary: 224 76% 48%;
+    --radius: 0.75rem;
+
+    /* Dark sidebar (applies globally via shadcn sidebar) */
+    --sidebar-background: 228 24% 13%;
+    --sidebar-foreground: 222 12% 74%;
+    --sidebar-primary: 226 65% 66%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 14% 96%;
-    --sidebar-accent-foreground: 221 39% 11%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 224 76% 48%;
+    --sidebar-accent: 228 20% 21%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 228 18% 20%;
+    --sidebar-ring: 226 65% 66%;
   }
 
   .dark {
@@ -72,10 +86,21 @@
     --accent: 217 33% 17%;
     --accent-foreground: 210 40% 98%;
 
-    --destructive: 0 63% 31%;
+    --destructive: 2 64% 46%;
     --destructive-foreground: 210 40% 98%;
 
-    --success: 160 84% 39%;
+    --success: 150 55% 45%;
+    --success-foreground: 0 0% 100%;
+    --warning: 40 85% 55%;
+    --warning-foreground: 40 60% 12%;
+    --info: 210 80% 60%;
+    --info-foreground: 0 0% 100%;
+
+    --c-email: 206 76% 58%;
+    --c-slack: 291 55% 66%;
+    --c-calendar: 152 50% 52%;
+    --c-webhook: 30 86% 60%;
+    --c-automation: 40 88% 58%;
 
     --border: 217 33% 17%;
     --input: 217 33% 17%;
@@ -99,6 +124,14 @@
 
   body {
     @apply bg-background text-foreground;
+    font-family: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: "Space Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+    letter-spacing: -0.01em;
   }
 }
 

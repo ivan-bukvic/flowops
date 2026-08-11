@@ -16,7 +16,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Copy, Trash2 } from "lucide-react";
+import { AlertTriangle, Copy, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const supabase: any = rawSupabase;
@@ -85,8 +85,8 @@ const ProjectSettings = ({ project, creatorDisplay, isAdmin, onProjectUpdate }: 
   return (
     <div className="space-y-6 mt-4">
       {/* Project Information */}
-      <div className="rounded-lg border border-border bg-card p-5 space-y-4">
-        <h3 className="text-sm font-semibold text-foreground">Project Information</h3>
+      <div className="rounded-2xl bg-card p-5 space-y-4 shadow-card">
+        <h3 className="text-[15px] font-bold text-foreground">Project Information</h3>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
             <Label htmlFor="project-name">Project Name</Label>
@@ -129,8 +129,8 @@ const ProjectSettings = ({ project, creatorDisplay, isAdmin, onProjectUpdate }: 
       </div>
 
       {/* Project ID */}
-      <div className="rounded-lg border border-border bg-card p-5 space-y-3">
-        <h3 className="text-sm font-semibold text-foreground">Project ID</h3>
+      <div className="rounded-2xl bg-card p-5 space-y-3 shadow-card">
+        <h3 className="text-[15px] font-bold text-foreground">Project ID</h3>
         <div className="flex items-center gap-2">
           <Input readOnly value={project.id} className="font-mono text-xs" />
           <Button variant="outline" size="icon" onClick={handleCopyId}>
@@ -142,8 +142,11 @@ const ProjectSettings = ({ project, creatorDisplay, isAdmin, onProjectUpdate }: 
 
       {/* Danger Zone */}
       {isAdmin && (
-        <div className="rounded-lg border border-destructive/30 bg-card p-5 space-y-3">
-          <h3 className="text-sm font-semibold text-destructive">Danger Zone</h3>
+        <div className="rounded-2xl border border-destructive/25 bg-destructive/[0.04] p-5 space-y-3 shadow-card">
+          <div className="flex items-center gap-2">
+            <AlertTriangle className="h-4 w-4 text-destructive" />
+            <h3 className="font-display text-[15px] font-bold text-destructive">Danger Zone</h3>
+          </div>
           <p className="text-sm text-muted-foreground">
             Deleting this project is permanent and cannot be undone. All documents and data will be removed.
           </p>

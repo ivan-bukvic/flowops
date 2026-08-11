@@ -55,17 +55,17 @@ export function AppSidebar() {
           to={item.url}
           onClick={() => isMobile && setOpenMobile(false)}
           className={`
-            relative flex items-center gap-3 rounded-md px-3 py-2 text-[15px] transition-all duration-150
+            relative flex items-center gap-3 rounded-lg px-3 py-2 text-[14px] transition-all duration-150
             ${active
-              ? "bg-primary/[0.08] text-foreground font-semibold"
-              : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+              ? "bg-sidebar-accent text-white font-semibold"
+              : "text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-white"
             }
           `}
         >
           {active && (
-            <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3.5px] h-5 rounded-r-full bg-primary" />
+            <span className="absolute -left-2 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-full bg-sidebar-primary" />
           )}
-          <item.icon className={`h-4 w-4 shrink-0 transition-colors ${active ? "text-primary" : "text-muted-foreground"}`} />
+          <item.icon className={`h-4 w-4 shrink-0 transition-colors ${active ? "text-white" : "text-sidebar-foreground/70"}`} />
           {!collapsed && <span>{item.title}</span>}
         </Link>
       </SidebarMenuItem>
@@ -77,18 +77,18 @@ export function AppSidebar() {
       <SidebarHeader className="gap-0 p-0">
         <div className="flex h-14 items-center px-4">
           {!collapsed && (
-            <img src={logo} alt="FlowOps" className="h-[2.1rem] text-ring" />
+            <img src={logo} alt="FlowOps" className="h-[1.9rem] [filter:brightness(0)_invert(1)]" />
           )}
           {collapsed && (
-            <img src={logo} alt="FlowOps" className="h-6 w-6 object-contain object-left" />
+            <img src={logo} alt="FlowOps" className="h-6 w-6 object-contain object-left [filter:brightness(0)_invert(1)]" />
           )}
         </div>
-        <Separator className="mx-5 opacity-30" />
+        <Separator className="mx-5 bg-sidebar-border opacity-60" />
       </SidebarHeader>
 
       <SidebarContent className="px-2 pt-4 pb-3">
         <SidebarGroup>
-          <SidebarGroupLabel className="text-[11px] uppercase tracking-[0.1em] text-primary/50 font-semibold px-3 mb-2">
+          <SidebarGroupLabel className="text-[10.5px] uppercase tracking-[0.11em] text-sidebar-foreground/50 font-semibold px-3 mb-1.5">
             Main
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -101,7 +101,7 @@ export function AppSidebar() {
         <div className="my-5" />
 
         <SidebarGroup>
-          <SidebarGroupLabel className="text-[11px] uppercase tracking-[0.1em] text-primary/50 font-semibold px-3 mb-2">
+          <SidebarGroupLabel className="text-[10.5px] uppercase tracking-[0.11em] text-sidebar-foreground/50 font-semibold px-3 mb-1.5">
             Workspace
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -114,7 +114,7 @@ export function AppSidebar() {
 
       <SidebarFooter className="border-t border-sidebar-border p-2">
         {!collapsed && (
-          <p className="text-[11px] text-muted-foreground/50 px-2">© FlowOps AI</p>
+          <p className="text-[11px] text-sidebar-foreground/50 px-2">© FlowOps AI</p>
         )}
       </SidebarFooter>
     </Sidebar>

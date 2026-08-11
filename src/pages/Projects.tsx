@@ -240,8 +240,8 @@ const Projects = () => {
       header: "Project Name",
       render: (row) => (
         <div className="flex items-center gap-3">
-          <div className="h-8 w-8 rounded-xl bg-indigo-50 flex items-center justify-center shrink-0">
-            <FolderKanban className="h-4 w-4 text-indigo-600" />
+          <div className="h-8 w-8 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+            <FolderKanban className="h-4 w-4 text-primary" />
           </div>
           <div>
             <span className="font-semibold text-foreground text-[14px]">{row.name}</span>
@@ -363,11 +363,11 @@ const Projects = () => {
             <div
               key={p.id}
               onClick={() => navigate(`/projects/${p.id}`)}
-              className="border border-border/80 rounded-lg bg-card p-4 shadow-[0_1px_3px_0_rgba(0,0,0,0.04)] cursor-pointer hover:bg-accent/30 transition-colors"
+              className="rounded-2xl bg-card p-4 shadow-card cursor-pointer hover:shadow-card-hover transition-shadow"
             >
               <div className="flex items-start gap-3">
-                <div className="h-9 w-9 rounded-xl bg-indigo-50 flex items-center justify-center shrink-0">
-                  <FolderKanban className="h-4 w-4 text-indigo-600" />
+                <div className="h-9 w-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                  <FolderKanban className="h-4 w-4 text-primary" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="font-semibold text-foreground text-[14px] truncate">

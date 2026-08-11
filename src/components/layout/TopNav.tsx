@@ -4,7 +4,6 @@ import { useOrg } from "@/contexts/OrgContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import {
   Select,
@@ -46,14 +45,14 @@ const TopNav = () => {
   })();
 
   return (
-    <header className="bg-card">
+    <header className="bg-card border-b border-border/70">
       <div className="flex h-14 items-center justify-between gap-2 sm:gap-4 px-3 sm:px-4">
         <div className="flex items-center gap-2 sm:gap-3 min-w-0">
           <SidebarTrigger className="lg:hidden" />
 
           {organizations.length > 0 && (
             <Select value={selectedOrgId ?? ""} onValueChange={setSelectedOrgId}>
-              <SelectTrigger className="w-[140px] sm:w-[180px] h-9 text-sm">
+              <SelectTrigger className="w-[150px] sm:w-[190px] h-9 text-sm font-medium [&>span]:flex [&>span]:items-center [&>span]:gap-2 before:content-[''] before:h-1.5 before:w-1.5 before:rounded-full before:bg-success before:shrink-0">
                 <SelectValue placeholder="Workspace" />
               </SelectTrigger>
               <SelectContent>
@@ -141,7 +140,6 @@ const TopNav = () => {
           </DropdownMenu>
         </div>
       </div>
-      <Separator className="mx-6 opacity-30" />
     </header>
   );
 };
