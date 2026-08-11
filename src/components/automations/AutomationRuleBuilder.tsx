@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/select";
 import { Zap, Settings, Mail, Calendar, MessageSquare, LayoutTemplate, Webhook, FileText } from "lucide-react";
 import { toast } from "sonner";
+import { styleFor, type IntegrationCategory } from "@/lib/integrationColors";
 
 const TRIGGER_OPTIONS = [
   { label: "Project Created", value: "PROJECT_CREATED" },
@@ -25,12 +26,12 @@ const TRIGGER_OPTIONS = [
   { label: "Workspace Created", value: "WORKSPACE_CREATED" },
 ];
 
-const ACTION_OPTIONS: { value: string; label: string; icon: React.ElementType }[] = [
-  { value: "EMAIL", label: "Email", icon: Mail },
-  { value: "SLACK_MESSAGE", label: "Slack", icon: MessageSquare },
-  { value: "GOOGLE_CALENDAR_EVENT", label: "Calendar", icon: Calendar },
-  { value: "WEBHOOK", label: "Webhook", icon: Webhook },
-  { value: "LOG", label: "Log", icon: FileText },
+const ACTION_OPTIONS: { value: string; label: string; icon: React.ElementType; category: IntegrationCategory }[] = [
+  { value: "EMAIL", label: "Email", icon: Mail, category: "email" },
+  { value: "SLACK_MESSAGE", label: "Slack", icon: MessageSquare, category: "slack" },
+  { value: "GOOGLE_CALENDAR_EVENT", label: "Calendar", icon: Calendar, category: "calendar" },
+  { value: "WEBHOOK", label: "Webhook", icon: Webhook, category: "webhook" },
+  { value: "LOG", label: "Log", icon: FileText, category: "log" },
 ];
 
 interface AutomationRuleBuilderProps {
@@ -180,7 +181,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
       <AutomationTemplatesModal open={templatesOpen} onOpenChange={setTemplatesOpen} onApplied={onCreated} />
 
       {/* Unified workflow card */}
-      <div className="rounded-lg border border-border/80 bg-card overflow-hidden">
+      <div className="rounded-2xl bg-card shadow-card overflow-hidden">
         {/* SECTION 1 — TRIGGER */}
         <div className="px-6 py-5">
           <SectionHeader
@@ -224,18 +225,17 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
                 {ACTION_OPTIONS.map((opt) => {
                   const Icon = opt.icon;
                   const active = action === opt.value;
+                  const style = styleFor(opt.category);
                   return (
                     <button
                       key={opt.value}
                       type="button"
                       onClick={() => setAction(opt.value)}
-                      className={`flex items-center gap-2.5 px-3 py-2.5 rounded-md text-[13px] font-medium text-left transition-colors ${
-                        active
-                          ? "bg-primary/10 text-primary"
-                          : "text-foreground/75 hover:bg-muted/60"
+                      className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[13px] font-semibold text-left transition-colors ${
+                        active ? `${style.bg} ${style.text}` : "text-foreground/75 hover:bg-muted/60"
                       }`}
                     >
-                      <Icon className={`h-4 w-4 ${active ? "text-primary" : "text-muted-foreground"}`} />
+                      <Icon className={`h-4 w-4 ${style.text}`} />
                       <span>{opt.label}</span>
                     </button>
                   );
@@ -246,7 +246,7 @@ const AutomationRuleBuilder = ({ onCreated }: AutomationRuleBuilderProps) => {
             {/* RIGHT: Configuration */}
             <div className="p-5">
               <div className="mb-4">
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                <p className={`text-[11px] font-semibold uppercase tracking-wider ${styleFor(ACTION_OPTIONS.find((a) => a.value === action)?.category ?? "log").text}`}>
                   Action: {ACTION_OPTIONS.find((a) => a.value === action)?.label ?? action}
                 </p>
                 <h4 className="text-[14px] font-bold text-foreground leading-tight mt-1">{configTitle}</h4>

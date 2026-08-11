@@ -2,22 +2,47 @@ import { useEffect, useState } from "react";
 import { useOrg } from "@/contexts/OrgContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import ColoredIcon from "@/components/shared/ColoredIcon";
+import StatCard from "@/components/shared/StatCard";
 import ActivityTimeline from "@/components/dashboard/ActivityTimeline";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
-  FolderKanban, FileText, Zap, Bot, Plus, Upload, Sparkles,
+  FolderKanban, FileText, Zap, Bot, Plus, Upload, Sparkles, ArrowRight,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
+const getGreeting = () => {
+  const hour = new Date().getHours();
+  if (hour < 12) return "Good morning";
+  if (hour < 18) return "Good afternoon";
+  return "Good evening";
+};
+
+const WEEKS = 6;
+const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+
+/** Bucket a list of ISO timestamps into WEEKS trailing weekly bins (oldest→newest). */
+function toWeeklySeries(dates: (string | null)[]): number[] {
+  const now = Date.now();
+  const bins = new Array(WEEKS).fill(0);
+  for (const d of dates) {
+    if (!d) continue;
+    const diff = now - new Date(d).getTime();
+    if (diff < 0) continue;
+    const weeksAgo = Math.floor(diff / WEEK_MS);
+    if (weeksAgo < WEEKS) bins[WEEKS - 1 - weeksAgo] += 1;
+  }
+  return bins;
+}
+
 const Dashboard = () => {
-  const { selectedOrgId, organizations } = useOrg();
+  const { selectedOrgId } = useOrg();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [projectCount, setProjectCount] = useState(0);
   const [docCount, setDocCount] = useState(0);
   const [automationCount, setAutomationCount] = useState(0);
   const [aiCount, setAiCount] = useState(0);
+  const [series, setSeries] = useState<Record<string, number[]>>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -54,7 +79,26 @@ const Dashboard = () => {
       setLoading(false);
     };
 
+    // Read-only, additive fetch that powers the mini bar charts with real data.
+    const fetchSeries = async () => {
+      const [projects, docs, automations, ai] = await Promise.all([
+        supabase.from("projects").select("created_at").eq("org_id", selectedOrgId).is("deleted_at", null),
+        supabase.from("documents").select("created_at").eq("org_id", selectedOrgId).is("deleted_at", null),
+        supabase.from("automation_rules").select("created_at").eq("org_id", selectedOrgId).is("deleted_at", null),
+        supabase.from("ai_queries").select("created_at"),
+      ]);
+      type CreatedRow = { created_at: string | null };
+      const pick = (rows: CreatedRow[] | null) => (rows ?? []).map((r) => r.created_at);
+      setSeries({
+        Projects: toWeeklySeries(pick(projects.data as CreatedRow[] | null)),
+        Documents: toWeeklySeries(pick(docs.data as CreatedRow[] | null)),
+        Automations: toWeeklySeries(pick(automations.data as CreatedRow[] | null)),
+        "AI Queries": toWeeklySeries(pick(ai.data as CreatedRow[] | null)),
+      });
+    };
+
     fetchStats();
+    fetchSeries();
   }, [selectedOrgId]);
 
   const fullName = (user?.user_metadata as any)?.full_name as string | undefined;
@@ -63,125 +107,106 @@ const Dashboard = () => {
     user?.email?.split("@")[0] ||
     "there";
 
-  const currentWorkspace = organizations.find((o) => o.id === selectedOrgId)?.name;
-
   const metrics = [
-    { label: "Projects", value: projectCount, suffix: "active", icon: FolderKanban, route: "/projects" },
-    { label: "Documents", value: docCount, suffix: "uploaded", icon: FileText, route: "/documents" },
-    { label: "Automations", value: automationCount, suffix: "active", icon: Zap, route: "/automations" },
-    { label: "AI Queries", value: aiCount, suffix: "total", icon: Bot, route: "/ai" },
+    {
+      label: "Projects", value: projectCount, suffix: "active", icon: FolderKanban, route: "/projects",
+      accentText: "text-primary", accentBg: "bg-primary/10", accentBar: "bg-primary",
+    },
+    {
+      label: "Documents", value: docCount, suffix: "uploaded", icon: FileText, route: "/documents",
+      accentText: "text-info", accentBg: "bg-info/10", accentBar: "bg-info",
+    },
+    {
+      label: "Automations", value: automationCount, suffix: "active", icon: Zap, route: "/automations",
+      accentText: "text-automation", accentBg: "bg-automation/10", accentBar: "bg-automation",
+    },
+    {
+      label: "AI Queries", value: aiCount, suffix: "total", icon: Bot, route: "/ai",
+      accentText: "text-slack", accentBg: "bg-slack/10", accentBar: "bg-slack",
+    },
   ];
 
   const quickActions = [
-    { label: "Create Project", icon: Plus, onClick: () => navigate("/projects"), bgClass: "bg-indigo-50", iconClass: "text-indigo-600" },
-    { label: "Upload Document", icon: Upload, onClick: () => navigate("/documents"), bgClass: "bg-sky-50", iconClass: "text-sky-500" },
-    { label: "Create Automation", icon: Zap, onClick: () => navigate("/automations"), bgClass: "bg-amber-50", iconClass: "text-amber-500" },
-    { label: "Ask AI", icon: Sparkles, onClick: () => navigate("/ai"), bgClass: "bg-violet-50", iconClass: "text-violet-600" },
+    { label: "Create Project", icon: Plus, onClick: () => navigate("/projects"), text: "text-primary", bg: "bg-primary/10" },
+    { label: "Upload Document", icon: Upload, onClick: () => navigate("/documents"), text: "text-info", bg: "bg-info/10" },
+    { label: "Create Automation", icon: Zap, onClick: () => navigate("/automations"), text: "text-automation", bg: "bg-automation/10" },
+    { label: "Ask AI", icon: Sparkles, onClick: () => navigate("/ai"), text: "text-slack", bg: "bg-slack/10" },
   ];
 
   return (
     <main className="p-3 sm:p-6 pt-3 sm:pt-4">
-      {/* Dotted background wrapper for Welcome + Quick Actions + Recent Activity */}
-      <div className="relative rounded-xl p-3 sm:p-6 mb-6 overflow-hidden">
-        {/* Background layer: dots + left→right fade (does NOT affect content) */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 z-0 opacity-60 sm:opacity-100"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle, hsl(var(--primary) / 0.20) 1px, transparent 1px)",
-            backgroundSize: "15px 15px",
-            WebkitMaskImage:
-              "linear-gradient(to right, black 0%, rgba(0,0,0,0.55) 55%, rgba(0,0,0,0.05) 85%, transparent 100%), linear-gradient(to bottom, black 0%, black 28%, rgba(0,0,0,0.30) 42%, rgba(0,0,0,0.05) 55%, transparent 65%)",
-            maskImage:
-              "linear-gradient(to right, black 0%, rgba(0,0,0,0.55) 55%, rgba(0,0,0,0.05) 85%, transparent 100%), linear-gradient(to bottom, black 0%, black 28%, rgba(0,0,0,0.30) 42%, rgba(0,0,0,0.05) 55%, transparent 65%)",
-            WebkitMaskComposite: "source-in",
-            maskComposite: "intersect",
-          }}
-        />
-        {/* Content layer */}
-        <div className="relative z-10">
+      {/* Welcome */}
+      <header className="mb-6">
+        <h1 className="font-display text-2xl sm:text-[26px] font-bold tracking-tight text-foreground">
+          {getGreeting()}, {userName}
+        </h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Here's what's happening in your workspace today.
+        </p>
+      </header>
 
-      {/* Welcome + System Overview Card */}
-      <section className="rounded-lg border border-border/80 bg-card p-4 sm:p-7 mb-8">
-        {/* Header */}
-        <div className="flex items-start justify-between gap-4 mb-6">
-          <div>
-            <h1 className="text-xl font-bold text-foreground">
-              Welcome back, {userName}
-            </h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              Here's what's happening in your workspace
-            </p>
-          </div>
-          {currentWorkspace && (
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-md border border-border/80 bg-background">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-              <span className="text-xs font-medium text-foreground/80">{currentWorkspace}</span>
-            </div>
-          )}
-        </div>
-
-        {/* Metrics Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-          {metrics.map((m) => (
+      {/* Metrics Grid */}
+      <div className="mb-8 grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
+        {metrics.map((m) => {
+          const data = series[m.label];
+          const hasSeries = data && data.some((n) => n > 0);
+          const recent = hasSeries ? data![data!.length - 1] : 0;
+          return (
             <button
               key={m.label}
               onClick={() => navigate(m.route)}
-              className="relative overflow-hidden flex items-center gap-3.5 rounded-lg border border-border/80 bg-card p-4 pl-[18px] text-left border-l-2 border-l-primary/70 hover:border-l-primary hover:border-primary/40 hover:bg-accent/30 hover:shadow-[0_4px_12px_-4px_hsl(var(--primary)/0.18)] transition-all duration-150 cursor-pointer group"
+              className="text-left rounded-2xl transition-all duration-150 hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
             >
-              <ColoredIcon
+              <StatCard
+                title={m.label}
+                value={loading ? <Skeleton className="h-7 w-12" /> : m.value}
+                suffix={loading ? undefined : m.suffix}
                 icon={m.icon}
-                bgClass="bg-primary/10 group-hover:bg-primary/15"
-                iconClass="text-primary group-hover:text-primary"
-                size="sm"
+                accentText={m.accentText}
+                accentBg={m.accentBg}
+                accentBar={m.accentBar}
+                series={hasSeries ? data : undefined}
+                trend={!loading && recent > 0 ? `+${recent} this week` : undefined}
               />
-              <div className="min-w-0">
-                <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                  {m.label}
-                </p>
-                {loading ? (
-                  <Skeleton className="h-5 w-20 mt-1" />
-                ) : (
-                  <p className="text-lg font-bold text-foreground tabular-nums leading-tight mt-0.5">
-                    <span className="text-primary">{m.value}</span>{` `}
-                    <span className="text-xs font-normal text-muted-foreground">
-                      {m.suffix}
-                    </span>
-                  </p>
-                )}
-              </div>
             </button>
-          ))}
-        </div>
-      </section>
+          );
+        })}
+      </div>
 
       {/* Quick Actions */}
-      <h2 className="text-sm font-bold uppercase tracking-wide text-foreground/80 mb-5">Quick Actions</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
+      <h2 className="mb-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Quick Actions</h2>
+      <div className="mb-8 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {quickActions.map((action) => (
           <button
             key={action.label}
             onClick={action.onClick}
-            className="flex items-center gap-3.5 px-5 py-4 rounded-lg border border-border/80 bg-card text-foreground shadow-[0_1px_3px_0_rgba(0,0,0,0.04)] hover:shadow-[0_4px_12px_0_rgba(0,0,0,0.08)] hover:border-primary/40 hover:bg-accent/30 transition-all duration-150 cursor-pointer group"
+            className="group flex items-center gap-3 rounded-xl bg-card px-4 py-3.5 text-foreground shadow-card transition-all duration-150 hover:shadow-card-hover"
           >
-            <ColoredIcon icon={action.icon} bgClass={`${action.bgClass} group-hover:bg-primary/10`} iconClass={`${action.iconClass} group-hover:text-primary`} size="sm" />
-            <span className="text-sm font-semibold text-foreground/90 group-hover:text-foreground transition-colors">{action.label}</span>
+            <span className={`flex h-8 w-8 items-center justify-center rounded-lg ${action.bg} ${action.text}`}>
+              <action.icon className="h-4 w-4" />
+            </span>
+            <span className="text-[13.5px] font-semibold">{action.label}</span>
           </button>
         ))}
       </div>
 
       {/* Recent Activity Timeline */}
-      <div className="mb-2 mt-12">
-        <h2 className="text-sm font-bold uppercase tracking-wide text-foreground/80">Recent Activity</h2>
-        <p className="text-xs text-muted-foreground mt-1 mb-5">
-          Latest events and automation activity in your workspace
-        </p>
+      <div className="mb-4 flex items-end justify-between gap-4">
+        <div>
+          <h2 className="font-display text-base font-bold text-foreground">Recent activity</h2>
+          <p className="mt-0.5 text-xs text-muted-foreground">
+            Latest events and automation activity in your workspace
+          </p>
+        </div>
+        <button
+          onClick={() => navigate("/events")}
+          className="inline-flex shrink-0 items-center gap-1 text-xs font-semibold text-primary transition-colors hover:text-primary/80"
+        >
+          View all
+          <ArrowRight className="h-3.5 w-3.5" />
+        </button>
       </div>
       {selectedOrgId && <ActivityTimeline orgId={selectedOrgId} />}
-        </div>
-      </div>
-      {/* end dotted background wrapper */}
     </main>
   );
 };

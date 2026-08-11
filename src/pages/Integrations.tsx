@@ -8,11 +8,11 @@ import { toast } from "sonner";
 import { useIntegrations, IntegrationKey } from "@/hooks/useIntegrations";
 import IntegrationModal from "@/components/integrations/IntegrationModal";
 
-const iconStyles: Record<IntegrationKey, { bg: string; text: string }> = {
-  email: { bg: "bg-orange-50", text: "text-orange-500" },
-  slack: { bg: "bg-purple-50", text: "text-purple-700" },
-  google_calendar: { bg: "bg-blue-50", text: "text-blue-600" },
-  webhooks: { bg: "bg-violet-50", text: "text-violet-600" },
+const iconStyles: Record<IntegrationKey, { bg: string; text: string; borderTop: string }> = {
+  email: { bg: "bg-email/10", text: "text-email", borderTop: "border-t-email" },
+  slack: { bg: "bg-slack/10", text: "text-slack", borderTop: "border-t-slack" },
+  google_calendar: { bg: "bg-calendar/10", text: "text-calendar", borderTop: "border-t-calendar" },
+  webhooks: { bg: "bg-webhook/10", text: "text-webhook", borderTop: "border-t-webhook" },
 };
 
 interface IntegrationDef {
@@ -94,7 +94,7 @@ const Integrations = () => {
           return (
             <Card
               key={integration.key}
-              className="shadow-[0_1px_3px_0_rgba(0,0,0,0.04)] hover:shadow-[0_4px_12px_0_rgba(0,0,0,0.07)] hover:border-primary/25 transition-all duration-150 group"
+              className={`group border-t-4 ${iconStyles[integration.key].borderTop} transition-all duration-150`}
             >
               <CardHeader className="pb-3 pt-6 px-6">
                 <div className="flex items-center justify-between">
@@ -108,10 +108,10 @@ const Integrations = () => {
                   </div>
                   <Badge
                     variant="outline"
-                    className={`text-xs font-medium border-0 px-2.5 py-0.5 rounded-md ${
+                    className={`text-xs font-semibold border-0 px-2.5 py-0.5 rounded-full ${
                       connected
-                        ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
-                        : "bg-secondary text-secondary-foreground"
+                        ? "bg-success/10 text-success"
+                        : "bg-muted text-muted-foreground"
                     }`}
                   >
                     {connected ? "Connected" : "Not Connected"}

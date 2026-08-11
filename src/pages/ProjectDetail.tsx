@@ -492,27 +492,37 @@ const ProjectDetail = () => {
       <PageHeader title={project.name} description={project.description || undefined} />
 
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="w-full justify-start overflow-x-auto no-scrollbar">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="documents">Documents</TabsTrigger>
-          <TabsTrigger value="ai">AI Queries</TabsTrigger>
-          <TabsTrigger value="members">Members</TabsTrigger>
-          <TabsTrigger value="settings">Settings</TabsTrigger>
+        <TabsList className="w-full justify-start gap-1.5 bg-transparent p-0 h-auto overflow-x-auto no-scrollbar">
+          {[
+            { v: "overview", l: "Overview" },
+            { v: "documents", l: "Documents" },
+            { v: "ai", l: "AI Queries" },
+            { v: "members", l: "Members" },
+            { v: "settings", l: "Settings" },
+          ].map((t) => (
+            <TabsTrigger
+              key={t.v}
+              value={t.v}
+              className="shrink-0 rounded-lg px-4 py-2 text-[13.5px] font-semibold text-muted-foreground bg-muted/70 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm transition-colors"
+            >
+              {t.l}
+            </TabsTrigger>
+          ))}
         </TabsList>
 
         <TabsContent value="overview">
-          <div className="rounded-lg border border-border bg-card p-5 space-y-3 mt-4">
+          <div className="mt-5 flex flex-wrap gap-x-16 gap-y-4 rounded-2xl bg-card p-5 shadow-card">
               <div>
-                <p className="text-xs text-muted-foreground">Created</p>
-                <p className="text-sm">{new Date(project.created_at).toLocaleString()}</p>
+                <p className="text-[11.5px] font-semibold text-muted-foreground">Created</p>
+                <p className="mt-0.5 text-sm font-medium">{new Date(project.created_at).toLocaleString()}</p>
               </div>
               <div>
-                <p className="text-xs text-muted-foreground">Created By</p>
-                <p className="text-sm">{creatorDisplay}</p>
+                <p className="text-[11.5px] font-semibold text-muted-foreground">Created By</p>
+                <p className="mt-0.5 text-sm font-medium">{creatorDisplay}</p>
               </div>
           </div>
 
-          <h3 className="text-sm font-medium text-foreground mt-6 mb-3">Activity</h3>
+          <h3 className="font-display text-base font-bold text-foreground mt-6 mb-3">Activity</h3>
           {activeOrgId && projectId && (
             <ProjectActivityFeed orgId={activeOrgId} projectId={projectId} />
           )}
